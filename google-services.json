@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1085838788540",
+    "project_id": "fit-x-cd2c8",
+    "storage_bucket": "fit-x-cd2c8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085838788540:android:2c9ab3d8f17218a032cdb9",
+        "android_client_info": {
+          "package_name": "FitX.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085838788540-mkt1r31a1ec6ln9gmbmh81kvacrf2lt2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiaXECnI17gk6q6pCF5aNiwGoAawW8Wmk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085838788540-mkt1r31a1ec6ln9gmbmh81kvacrf2lt2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1085838788540-ooj5j4miigirtcvrr8a2igt1e3kjfs5p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "FitX.com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

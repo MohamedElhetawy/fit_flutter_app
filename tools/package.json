@@ -1,0 +1,13 @@
+{
+  "name": "fitx-firebase-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Migration and ops tools for FitX Firebase backend",
+  "scripts": {
+    "migrate:v1:dry": "node firestore_migration_v1.js --dry-run",
+    "migrate:v1:apply": "node firestore_migration_v1.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
