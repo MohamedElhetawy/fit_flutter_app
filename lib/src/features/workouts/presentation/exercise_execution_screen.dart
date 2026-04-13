@@ -118,7 +118,7 @@ class _ExerciseExecutionScreenState
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: bgColor.withValues(alpha: 0.8),
+            color: bgColor.withOpacity(0.8),
             borderRadius: BorderRadius.circular(radiusMd),
           ),
           child: IconButton(
@@ -131,7 +131,7 @@ class _ExerciseExecutionScreenState
           Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.9),
+              color: primaryColor.withOpacity(0.9),
               borderRadius: BorderRadius.circular(radiusMd),
             ),
             child: IconButton(
@@ -210,8 +210,8 @@ class _ExerciseExecutionScreenState
                           end: Alignment.topCenter,
                           colors: [
                             bgColor,
-                            bgColor.withValues(alpha: 0.8),
-                            bgColor.withValues(alpha: 0.4),
+                            bgColor.withOpacity(0.8),
+                            bgColor.withOpacity(0.4),
                             Colors.transparent,
                           ],
                         ),
@@ -297,7 +297,7 @@ class _ExerciseExecutionScreenState
                         backgroundColor: primaryColor,
                         foregroundColor: const Color(0xFF1A1A00),
                         elevation: 8,
-                        shadowColor: primaryColor.withValues(alpha: 0.4),
+                        shadowColor: primaryColor.withOpacity(0.4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(radiusLg),
                         ),
@@ -391,7 +391,7 @@ class _ExerciseExecutionScreenState
                                           Text(
                                             'ثانية',
                                             style: TextStyle(
-                                              color: textSecondary.withValues(alpha: 0.7),
+                                              color: textSecondary.withOpacity(0.7),
                                               fontSize: 12,
                                             ),
                                           ),
@@ -540,7 +540,7 @@ class _ExerciseExecutionScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: primaryColor.withValues(alpha: 0.2),
+        color: primaryColor.withOpacity(0.2),
         borderRadius: BorderRadius.circular(radiusSm),
       ),
       child: Text(
@@ -584,7 +584,7 @@ class _ExerciseExecutionScreenState
           ),
           hintText: hint,
           hintStyle: TextStyle(
-            color: textTertiary.withValues(alpha: 0.5),
+            color: textTertiary.withOpacity(0.5),
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -611,7 +611,7 @@ class _ExerciseExecutionScreenState
             height: 48,
             decoration: BoxDecoration(
               color: isPrimary
-                  ? primaryColor.withValues(alpha: 0.2)
+                  ? primaryColor.withOpacity(0.2)
                   : surfaceColorLight,
               borderRadius: BorderRadius.circular(radiusMd),
               border: Border.all(
@@ -675,13 +675,13 @@ class _ExerciseExecutionScreenState
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  primaryColor.withValues(alpha: 0.3),
-                  primaryColor.withValues(alpha: 0.1),
+                  primaryColor.withOpacity(0.3),
+                  primaryColor.withOpacity(0.1),
                 ],
               ),
               borderRadius: BorderRadius.circular(radiusSm),
               border: Border.all(
-                color: primaryColor.withValues(alpha: 0.3),
+                color: primaryColor.withOpacity(0.3),
                 width: 1,
               ),
             ),
@@ -738,7 +738,7 @@ class _ExerciseExecutionScreenState
             child: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: errorColor.withValues(alpha: 0.1),
+                color: errorColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(radiusXs),
               ),
               child: const Icon(
@@ -792,7 +792,7 @@ class _ExerciseExecutionScreenState
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.2),
+                      color: primaryColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(radiusSm),
                     ),
                     child: const Icon(
@@ -846,7 +846,7 @@ class _ExerciseExecutionScreenState
                 Text(
                   'نسبة الثقة: ${(recommendation.confidence * 100).toStringAsFixed(0)}%',
                   style: TextStyle(
-                    color: successColor.withValues(alpha: 0.8),
+                    color: successColor.withOpacity(0.8),
                     fontSize: 11,
                   ),
                 ),
@@ -876,7 +876,7 @@ class _ExerciseExecutionScreenState
 
         return FitXCard(
           color: comparison.isBetter
-              ? successColor.withValues(alpha: 0.1)
+              ? successColor.withOpacity(0.1)
               : surfaceColorLight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

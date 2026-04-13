@@ -97,7 +97,7 @@ const Curve defaultCurve = Curves.easeOutCubic;
 // ── Shadows ──────────────────────────────────────────────────
 List<BoxShadow> get accentGlow => [
       BoxShadow(
-        color: primaryColor.withValues(alpha: 0.25),
+        color: primaryColor.withOpacity(0.25),
         blurRadius: 20,
         spreadRadius: 0,
         offset: const Offset(0, 4),
@@ -106,7 +106,7 @@ List<BoxShadow> get accentGlow => [
 
 List<BoxShadow> get subtleShadow => [
       BoxShadow(
-        color: Colors.black.withValues(alpha: 0.3),
+        color: Colors.black.withOpacity(0.3),
         blurRadius: 16,
         spreadRadius: 0,
         offset: const Offset(0, 4),
@@ -121,7 +121,7 @@ final passwordValidator = MultiValidator([
       errorText: 'passwords must have at least one special character')
 ]);
 
-final emaildValidator = MultiValidator([
+final emailValidator = MultiValidator([
   RequiredValidator(errorText: 'Email is required'),
   EmailValidator(errorText: 'Enter a valid email address'),
 ]);

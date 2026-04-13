@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitx/src/core/providers/firebase_providers.dart';
+import '../../dashboard/data/home_providers.dart';
 
 import '../data/nutrition_models.dart';
 
@@ -204,6 +205,7 @@ class NutritionRepository {
     required NutritionLog log,
     String? mealType,
   }) async {
+    // 1. Add individual log
     await _firestore
         .collection('users')
         .doc(uid)
@@ -219,7 +221,37 @@ class NutritionRepository {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    // Update streak
+    // 2. Aggregate to unified daily_stats for the Interconnected Dashboard
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final statsDoc = _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('daily_stats')
+        .doc(startOfDay.millisecondsSinceEpoch.toString());
+
+    await _firestore.runTransaction((transaction) async {
+      final snap = await transaction.get(statsDoc);
+      if (!snap.exists) {
+        transaction.set(statsDoc, {
+          'caloriesConsumed': log.calories,
+          'protein': log.protein,
+          'carbs': log.carbs,
+          'fat': log.fat,
+          'date': Timestamp.fromDate(startOfDay),
+        });
+      } else {
+        final data = snap.data()!;
+        transaction.update(statsDoc, {
+          'caloriesConsumed': (data['caloriesConsumed'] ?? 0) + log.calories,
+          'protein': (data['protein'] ?? 0) + log.protein,
+          'carbs': (data['carbs'] ?? 0) + log.carbs,
+          'fat': (data['fat'] ?? 0) + log.fat,
+        });
+      }
+    });
+
+    // 3. Update streak
     await _updateStreak(uid);
   }
 

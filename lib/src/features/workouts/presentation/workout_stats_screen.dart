@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitx/constants.dart';
 import '../../../shared/widgets/fitx_card.dart';
+import '../../../shared/widgets/fitx_shimmer.dart';
 import '../providers/workout_session_provider.dart';
 import '../providers/knn_providers.dart';
 
@@ -42,7 +43,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      primaryColor.withValues(alpha: 0.2),
+                      primaryColor.withOpacity(0.2),
                       bgColor,
                     ],
                   ),
@@ -110,7 +111,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
             Icon(
               Icons.fitness_center_outlined,
               size: 64,
-              color: textSecondary.withValues(alpha: 0.5),
+              color: textSecondary.withOpacity(0.5),
             ),
             const SizedBox(height: spaceLg),
             const Text(
@@ -274,7 +275,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
+            color: color.withOpacity(0.2),
             borderRadius: BorderRadius.circular(radiusSm),
           ),
           child: Icon(icon, color: color, size: 18),
@@ -348,9 +349,9 @@ class WorkoutStatsScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
+        color: color.withOpacity(0.2),
         borderRadius: BorderRadius.circular(radiusSm),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
+        border: Border.all(color: color.withOpacity(0.5)),
       ),
       child: Text(
         '$label: $count',
@@ -548,14 +549,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
   }
 
   Widget _buildLoadingCard() {
-    return const FitXCard(
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(spaceLg),
-          child: CircularProgressIndicator(color: primaryColor),
-        ),
-      ),
-    );
+    return const FitXShimmerCard(height: 150);
   }
 
   // Helper methods

@@ -47,9 +47,9 @@ class ProfileScreenFitX extends ConsumerWidget {
                     height: 56,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor.withValues(alpha: 0.15),
+                      color: primaryColor.withOpacity(0.15),
                       border: Border.all(
-                        color: primaryColor.withValues(alpha: 0.4),
+                        color: primaryColor.withOpacity(0.4),
                         width: 2,
                       ),
                     ),
@@ -114,7 +114,7 @@ class ProfileScreenFitX extends ConsumerWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: successColor.withValues(alpha: 0.15),
+                      color: successColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(radiusSm),
                     ),
                     child: const Icon(
@@ -140,7 +140,7 @@ class ProfileScreenFitX extends ConsumerWidget {
                         Text(
                           'Compare your transformation',
                           style: TextStyle(
-                            color: textSecondary.withValues(alpha: 0.8),
+                            color: textSecondary.withOpacity(0.8),
                             fontSize: 13,
                           ),
                         ),

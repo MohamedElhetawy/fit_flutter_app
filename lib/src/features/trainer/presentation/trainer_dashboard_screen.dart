@@ -31,11 +31,16 @@ class TrainerDashboardScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        backgroundColor: bgColor,
         appBar: AppBar(
-          title: const Text('Trainer Center'),
+          backgroundColor: bgColor,
+          elevation: 0,
+          title: const Text('مركز المدرب', style: TextStyle(color: textPrimary)),
           bottom: TabBar(
+            labelColor: primaryColor,
+            unselectedLabelColor: textSecondary,
             tabs: [
-              const Tab(icon: Icon(Icons.people), text: 'My Trainees'),
+              const Tab(icon: Icon(Icons.people), text: 'المتدربين'),
               Tab(
                 icon: Badge(
                   isLabelVisible: pendingCount.when(
@@ -44,15 +49,15 @@ class TrainerDashboardScreen extends ConsumerWidget {
                     error: (_, __) => false,
                   ),
                   label: pendingCount.when(
-                    data: (c) => Text('$c'),
+                    data: (c) => Text('$c', style: const TextStyle(color: Colors.white)),
                     loading: () => null,
                     error: (_, __) => null,
                   ),
                   child: const Icon(Icons.notifications),
                 ),
-                text: 'Requests',
+                text: 'الطلبات',
               ),
-              const Tab(icon: Icon(Icons.qr_code), text: 'QR'),
+              const Tab(icon: Icon(Icons.qr_code), text: 'الربط'),
             ],
           ),
         ),
@@ -87,16 +92,16 @@ class _TraineesTab extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
+                const Icon(Icons.people_outline, size: 64, color: textTertiary),
                 const SizedBox(height: 16),
                 Text(
-                  'No trainees connected yet',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+                  'لا يوجد متدربين مرتبطين بعد',
+                  style: const TextStyle(color: textSecondary, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Share your QR code to get started',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+                  'شارك QR code عشان تبدأ',
+                  style: const TextStyle(color: textTertiary, fontSize: 14),
                 ),
               ],
             ),
@@ -442,7 +447,7 @@ class _LinkRequestsTab extends ConsumerWidget {
                     const SizedBox(height: 16),
                     Text(
                       'No requests yet',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+                      style: const TextStyle(color: textSecondary, fontSize: 16),
                     ),
                   ],
                 ),
@@ -643,7 +648,7 @@ class _QrTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -664,7 +669,7 @@ class _QrTab extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Scan to request connection',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                    style: const TextStyle(color: textTertiary, fontSize: 14),
                   ),
                 ],
               ),

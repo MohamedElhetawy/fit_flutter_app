@@ -163,7 +163,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                task.assignedByName ?? 'Coach',
+                task.assignedByName ?? 'مدرب',
                 style: const TextStyle(
                   color: textPrimary,
                   fontSize: 18,
@@ -182,7 +182,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    task.type == TaskType.workout ? 'Workout' : 'Nutrition',
+                    task.type == TaskType.workout ? 'تمرين' : 'تغذية',
                     style: const TextStyle(
                       color: textSecondary,
                       fontSize: 14,
@@ -205,7 +205,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Progress',
+              'التقدم',
               style: TextStyle(
                 color: textSecondary,
                 fontSize: 13,
@@ -242,8 +242,8 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         children: [
           Text(
             widget.task.type == TaskType.workout
-                ? 'Exercises'
-                : 'Meal Items',
+                ? 'التمارين'
+                : 'عناصر الوجبة',
             style: const TextStyle(
               color: textPrimary,
               fontSize: 16,
@@ -269,12 +269,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           padding: const EdgeInsets.all(spaceSm),
           decoration: BoxDecoration(
             color: item.isChecked
-                ? primaryColor.withValues(alpha: 0.1)
+                ? primaryColor.withOpacity(0.1)
                 : surfaceColorLight,
             borderRadius: BorderRadius.circular(radiusMd),
             border: Border.all(
               color: item.isChecked
-                  ? primaryColor.withValues(alpha: 0.3)
+                  ? primaryColor.withOpacity(0.3)
                   : surfaceBorder,
             ),
           ),
@@ -337,7 +337,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             borderRadius: BorderRadius.circular(radiusLg),
           ),
           elevation: canComplete ? 4 : 0,
-          shadowColor: canComplete ? primaryColor.withValues(alpha: 0.4) : null,
+          shadowColor: canComplete ? primaryColor.withOpacity(0.4) : null,
         ),
         child: _isCompleting
             ? const SizedBox(
@@ -357,7 +357,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   ),
                   const SizedBox(width: spaceSm),
                   Text(
-                    canComplete ? 'Mark as Complete' : 'Complete All Items First',
+                    canComplete ? 'تحديد كمكتمل' : 'أكمل كل العناصر أولاً',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -391,7 +391,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update: $e'),
+            content: Text('فشل التحديث: $e'),
             backgroundColor: errorColor,
           ),
         );
@@ -415,7 +415,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: spaceSm),
-                Text('Task completed! Great job!'),
+                Text('تم إكمال المهمة! عمل رائع!'),
               ],
             ),
             backgroundColor: successColor,

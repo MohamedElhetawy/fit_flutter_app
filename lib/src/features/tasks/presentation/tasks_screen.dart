@@ -28,7 +28,7 @@ class TasksScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'My Tasks',
+                      'مهامي',
                       style: TextStyle(
                         color: textPrimary,
                         fontSize: 28,
@@ -37,7 +37,7 @@ class TasksScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: spaceSm),
                     Text(
-                      'Workout and nutrition tasks from your coach',
+                      'تمارين ومهام تغذية من مدربك',
                       style: TextStyle(
                         color: textSecondary,
                         fontSize: 14,
@@ -58,7 +58,7 @@ class TasksScreen extends ConsumerWidget {
               error: (e, _) => SliverFillRemaining(
                 child: Center(
                   child: Text(
-                    'Error: $e',
+                    'خطأ: $e',
                     style: const TextStyle(color: textPrimary),
                   ),
                 ),
@@ -78,12 +78,12 @@ class TasksScreen extends ConsumerWidget {
                       // Workout Tasks Section
                       _buildSectionHeader(
                         icon: Icons.fitness_center,
-                        title: 'Workout Tasks',
+                        title: 'مهام التمرين',
                         color: primaryColor,
                       ),
                       const SizedBox(height: spaceMd),
                       if (workoutTasks.isEmpty)
-                        _buildEmptySection('No workout tasks')
+                        _buildEmptySection('لا توجد مهام تمرين')
                       else
                         ...workoutTasks.map((task) => _TaskCard(task: task)),
 
@@ -92,16 +92,17 @@ class TasksScreen extends ConsumerWidget {
                       // Nutrition Tasks Section
                       _buildSectionHeader(
                         icon: Icons.restaurant,
-                        title: 'Nutrition Tasks',
+                        title: 'مهام التغذية',
                         color: Colors.orange,
                       ),
                       const SizedBox(height: spaceMd),
                       if (nutritionTasks.isEmpty)
-                        _buildEmptySection('No nutrition tasks')
+                        _buildEmptySection('لا توجد مهام تغذية')
                       else
                         ...nutritionTasks.map((task) => _TaskCard(task: task)),
 
                       const SizedBox(height: spaceLg),
+                      const SizedBox(height: 100), // Bottom nav padding
                     ]),
                   ),
                 );
@@ -123,7 +124,7 @@ class TasksScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
+            color: color.withOpacity(0.2),
             borderRadius: BorderRadius.circular(radiusSm),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -249,7 +250,7 @@ class _TaskCard extends ConsumerWidget {
                 if (!allChecked) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Complete all items first'),
+                      content: Text('أكمل كل العناصر أولاً'),
                       backgroundColor: errorColor,
                       duration: Duration(seconds: 2),
                     ),
@@ -271,7 +272,7 @@ class _TaskCard extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Task completed!'),
+                      content: Text('تم إكمال المهمة!'),
                       backgroundColor: successColor,
                       duration: Duration(seconds: 2),
                     ),
@@ -320,16 +321,16 @@ class _TaskCard extends ConsumerWidget {
     };
 
     final labels = {
-      TaskStatus.pending: 'New',
-      TaskStatus.inProgress: 'In Progress',
-      TaskStatus.completed: 'Done',
-      TaskStatus.cancelled: 'Cancelled',
+      TaskStatus.pending: 'جديد',
+      TaskStatus.inProgress: 'جاري',
+      TaskStatus.completed: 'مكتمل',
+      TaskStatus.cancelled: 'ملغي',
     };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: colors[task.status]?.withValues(alpha: 0.2),
+        color: colors[task.status]?.withOpacity(0.2),
         borderRadius: BorderRadius.circular(radiusXs),
       ),
       child: Text(
@@ -357,10 +358,10 @@ class _TaskCard extends ConsumerWidget {
     final diff = now.difference(date);
 
     if (diff.inDays == 0) {
-      if (diff.inHours == 0) return 'Just now';
-      return 'Today';
+      if (diff.inHours == 0) return 'الآن';
+      return 'اليوم';
     } else if (diff.inDays == 1) {
-      return 'Yesterday';
+      return 'أمس';
     }
     return '${date.day}/${date.month}';
   }

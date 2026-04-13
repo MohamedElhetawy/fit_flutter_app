@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 import '../../../../constants.dart';
+import '../../../shared/widgets/fitx_card.dart';
 
 import '../../../core/auth/auth_controller.dart';
 import '../data/nutrition_models.dart';
@@ -30,93 +31,128 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
     final logsAsync = ref.watch(dailyNutritionLogsProvider((uid: uid, date: _selectedDate)));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nutrition Log'),
-        actions: [
-          IconButton(
-            onPressed: () => _showMacroGoalsDialog(context, ref, uid),
-            icon: const Icon(Icons.tune),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Date Selector
-          _DateSelector(
-            selectedDate: _selectedDate,
-            onDateChanged: (date) => setState(() => _selectedDate = date),
-          ),
-
-          // Macro Progress Rings
-          goalsAsync.when(
-            data: (goals) => logsAsync.when(
-              data: (logs) => _MacroProgressHeader(goals: goals, logs: logs),
-              loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator())),
-              error: (_, __) => const SizedBox.shrink(),
-            ),
-            loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
-          // Hydration Tracker
-          _HydrationTracker(),
-
-          // Meal Sections
-          Expanded(
-            child: logsAsync.when(
-              data: (logs) => _MealsList(
-                logs: logs,
-                selectedDate: _selectedDate,
-                onAddMeal: (mealType) => _showAddMealDialog(context, ref, uid, mealType),
-              ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // AI Food Recognition - Coming Soon
-          FloatingActionButton.small(
-            onPressed: () => _showComingSoonDialog(context, 'AI Food Recognition'),
-            backgroundColor: surfaceColorLight,
-            heroTag: 'ai_food',
-            child: Stack(
-              children: [
-                const Icon(Icons.camera_alt, color: textSecondary),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(4),
+      backgroundColor: bgColor,
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Custom Header
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(defaultPadding, spaceMd, defaultPadding, 0),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'التغذية',
+                          style: TextStyle(
+                            color: textPrimary,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: spaceSm),
+                        const Text(
+                          'تتبع وجباتك ووحداتك الغذائية',
+                          style: TextStyle(
+                            color: textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                    child: const Text(
-                      'قريباً',
-                      style: TextStyle(
-                        color: Color(0xFF1A1A00),
-                        fontSize: 6,
-                        fontWeight: FontWeight.bold,
+                    const Spacer(),
+                    _CircleActionBtn(
+                      icon: Icons.tune,
+                      filled: true,
+                      onTap: () => _showMacroGoalsDialog(context, ref, uid),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Date Selector
+            SliverToBoxAdapter(
+              child: _DateSelector(
+                selectedDate: _selectedDate,
+                onDateChanged: (date) => setState(() => _selectedDate = date),
+              ),
+            ),
+
+            // Macro Progress Rings
+            SliverToBoxAdapter(
+              child: goalsAsync.when(
+                data: (goals) => logsAsync.when(
+                  data: (logs) => _MacroProgressHeader(goals: goals, logs: logs),
+                  loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator(color: primaryColor))),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
+                loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator(color: primaryColor))),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+            ),
+
+            // Hydration Tracker
+            SliverToBoxAdapter(child: _HydrationTracker()),
+
+            // Add Food Button
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: defaultPadding, vertical: spaceMd),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showAddMealDialog(context, ref, uid, null),
+                        icon: const Icon(Icons.add, size: 18),
+                        label: const Text('إضافة وجبة'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: const Color(0xFF1A1A00),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(radiusMd),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: spaceSm),
+                    _CircleActionBtn(
+                      icon: Icons.camera_alt,
+                      onTap: () => _showComingSoonDialog(context, 'التعرف بالكاميرا'),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          // Main Add Food Button
-          FloatingActionButton.extended(
-            onPressed: () => _showAddMealDialog(context, ref, uid, null),
-            icon: const Icon(Icons.add),
-            label: const Text('Log Food'),
-            heroTag: 'add_food',
-          ),
-        ],
+
+            // Meal Sections
+            logsAsync.when(
+              data: (logs) => SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+                sliver: _MealsSliver(
+                  logs: logs,
+                  selectedDate: _selectedDate,
+                  onAddMeal: (mealType) => _showAddMealDialog(context, ref, uid, mealType),
+                ),
+              ),
+              loading: () => const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator(color: primaryColor)),
+              ),
+              error: (e, _) => SliverFillRemaining(
+                child: Center(child: Text('خطأ: $e', style: const TextStyle(color: textPrimary))),
+              ),
+            ),
+
+            const SliverPadding(
+              padding: EdgeInsets.only(bottom: 100),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -132,36 +168,37 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Daily Macro Goals'),
+        backgroundColor: surfaceColor,
+        title: const Text('الأهداف اليومية'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: calCtrl,
-                decoration: const InputDecoration(labelText: 'Calories', suffixText: 'kcal'),
+                decoration: const InputDecoration(labelText: 'السعرات', suffixText: 'kcal'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: proteinCtrl,
-                decoration: const InputDecoration(labelText: 'Protein', suffixText: 'g'),
+                decoration: const InputDecoration(labelText: 'البروتين', suffixText: 'g'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: carbsCtrl,
-                decoration: const InputDecoration(labelText: 'Carbs', suffixText: 'g'),
+                decoration: const InputDecoration(labelText: 'الكارب', suffixText: 'g'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: fatCtrl,
-                decoration: const InputDecoration(labelText: 'Fat', suffixText: 'g'),
+                decoration: const InputDecoration(labelText: 'الدهون', suffixText: 'g'),
                 keyboardType: TextInputType.number,
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => context.pop(), child: const Text('Cancel')),
+          TextButton(onPressed: () => context.pop(), child: const Text('إلغاء')),
           ElevatedButton(
             onPressed: () async {
               try {
@@ -173,7 +210,7 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                 if (calories == null || protein == null || carbs == null || fat == null) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please enter valid numbers for all fields')),
+                      const SnackBar(content: Text('يرجى إدخال أرقام صحيحة')),
                     );
                   }
                   return;
@@ -182,7 +219,7 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                 if (calories <= 0 || protein < 0 || carbs < 0 || fat < 0) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Values must be positive numbers')),
+                      const SnackBar(content: Text('القيم لازم تكون أرقام موجبة')),
                     );
                   }
                   return;
@@ -198,18 +235,18 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                 if (context.mounted) {
                   context.pop();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Goals updated successfully')),
+                    const SnackBar(content: Text('تم تحديث الأهداف بنجاح'), backgroundColor: primaryColor),
                   );
                 }
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error updating goals: $e')),
+                    SnackBar(content: Text('خطأ: $e')),
                   );
                 }
               }
             },
-            child: const Text('Save'),
+            child: const Text('حفظ'),
           ),
         ],
       ),
@@ -229,7 +266,7 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
           ],
         ),
         content: Text(
-          'ميزة $feature قيد التطوير حالياً و ستكون متاحة في التحديث القادم',
+          'ميزة "$feature" قيد التطوير وستكون متاحة قريباً',
           style: const TextStyle(color: textSecondary),
         ),
         actions: [
@@ -274,9 +311,9 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: primaryColor.withValues(alpha: 0.15),
+                    color: primaryColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(radiusSm),
-                    border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                    border: Border.all(color: primaryColor.withOpacity(0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -320,7 +357,7 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
               children: [
                 // Meal Type Dropdown
                 DropdownButtonFormField<String>(
-                  initialValue: selectedMealType,
+                  value: selectedMealType,
                   decoration: InputDecoration(
                     labelText: 'نوع الوجبة',
                     labelStyle: const TextStyle(color: textSecondary),
@@ -423,7 +460,7 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                         return ListTile(
                           dense: true,
                           selected: isSelected,
-                          selectedTileColor: primaryColor.withValues(alpha: 0.1),
+                          selectedTileColor: primaryColor.withOpacity(0.1),
                           title: Text(
                             food.displayName,
                             style: TextStyle(
@@ -472,9 +509,9 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.1),
+                      color: primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(radiusMd),
-                      border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                      border: Border.all(color: primaryColor.withOpacity(0.3)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -624,12 +661,12 @@ class _DateSelector extends StatelessWidget {
         selectedDate.year == DateTime.now().year;
 
     return Container(
-      padding: const EdgeInsets.all(defaultPadding),
+      padding: const EdgeInsets.symmetric(horizontal: defaultPadding, vertical: spaceMd),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () => onDateChanged(selectedDate.subtract(const Duration(days: 1))),
-            icon: const Icon(Icons.chevron_left),
+          _CircleActionBtn(
+            icon: Icons.chevron_left_rounded,
+            onTap: () => onDateChanged(selectedDate.subtract(const Duration(days: 1))),
           ),
           Expanded(
             child: InkWell(
@@ -645,26 +682,29 @@ class _DateSelector extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    isToday ? 'Today' : _formatDate(selectedDate),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                    isToday ? 'اليوم' : _formatDate(selectedDate),
+                    style: const TextStyle(
+                      color: textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Text(
                     '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    style: const TextStyle(
+                      color: textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          IconButton(
-            onPressed: selectedDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))
+          _CircleActionBtn(
+            icon: Icons.chevron_right_rounded,
+            onTap: selectedDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))
                 ? null
                 : () => onDateChanged(selectedDate.add(const Duration(days: 1))),
-            icon: const Icon(Icons.chevron_right),
           ),
         ],
       ),
@@ -672,7 +712,7 @@ class _DateSelector extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final days = ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
     return days[date.weekday - 1];
   }
 }
@@ -700,28 +740,28 @@ class _MacroProgressHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _MacroRing(
-            label: 'Calories',
+            label: 'سعرات',
             current: totalCalories,
             goal: goals.calories,
-            color: Theme.of(context).colorScheme.primary,
+            color: primaryColor,
           ),
           _MacroRing(
-            label: 'Protein',
+            label: 'بروتين',
             current: totalProtein,
             goal: goals.protein,
-            color: Theme.of(context).colorScheme.secondary,
+            color: Colors.blue,
           ),
           _MacroRing(
-            label: 'Carbs',
+            label: 'كارب',
             current: totalCarbs,
             goal: goals.carbs,
-            color: Colors.green,
+            color: Colors.orange,
           ),
           _MacroRing(
-            label: 'Fat',
+            label: 'دهون',
             current: totalFat,
             goal: goals.fat,
-            color: Colors.red,
+            color: Colors.redAccent,
           ),
         ],
       ),
@@ -758,7 +798,7 @@ class _MacroRing extends StatelessWidget {
               CircularProgressIndicator(
                 value: progress.toDouble(),
                 strokeWidth: 8,
-                backgroundColor: Colors.grey[200],
+                backgroundColor: surfaceBorder,
                 valueColor: AlwaysStoppedAnimation<Color>(color),
               ),
               Center(
@@ -775,9 +815,9 @@ class _MacroRing extends StatelessWidget {
                     ),
                     Text(
                       '$current',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 10,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                     ),
                   ],
@@ -789,16 +829,16 @@ class _MacroRing extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
-            color: Colors.grey[700],
+            color: textSecondary,
           ),
         ),
         Text(
           '/$goal',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 10,
-            color: Colors.grey[500],
+            color: textTertiary,
           ),
         ),
       ],
@@ -806,13 +846,13 @@ class _MacroRing extends StatelessWidget {
   }
 }
 
-/// Meals List organized by meal type
-class _MealsList extends StatelessWidget {
+/// Meals Sliver organized by meal type
+class _MealsSliver extends StatelessWidget {
   final List<NutritionLog> logs;
   final DateTime selectedDate;
   final ValueChanged<String> onAddMeal;
 
-  const _MealsList({
+  const _MealsSliver({
     required this.logs,
     required this.selectedDate,
     required this.onAddMeal,
@@ -822,12 +862,9 @@ class _MealsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final mealOrder = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Pre-workout', 'Post-workout'];
     
-    // Group logs by meal type - temporarily filter by name until mealType field is added
     final grouped = <String, List<NutritionLog>>{};
     for (final mealType in mealOrder) {
       grouped[mealType] = logs.where((log) {
-        // Extract meal type from log name or use a different approach
-        // This is a temporary solution - ideally NutritionLog should have a mealType field
         final logName = log.name.toLowerCase();
         switch (mealType.toLowerCase()) {
           case 'breakfast':
@@ -848,19 +885,17 @@ class _MealsList extends StatelessWidget {
       }).toList();
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(defaultPadding),
-      itemCount: mealOrder.length,
-      itemBuilder: (context, index) {
-        final mealType = mealOrder[index];
-        final mealLogs = grouped[mealType] ?? [];
-        
-        return _MealSection(
-          mealType: mealType,
-          logs: mealLogs,
-          onAdd: () => onAddMeal(mealType),
-        );
-      },
+    return SliverList(
+      delegate: SliverChildListDelegate([
+        for (int i = 0; i < mealOrder.length; i++) ...[
+          _MealSection(
+            mealType: mealOrder[i],
+            logs: grouped[mealOrder[i]] ?? [],
+            onAdd: () => onAddMeal(mealOrder[i]),
+          ),
+          if (i < mealOrder.length - 1) const SizedBox(height: spaceMd),
+        ],
+      ]),
     );
   }
 }
@@ -869,6 +904,24 @@ class _MealSection extends StatelessWidget {
   final String mealType;
   final List<NutritionLog> logs;
   final VoidCallback onAdd;
+
+  static const _mealLabels = {
+    'Breakfast': 'إفطار',
+    'Lunch': 'غداء',
+    'Dinner': 'عشاء',
+    'Snack': 'وجبة خفيفة',
+    'Pre-workout': 'قبل التمرين',
+    'Post-workout': 'بعد التمرين',
+  };
+
+  static const _mealIcons = {
+    'Breakfast': Icons.wb_sunny_rounded,
+    'Lunch': Icons.lunch_dining_rounded,
+    'Dinner': Icons.dinner_dining_rounded,
+    'Snack': Icons.cookie_rounded,
+    'Pre-workout': Icons.fitness_center_rounded,
+    'Post-workout': Icons.local_drink_rounded,
+  };
 
   const _MealSection({
     required this.mealType,
@@ -879,64 +932,79 @@ class _MealSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalCalories = logs.fold<int>(0, (sum, log) => sum + log.calories);
+    final label = _mealLabels[mealType] ?? mealType;
+    final icon = _mealIcons[mealType] ?? Icons.restaurant_rounded;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        mealType,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+    return FitXCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(radiusSm),
+                ),
+                child: Icon(icon, color: primaryColor, size: 18),
+              ),
+              const SizedBox(width: spaceSm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: textPrimary,
                       ),
-                      if (logs.isNotEmpty)
-                        Text(
-                          '$totalCalories kcal',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                          ),
+                    ),
+                    if (logs.isNotEmpty)
+                      Text(
+                        '$totalCalories سعرة',
+                        style: const TextStyle(
+                          color: textSecondary,
+                          fontSize: 12,
                         ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: onAdd,
-                  icon: Icon(
-                    Icons.add_circle,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            if (logs.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              const Divider(),
-              ...logs.map((log) => _MealItem(log: log)),
-            ],
-            if (logs.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'No food logged yet',
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontStyle: FontStyle.italic,
-                  ),
+                      ),
+                  ],
                 ),
               ),
+              GestureDetector(
+                onTap: onAdd,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(radiusXs),
+                  ),
+                  child: const Icon(Icons.add_rounded, color: primaryColor, size: 18),
+                ),
+              ),
+            ],
+          ),
+          if (logs.isNotEmpty) ...[
+            const SizedBox(height: spaceMd),
+            Divider(color: surfaceBorder, thickness: 0.5),
+            const SizedBox(height: spaceSm),
+            ...logs.map((log) => _MealItem(log: log)),
           ],
-        ),
+          if (logs.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: spaceMd),
+              child: Text(
+                'لم يتم تسجيل طعام بعد',
+                style: TextStyle(
+                  color: textTertiary,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -949,22 +1017,46 @@ class _MealItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extract food name from the log name (remove meal type prefix)
-    final displayName = log.name.contains(' - ') 
+    final displayName = log.name.contains(' - ')
         ? log.name.split(' - ').skip(1).join(' - ')
         : log.name;
-    
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-      title: Text(displayName),
-      subtitle: Text('P:${log.protein.toInt()}g C:${log.carbs.toInt()}g F:${log.fat.toInt()}g'),
-      trailing: Text(
-        '${log.calories} kcal',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: spaceSm),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayName,
+                  style: const TextStyle(
+                    color: textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'ب:${log.protein.toInt()}g ك:${log.carbs.toInt()}g د:${log.fat.toInt()}g',
+                  style: const TextStyle(
+                    color: textSecondary,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '${log.calories} سعرة',
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: primaryColor,
+              fontSize: 13,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1008,7 +1100,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withValues(alpha: 0.2),
+                  color: Colors.blue.withOpacity(0.2),
                 ),
                 child: const Icon(Icons.water_drop_rounded, color: Colors.blue, size: 24),
               ),
@@ -1018,7 +1110,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Hydration',
+                      'الماء',
                       style: TextStyle(
                         color: textPrimary,
                         fontSize: 16,
@@ -1026,7 +1118,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                       ),
                     ),
                     Text(
-                      '${_waterIntake}ml / ${_goal}ml • $glasses glasses',
+                      '${_waterIntake}مل / ${_goal}مل • $glasses كوب',
                       style: const TextStyle(color: textSecondary, fontSize: 13),
                     ),
                   ],
@@ -1050,9 +1142,9 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildWaterButton(250, 'Small'),
-              _buildWaterButton(500, 'Medium'),
-              _buildWaterButton(750, 'Large'),
+              _buildWaterButton(250, 'صغير'),
+              _buildWaterButton(500, 'وسط'),
+              _buildWaterButton(750, 'كبير'),
             ],
           ),
           const SizedBox(height: spaceSm),
@@ -1070,7 +1162,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                 child: Text(
                   '+250ml',
                   style: TextStyle(
-                    color: Colors.blue.withValues(alpha: 0.8),
+                    color: Colors.blue.withOpacity(0.8),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1094,7 +1186,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceSm),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.withValues(alpha: 0.2) : surfaceColorLight,
+          color: isSelected ? Colors.blue.withOpacity(0.2) : surfaceColorLight,
           borderRadius: BorderRadius.circular(radiusSm),
           border: Border.all(
             color: isSelected ? Colors.blue : surfaceBorder,
@@ -1117,6 +1209,28 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CircleActionBtn extends StatelessWidget {
+  final IconData icon;
+  final bool filled;
+  final VoidCallback? onTap;
+  const _CircleActionBtn({required this.icon, this.filled = false, this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44, height: 44,
+        decoration: BoxDecoration(
+          color: filled ? primaryColor : surfaceColor,
+          borderRadius: BorderRadius.circular(radiusSm),
+          border: filled ? null : Border.all(color: surfaceBorder),
+        ),
+        child: Icon(icon, color: filled ? const Color(0xFF1A1A00) : textSecondary, size: 20),
       ),
     );
   }

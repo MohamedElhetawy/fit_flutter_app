@@ -59,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withValues(alpha: 0.08),
+                    primaryColor.withOpacity(0.08),
                     Colors.transparent,
                   ],
                 ),
@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withValues(alpha: 0.06),
+                    primaryColor.withOpacity(0.06),
                     Colors.transparent,
                   ],
                 ),
@@ -118,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                 Shadow(
                                   offset: const Offset(0, 8),
                                   blurRadius: 16,
-                                  color: primaryColor.withValues(alpha: 0.3),
+                                  color: primaryColor.withOpacity(0.3),
                                 ),
                               ],
                             ),
@@ -434,7 +434,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          backgroundColor: surfaceColor.withValues(alpha: 0.5),
+          backgroundColor: surfaceColor.withOpacity(0.5),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

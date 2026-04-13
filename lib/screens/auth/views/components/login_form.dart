@@ -71,7 +71,7 @@ class _LogInFormState extends State<LogInForm> {
               boxShadow: _emailHasFocus
                   ? [
                       BoxShadow(
-                        color: primaryColor.withValues(alpha: 0.08),
+                        color: primaryColor.withOpacity(0.08),
                         blurRadius: 12,
                         spreadRadius: 0,
                         offset: const Offset(0, 2),
@@ -82,7 +82,7 @@ class _LogInFormState extends State<LogInForm> {
             child: TextFormField(
               controller: widget.emailController,
               focusNode: _emailFocus,
-              validator: emaildValidator.call,
+              validator: emailValidator.call,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(
@@ -133,7 +133,7 @@ class _LogInFormState extends State<LogInForm> {
               boxShadow: _passwordHasFocus
                   ? [
                       BoxShadow(
-                        color: primaryColor.withValues(alpha: 0.08),
+                        color: primaryColor.withOpacity(0.08),
                         blurRadius: 12,
                         spreadRadius: 0,
                         offset: const Offset(0, 2),

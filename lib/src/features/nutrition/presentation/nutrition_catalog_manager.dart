@@ -218,7 +218,7 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
 
                   // Category Dropdown
                   DropdownButtonFormField<String>(
-                    initialValue: category,
+                    value: category,
                     decoration: const InputDecoration(labelText: 'Category *'),
                     items: categories.map((c) => DropdownMenuItem(
                       value: c,
@@ -324,7 +324,7 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
           ),
           actions: [
             TextButton(
-              onPressed: () => context.pop(),
+              onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -346,7 +346,7 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                   'searchableName': nameCtrl.text.trim().toLowerCase(),
                 });
 
-                if (context.mounted) context.pop();
+                if (context.mounted) Navigator.pop(context);
               },
               child: const Text('Add to Catalog'),
             ),
@@ -474,7 +474,7 @@ class _MacroBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

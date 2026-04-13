@@ -102,7 +102,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withValues(alpha: 0.08),
+                    primaryColor.withOpacity(0.08),
                     Colors.transparent,
                   ],
                 ),
@@ -119,7 +119,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withValues(alpha: 0.06),
+                    primaryColor.withOpacity(0.06),
                     Colors.transparent,
                   ],
                 ),
@@ -219,10 +219,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                         child: Container(
                           padding: const EdgeInsets.all(spaceLg),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
+                            color: Colors.green.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(radiusLg),
                             border: Border.all(
-                              color: Colors.green.withValues(alpha: 0.3),
+                              color: Colors.green.withOpacity(0.3),
                               width: 1,
                             ),
                           ),
@@ -280,7 +280,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                       FadeTransition(
                         opacity: CurvedAnimation(
                           parent: _animController,
-                          curve: const Interval(0.2, 0.6),
+                        curve: const Interval(0.2, 0.6),
                         ),
                         child: AppTheme.buildGlassmorphicContainer(
                           backgroundColor: surfaceColor,
@@ -296,10 +296,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                                   Container(
                                     padding: const EdgeInsets.all(spaceSm),
                                     decoration: BoxDecoration(
-                                      color: errorColor.withValues(alpha: 0.1),
+                                      color: errorColor.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(radiusSm),
                                       border: Border.all(
-                                        color: errorColor.withValues(alpha: 0.3),
+                                        color: errorColor.withOpacity(0.3),
                                       ),
                                     ),
                                     child: Row(

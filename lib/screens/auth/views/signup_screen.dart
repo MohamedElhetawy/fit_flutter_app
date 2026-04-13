@@ -93,7 +93,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withValues(alpha: 0.08),
+                    primaryColor.withOpacity(0.08),
                     Colors.transparent,
                   ],
                 ),
@@ -110,7 +110,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withValues(alpha: 0.06),
+                    primaryColor.withOpacity(0.06),
                     Colors.transparent,
                   ],
                 ),
@@ -571,7 +571,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          backgroundColor: surfaceColor.withValues(alpha: 0.5),
+          backgroundColor: surfaceColor.withOpacity(0.5),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

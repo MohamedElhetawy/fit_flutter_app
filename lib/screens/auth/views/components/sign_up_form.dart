@@ -23,7 +23,7 @@ class SignUpForm extends StatelessWidget {
         children: [
           TextFormField(
             controller: emailController,
-            validator: emaildValidator.call,
+            validator: emailValidator.call,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(

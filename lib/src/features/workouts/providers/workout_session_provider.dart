@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fitx/src/core/providers/firebase_providers.dart';
+import 'package:fitx/src/core/auth/auth_controller.dart';
 
 /// Single set data for a workout
 class WorkoutSet {
@@ -115,7 +118,8 @@ class WorkoutSession {
 
 /// Workout Session Notifier
 class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
-  WorkoutSessionNotifier() : super(null);
+  final Ref ref;
+  WorkoutSessionNotifier(this.ref) : super(null);
 
   void startWorkout({String? muscleGroup}) {
     state = WorkoutSession(
@@ -161,13 +165,60 @@ class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
     );
   }
 
-  void endWorkout() {
+  Future<void> endWorkout() async {
     if (state == null) return;
 
-    state = state!.copyWith(
+    final finalSession = state!.copyWith(
       endTime: DateTime.now(),
       isActive: false,
     );
+
+    // 1. Sync to activities for Recent Activity on Home
+    await _syncToFirebase(finalSession);
+
+    state = finalSession;
+  }
+
+  Future<void> _syncToFirebase(WorkoutSession session) async {
+    final user = ref.read(authStateProvider).value;
+    if (user == null) return;
+
+    final firestore = ref.read(firestoreProvider);
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+
+    final batch = firestore.batch();
+
+    // A. Add to Activities
+    final activityRef = firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('activities')
+        .doc(session.id);
+    
+    batch.set(activityRef, {
+      'name': '${session.muscleGroup ?? 'General'} Workout',
+      'durationMinutes': session.duration?.inMinutes ?? 0,
+      'type': 'workout',
+      'timestamp': Timestamp.fromDate(now),
+      'volume': session.totalVolume,
+    });
+
+    // B. Update Daily Stats for Interconnected Dashboard
+    final statsDoc = firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('daily_stats')
+        .doc(startOfDay.millisecondsSinceEpoch.toString());
+
+    // Note: We use a batch here, but for increments we need to be careful. 
+    // In a real app, fieldValue.increment is better.
+    batch.set(statsDoc, {
+      'caloriesBurned': FieldValue.increment((session.duration?.inMinutes ?? 0) * 8), // Rough estimate
+      'lastUpdated': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    await batch.commit();
   }
 
   void clearSession() {
@@ -177,7 +228,7 @@ class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
 
 /// Providers
 final workoutSessionProvider = StateNotifierProvider<WorkoutSessionNotifier, WorkoutSession?>((ref) {
-  return WorkoutSessionNotifier();
+  return WorkoutSessionNotifier(ref);
 });
 
 /// Current workout stats (computed)

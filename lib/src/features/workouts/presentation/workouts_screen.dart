@@ -145,7 +145,7 @@ class _MuscleGroupCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(radiusLg),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -190,8 +190,8 @@ class _MuscleGroupCard extends StatelessWidget {
                     colors: [
                       Colors.transparent,
                       Colors.transparent,
-                      bgColor.withValues(alpha: 0.7),
-                      bgColor.withValues(alpha: 0.95),
+                      bgColor.withOpacity(0.7),
+                      bgColor.withOpacity(0.95),
                     ],
                   ),
                 ),
@@ -222,7 +222,7 @@ class _MuscleGroupCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: primaryColor.withValues(alpha: 0.2),
+                              color: primaryColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(radiusXs),
                             ),
                             child: Text(
@@ -249,7 +249,7 @@ class _MuscleGroupCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: bgColor.withValues(alpha: 0.6),
+                    color: bgColor.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(radiusFull),
                   ),
                   child: const Icon(
