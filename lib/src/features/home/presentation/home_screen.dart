@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitx/constants.dart';
-import 'package:fitx/src/features/dashboard/data/home_providers.dart';
-import 'package:fitx/src/shared/widgets/fitx_card.dart';
-import 'package:fitx/src/shared/widgets/section_header.dart';
-import 'package:fitx/src/shared/widgets/fitx_shimmer.dart';
-import 'package:fitx/src/features/tasks/presentation/coach_task_card.dart';
+import '../../../shared/widgets/fitx_card.dart';
+import '../../../shared/widgets/section_header.dart';
+import '../../../shared/widgets/fitx_shimmer.dart';
+import '../../dashboard/data/home_providers.dart';
+import '../../dashboard/providers/unified_steps_provider.dart';
+import '../../tasks/presentation/coach_task_card.dart';
 
 // ─── HOME SCREEN (CLEAN VERSION) ──────────────────────────
 
@@ -60,7 +61,7 @@ class _HomeAppBar extends ConsumerWidget {
       sliver: SliverToBoxAdapter(
         child: Row(
           children: [
-            _CircularAvatar(onTap: () => context.push('/profile')),
+            _CircularAvatar(onTap: () => context.go('/profile')),
             const SizedBox(width: spaceMd),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +71,7 @@ class _HomeAppBar extends ConsumerWidget {
               ],
             ),
             const Spacer(),
-            _IconButton(icon: Icons.notifications_none_rounded),
+            const _IconButton(icon: Icons.notifications_none_rounded),
           ],
         ),
       ),
@@ -82,6 +83,7 @@ class _UnifiedMetricsGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final health = ref.watch(dailyHealthProvider).valueOrNull;
+    final steps = ref.watch(unifiedStepsProvider); // Real-time unified steps
     if (health == null) return const FitXShimmerCard(height: 150);
 
     return Wrap(
@@ -90,11 +92,11 @@ class _UnifiedMetricsGrid extends ConsumerWidget {
       children: [
         _MetricCard(
           title: 'الخطوات',
-          value: health.steps.toString(),
+          value: steps.toString(), // Use unified steps (real-time)
           unit: 'خطوة',
           icon: Icons.directions_walk,
           color: primaryColor,
-          progress: health.stepProgress,
+          progress: (steps / 10000).clamp(0.0, 1.0),
         ),
         _MetricCard(
           title: 'التغذية',
@@ -136,7 +138,7 @@ class _RecentActivityCard extends ConsumerWidget {
       accentGlow: true,
       child: Row(
         children: [
-          _IconCircle(icon: Icons.bolt, color: primaryColor),
+          const _IconCircle(icon: Icons.bolt, color: primaryColor),
           const SizedBox(width: spaceMd),
           Expanded(
             child: Column(
@@ -162,7 +164,7 @@ class _WorkoutFeaturedCard extends ConsumerWidget {
       height: 160,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radiusLg),
-        gradient: LinearGradient(colors: [surfaceColor, bgColor], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: const LinearGradient(colors: [surfaceColor, bgColor], begin: Alignment.topLeft, end: Alignment.bottomRight),
         border: Border.all(color: surfaceBorder),
       ),
       child: Stack(

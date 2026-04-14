@@ -5,6 +5,7 @@ import '../../../shared/widgets/fitx_card.dart';
 import '../../../shared/widgets/fitx_shimmer.dart';
 import '../providers/workout_session_provider.dart';
 import '../providers/knn_providers.dart';
+import '../providers/user_repository_providers.dart';
 
 /// Smart Workout Stats Screen
 /// Shows workout summary + K-NN insights
@@ -210,6 +211,8 @@ class WorkoutStatsScreen extends ConsumerWidget {
   }
 
   Widget _buildKNNInsights(WorkoutSession session, WidgetRef ref) {
+    final percentileAsync = ref.watch(volumePercentileProvider);
+    
     return FitXCard(
       accentGlow: true,
       child: Column(
@@ -231,13 +234,25 @@ class WorkoutStatsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: spaceMd),
           
-          // Volume Comparison
+          // Volume Comparison with REAL percentile
           if (session.totalVolume > 0)
-            _buildInsightRow(
-              icon: Icons.bar_chart,
-              title: 'حجم التمرين',
-              subtitle: 'أنت في أعلى ${_calculateVolumePercentile(session)}% من المستخدمين المشابهين',
-              color: successColor,
+            percentileAsync.when(
+              data: (percentile) => _buildInsightRow(
+                icon: Icons.bar_chart,
+                title: 'حجم التمرين',
+                subtitle: 'أنت في أعلى $percentile% من المستخدمين المشابهين',
+                color: successColor,
+              ),
+              loading: () => const SizedBox(
+                height: 20,
+                child: FitXShimmer(height: 20, width: 200),
+              ),
+              error: (_, __) => _buildInsightRow(
+                icon: Icons.bar_chart,
+                title: 'حجم التمرين',
+                subtitle: 'أنت في أعلى ${_calculateVolumePercentile(session)}% من المستخدمين المشابهين',
+                color: successColor,
+              ),
             ),
 
           const SizedBox(height: spaceSm),

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitx/src/core/providers/firebase_providers.dart';
-import '../../dashboard/data/home_providers.dart';
 
 import '../data/nutrition_models.dart';
 

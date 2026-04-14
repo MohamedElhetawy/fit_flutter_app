@@ -150,6 +150,39 @@ class LinkRequestRepository {
         .snapshots()
         .map((s) => s.docs.length);
   }
+
+  /// Create link request initiated by trainer scanning trainee QR (reverse flow)
+  Future<String> createRequestByTrainer({
+    required String trainerId,
+    required String trainerName,
+    required String traineeId,
+    required String traineeName,
+    required String traineeEmail,
+  }) async {
+    // Check if there's already a pending request
+    final existing = await _collection
+        .where('trainerId', isEqualTo: trainerId)
+        .where('traineeId', isEqualTo: traineeId)
+        .where('status', isEqualTo: 'pending')
+        .get();
+
+    if (existing.docs.isNotEmpty) {
+      throw LinkRequestException('طلب معلق موجود بالفعل');
+    }
+
+    final doc = await _collection.add({
+      'trainerId': trainerId,
+      'trainerName': trainerName,
+      'traineeId': traineeId,
+      'traineeName': traineeName,
+      'traineeEmail': traineeEmail,
+      'status': 'pending',
+      'initiatedBy': 'trainer', // Mark as reverse flow
+      'createdAt': DateTime.now().toIso8601String(),
+    });
+
+    return doc.id;
+  }
 }
 
 class LinkRequestException implements Exception {

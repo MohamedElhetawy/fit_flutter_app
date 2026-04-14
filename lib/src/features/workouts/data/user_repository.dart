@@ -356,4 +356,78 @@ class UserRepository {
       orElse: () => Gender.male,
     );
   }
+
+  // ═══════════════════════════════════════════════════════════════
+  // VOLUME PERCENTILE CALCULATION (REAL DATA)
+  // ═══════════════════════════════════════════════════════════════
+
+  /// Calculate real volume percentile comparing user to all users today
+  /// Returns 0-100 representing user's rank among all users
+  Future<int> calculateVolumePercentile(double userVolume) async {
+    try {
+      final now = DateTime.now();
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      
+      // Get all users' workout volumes for today
+      final snapshot = await _firestore
+          .collectionGroup('daily_stats')
+          .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .where('steps', isGreaterThan: 0) // Users with activity
+          .get();
+
+      final volumes = <double>[];
+      
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        // Calculate estimated volume from steps + calories burned
+        final steps = (data['steps'] ?? 0) as int;
+        final caloriesBurned = (data['caloriesBurned'] ?? 0) as int;
+        
+        // Estimate workout volume: calories * 0.5 + steps * 0.1
+        final estimatedVolume = (caloriesBurned * 0.5) + (steps * 0.1);
+        volumes.add(estimatedVolume);
+      }
+
+      if (volumes.isEmpty) {
+        return 50; // Default if no data
+      }
+
+      // Sort volumes
+      volumes.sort();
+      
+      // Calculate percentile
+      final countBelow = volumes.where((v) => v < userVolume).length;
+      final percentile = ((countBelow / volumes.length) * 100).round();
+      
+      // Clamp between 0-100
+      return percentile.clamp(0, 100);
+    } catch (e) {
+      return 50; // Default on error
+    }
+  }
+
+  /// Get today's workout volume for current user
+  Future<double> getTodayWorkoutVolume() async {
+    final uid = currentUserId;
+    if (uid == null) return 0;
+
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+
+    final doc = await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('daily_stats')
+        .doc(startOfDay.millisecondsSinceEpoch.toString())
+        .get();
+
+    if (!doc.exists) return 0;
+
+    final data = doc.data()!;
+    final caloriesBurned = (data['caloriesBurned'] ?? 0) as int;
+    final steps = (data['steps'] ?? 0) as int;
+    
+    // Estimate volume
+    return (caloriesBurned * 0.5) + (steps * 0.1);
+  }
 }

@@ -84,13 +84,13 @@ class WorkoutSession {
   // Stats getters
   int get totalSets => sets.length;
   int get totalExercises => sets.map((s) => s.exerciseId).toSet().length;
-  double get totalVolume => sets.fold(0, (sum, s) => sum + s.volume);
+  double get totalVolume => sets.fold(0, (total, s) => total + s.volume);
   Duration? get duration => endTime != null 
       ? endTime!.difference(startTime) 
       : DateTime.now().difference(startTime);
   double get averageWeight => sets.isEmpty 
       ? 0 
-      : sets.fold(0.0, (sum, s) => sum + s.weight) / sets.length;
+      : sets.fold(0.0, (total, s) => total + s.weight) / sets.length;
   double get bestOneRepMax => sets.isEmpty 
       ? 0 
       : sets.map((s) => s.oneRepMax).reduce((a, b) => a > b ? a : b);

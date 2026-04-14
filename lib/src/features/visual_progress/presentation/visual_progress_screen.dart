@@ -211,6 +211,7 @@ class VisualProgressScreen extends ConsumerWidget {
             File(photo.localPath),
             height: 120,
             width: double.infinity,
+            cacheWidth: 400,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => Container(
               height: 120,
@@ -348,6 +349,7 @@ class VisualProgressScreen extends ConsumerWidget {
                 child: Image.file(
                   File(photo.localPath),
                   width: double.infinity,
+                  cacheWidth: 800,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
                     color: surfaceColorLight,
@@ -490,86 +492,17 @@ class VisualProgressScreen extends ConsumerWidget {
   }
 
   void _showPhotoTypeDialog(BuildContext context, WidgetRef ref, XFile image) {
-    PhotoType selectedType = PhotoType.front;
-    final notesController = TextEditingController();
-
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          backgroundColor: surfaceColor,
-          title: const Text('Photo Details', style: TextStyle(color: textPrimary)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Photo type selector
-              SegmentedButton<PhotoType>(
-                segments: PhotoType.values.map((type) => ButtonSegment(
-                  value: type,
-                  label: Text(_getPhotoTypeName(type)),
-                )).toList(),
-                selected: {selectedType},
-                onSelectionChanged: (selection) {
-                  setState(() => selectedType = selection.first);
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return primaryColor;
-                    }
-                    return surfaceColorLight;
-                  }),
-                  foregroundColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return const Color(0xFF1A1A00);
-                    }
-                    return textPrimary;
-                  }),
-                ),
-              ),
-              const SizedBox(height: spaceMd),
-              // Notes field
-              TextField(
-                controller: notesController,
-                style: const TextStyle(color: textPrimary),
-                decoration: InputDecoration(
-                  hintText: 'Notes (optional)',
-                  hintStyle: const TextStyle(color: textTertiary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(radiusMd),
-                    borderSide: const BorderSide(color: surfaceBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(radiusMd),
-                    borderSide: const BorderSide(color: primaryColor),
-                  ),
-                ),
-                maxLines: 2,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: textSecondary)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(photosNotifierProvider.notifier).addPhoto(
-                  imageFile: image,
-                  type: selectedType,
-                  notes: notesController.text.isEmpty ? null : notesController.text,
-                );
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: const Color(0xFF1A1A00),
-              ),
-              child: const Text('Save'),
-            ),
-          ],
-        ),
+      builder: (context) => _PhotoTypeDialog(
+        image: image,
+        onSave: (type, notes) {
+          ref.read(photosNotifierProvider.notifier).addPhoto(
+            imageFile: image,
+            type: type,
+            notes: notes?.isEmpty ?? true ? null : notes,
+          );
+        },
       ),
     );
   }
@@ -586,6 +519,7 @@ class VisualProgressScreen extends ConsumerWidget {
               children: [
                 Image.file(
                   File(photo.localPath),
+                  cacheWidth: 1200,
                   fit: BoxFit.contain,
                 ),
                 Positioned(
@@ -771,6 +705,125 @@ class VisualProgressScreen extends ConsumerWidget {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+}
+
+/// Dialog for selecting photo type with proper controller disposal
+class _PhotoTypeDialog extends StatefulWidget {
+  final XFile image;
+  final void Function(PhotoType type, String? notes) onSave;
+
+  const _PhotoTypeDialog({
+    required this.image,
+    required this.onSave,
+  });
+
+  @override
+  State<_PhotoTypeDialog> createState() => _PhotoTypeDialogState();
+}
+
+class _PhotoTypeDialogState extends State<_PhotoTypeDialog> {
+  PhotoType selectedType = PhotoType.front;
+  late final TextEditingController notesController;
+
+  @override
+  void initState() {
+    super.initState();
+    notesController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    notesController.dispose();
+    super.dispose();
+  }
+
+  String _getPhotoTypeName(PhotoType type) {
+    switch (type) {
+      case PhotoType.front:
+        return 'Front';
+      case PhotoType.side:
+        return 'Side';
+      case PhotoType.back:
+        return 'Back';
+      case PhotoType.other:
+        return 'Other';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: surfaceColor,
+      title: const Text('Photo Details', style: TextStyle(color: textPrimary)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SegmentedButton<PhotoType>(
+            segments: PhotoType.values.map((type) => ButtonSegment(
+              value: type,
+              label: Text(_getPhotoTypeName(type)),
+            )).toList(),
+            selected: {selectedType},
+            onSelectionChanged: (selection) {
+              setState(() => selectedType = selection.first);
+            },
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return primaryColor;
+                }
+                return surfaceColorLight;
+              }),
+              foregroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return const Color(0xFF1A1A00);
+                }
+                return textPrimary;
+              }),
+            ),
+          ),
+          const SizedBox(height: spaceMd),
+          TextField(
+            controller: notesController,
+            style: const TextStyle(color: textPrimary),
+            decoration: InputDecoration(
+              hintText: 'Notes (optional)',
+              hintStyle: const TextStyle(color: textTertiary),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(radiusMd),
+                borderSide: const BorderSide(color: surfaceBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(radiusMd),
+                borderSide: const BorderSide(color: primaryColor),
+              ),
+            ),
+            maxLines: 2,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel', style: TextStyle(color: textSecondary)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.onSave(
+              selectedType,
+              notesController.text.isEmpty ? null : notesController.text,
+            );
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryColor,
+            foregroundColor: const Color(0xFF1A1A00),
+          ),
+          child: const Text('Save'),
+        ),
+      ],
+    );
   }
 }
 

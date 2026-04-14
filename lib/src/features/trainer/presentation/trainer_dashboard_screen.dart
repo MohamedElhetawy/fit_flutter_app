@@ -10,6 +10,7 @@ import '../../../core/auth/auth_controller.dart';
 import '../../tasks/data/task_models.dart';
 import '../../tasks/providers/task_providers.dart';
 import '../data/link_request.dart';
+import '../data/link_request_repository.dart';
 import '../providers/link_request_providers.dart';
 import '../services/qr_crypto_service.dart';
 
@@ -36,6 +37,12 @@ class TrainerDashboardScreen extends ConsumerWidget {
           backgroundColor: bgColor,
           elevation: 0,
           title: const Text('مركز المدرب', style: TextStyle(color: textPrimary)),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: textSecondary),
+              onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+            ),
+          ],
           bottom: TabBar(
             labelColor: primaryColor,
             unselectedLabelColor: textSecondary,
@@ -88,20 +95,20 @@ class _TraineesTab extends ConsumerWidget {
         final accepted = requests.where((r) => r.status == LinkRequestStatus.accepted).toList();
 
         if (accepted.isEmpty) {
-          return Center(
+          return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.people_outline, size: 64, color: textTertiary),
-                const SizedBox(height: 16),
+                Icon(Icons.people_outline, size: 64, color: textTertiary),
+                SizedBox(height: 16),
                 Text(
                   'لا يوجد متدربين مرتبطين بعد',
-                  style: const TextStyle(color: textSecondary, fontSize: 16),
+                  style: TextStyle(color: textSecondary, fontSize: 16),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'شارك QR code عشان تبدأ',
-                  style: const TextStyle(color: textTertiary, fontSize: 14),
+                  style: TextStyle(color: textTertiary, fontSize: 14),
                 ),
               ],
             ),
@@ -170,237 +177,49 @@ class _TraineeCard extends ConsumerWidget {
   }
 
   void _showAssignNutritionTask(BuildContext context, WidgetRef ref) {
-    final nameCtrl = TextEditingController();
-    final calCtrl = TextEditingController(text: '500');
-    final proteinCtrl = TextEditingController(text: '30');
-    final carbsCtrl = TextEditingController(text: '50');
-    final fatCtrl = TextEditingController(text: '15');
-    final dueCtrl = TextEditingController();
-
+    final trainer = ref.read(currentUserProvider).value;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Assign Nutrition Task'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(labelText: 'Meal Name'),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: calCtrl,
-                      decoration: const InputDecoration(labelText: 'Cal'),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: proteinCtrl,
-                      decoration: const InputDecoration(labelText: 'Protein'),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: carbsCtrl,
-                      decoration: const InputDecoration(labelText: 'Carbs'),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: fatCtrl,
-                      decoration: const InputDecoration(labelText: 'Fat'),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
-              ),
-              TextField(
-                controller: dueCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Due Date',
-                  suffixIcon: Icon(Icons.calendar_today),
-                ),
-                onTap: () async {
-                  final date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now().add(const Duration(days: 1)),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 30)),
-                  );
-                  if (date != null) {
-                    dueCtrl.text = '${date.day}/${date.month}/${date.year}';
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final trainer = ref.read(currentUserProvider).value;
-              
-              DateTime? dueDate;
-              if (dueCtrl.text.isNotEmpty) {
-                final parts = dueCtrl.text.split('/');
-                if (parts.length == 3) {
-                  dueDate = DateTime(
-                    int.parse(parts[2]),
-                    int.parse(parts[1]),
-                    int.parse(parts[0]),
-                  );
-                }
-              }
-
-              await ref.read(taskCreateControllerProvider.notifier).createTask(
-                userId: request.traineeId,
-                assignedById: request.trainerId,
-                assignedByName: trainer?.name ?? 'Trainer',
-                type: TaskType.nutrition,
-                title: nameCtrl.text.isEmpty ? 'Nutrition Task' : nameCtrl.text,
-                description: '${calCtrl.text} kcal | P:${proteinCtrl.text} C:${carbsCtrl.text} F:${fatCtrl.text}',
-                dueDate: dueDate,
-                metadata: {
-                  'calories': int.tryParse(calCtrl.text) ?? 0,
-                  'protein': int.tryParse(proteinCtrl.text) ?? 0,
-                  'carbs': int.tryParse(carbsCtrl.text) ?? 0,
-                  'fat': int.tryParse(fatCtrl.text) ?? 0,
-                },
-              );
-
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('Assign'),
-          ),
-        ],
+      builder: (context) => _NutritionTaskDialog(
+        traineeId: request.traineeId,
+        trainerId: request.trainerId,
+        trainerName: trainer?.name ?? 'Trainer',
+        onAssign: (taskData) {
+          ref.read(taskCreateControllerProvider.notifier).createTask(
+            userId: request.traineeId,
+            assignedById: request.trainerId,
+            assignedByName: trainer?.name ?? 'Trainer',
+            type: TaskType.nutrition,
+            title: taskData.title,
+            description: taskData.description,
+            dueDate: taskData.dueDate,
+            metadata: taskData.metadata,
+          );
+        },
       ),
     );
   }
 
   void _showAssignWorkoutTask(BuildContext context, WidgetRef ref) {
-    final nameCtrl = TextEditingController();
-    final notesCtrl = TextEditingController();
-    final dueCtrl = TextEditingController();
-    TaskPriority priority = TaskPriority.medium;
-
+    final trainer = ref.read(currentUserProvider).value;
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Assign Workout Task'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Workout Name'),
-                ),
-                TextField(
-                  controller: notesCtrl,
-                  decoration: const InputDecoration(labelText: 'Notes / Sets & Reps'),
-                  maxLines: 2,
-                ),
-                TextField(
-                  controller: dueCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Due Date',
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now().add(const Duration(days: 1)),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 30)),
-                    );
-                    if (date != null) {
-                      dueCtrl.text = '${date.day}/${date.month}/${date.year}';
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Text('Priority: '),
-                    const SizedBox(width: 8),
-                    ChoiceChip(
-                      label: const Text('Low'),
-                      selected: priority == TaskPriority.low,
-                      onSelected: (_) => setState(() => priority = TaskPriority.low),
-                    ),
-                    const SizedBox(width: 4),
-                    ChoiceChip(
-                      label: const Text('Medium'),
-                      selected: priority == TaskPriority.medium,
-                      onSelected: (_) => setState(() => priority = TaskPriority.medium),
-                    ),
-                    const SizedBox(width: 4),
-                    ChoiceChip(
-                      label: const Text('High'),
-                      selected: priority == TaskPriority.high,
-                      onSelected: (_) => setState(() => priority = TaskPriority.high),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final trainer = ref.read(currentUserProvider).value;
-                
-                DateTime? dueDate;
-                if (dueCtrl.text.isNotEmpty) {
-                  final parts = dueCtrl.text.split('/');
-                  if (parts.length == 3) {
-                    dueDate = DateTime(
-                      int.parse(parts[2]),
-                      int.parse(parts[1]),
-                      int.parse(parts[0]),
-                    );
-                  }
-                }
-
-                await ref.read(taskCreateControllerProvider.notifier).createTask(
-                  userId: request.traineeId,
-                  assignedById: request.trainerId,
-                  assignedByName: trainer?.name ?? 'Trainer',
-                  type: TaskType.workout,
-                  title: nameCtrl.text.isEmpty ? 'Workout Task' : nameCtrl.text,
-                  description: notesCtrl.text,
-                  priority: priority,
-                  dueDate: dueDate,
-                );
-
-                if (context.mounted) Navigator.pop(context);
-              },
-              child: const Text('Assign'),
-            ),
-          ],
-        ),
+      builder: (context) => _WorkoutTaskDialog(
+        traineeId: request.traineeId,
+        trainerId: request.trainerId,
+        trainerName: trainer?.name ?? 'Trainer',
+        onAssign: (taskData) {
+          ref.read(taskCreateControllerProvider.notifier).createTask(
+            userId: request.traineeId,
+            assignedById: request.trainerId,
+            assignedByName: trainer?.name ?? 'Trainer',
+            type: TaskType.workout,
+            title: taskData.title,
+            description: taskData.description,
+            priority: taskData.priority ?? TaskPriority.medium,
+            dueDate: taskData.dueDate,
+          );
+        },
       ),
     );
   }
@@ -445,9 +264,9 @@ class _LinkRequestsTab extends ConsumerWidget {
                     const SizedBox(height: 64),
                     Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'No requests yet',
-                      style: const TextStyle(color: textSecondary, fontSize: 16),
+                      style: TextStyle(color: textSecondary, fontSize: 16),
                     ),
                   ],
                 ),
@@ -541,40 +360,405 @@ class _PendingRequestCard extends ConsumerWidget {
   }
 
   void _showDeclineDialog(BuildContext context, WidgetRef ref) {
-    final reasonCtrl = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Decline Request?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Optional: Add a reason for declining'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: reasonCtrl,
-              decoration: const InputDecoration(hintText: 'Reason (optional)'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ref.read(linkRequestControllerProvider.notifier).declineRequest(
-                request.id,
-                reason: reasonCtrl.text.isEmpty ? null : reasonCtrl.text,
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Decline'),
+      builder: (context) => _DeclineDialog(
+        requestId: request.id,
+        onDecline: (reason) {
+          ref.read(linkRequestControllerProvider.notifier).declineRequest(
+            request.id,
+            reason: reason,
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Decline dialog with proper controller disposal
+class _DeclineDialog extends StatefulWidget {
+  final String requestId;
+  final void Function(String? reason) onDecline;
+
+  const _DeclineDialog({
+    required this.requestId,
+    required this.onDecline,
+  });
+
+  @override
+  State<_DeclineDialog> createState() => _DeclineDialogState();
+}
+
+class _DeclineDialogState extends State<_DeclineDialog> {
+  late final TextEditingController reasonCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    reasonCtrl = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    reasonCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Decline Request?'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Optional: Add a reason for declining'),
+          const SizedBox(height: 8),
+          TextField(
+            controller: reasonCtrl,
+            decoration: const InputDecoration(hintText: 'Reason (optional)'),
           ),
         ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            widget.onDecline(reasonCtrl.text.isEmpty ? null : reasonCtrl.text);
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: const Text('Decline'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Task data holder for task dialogs
+class _TaskData {
+  final String title;
+  final String description;
+  final DateTime? dueDate;
+  final Map<String, dynamic> metadata;
+  final TaskPriority? priority;
+
+  _TaskData({
+    required this.title,
+    required this.description,
+    this.dueDate,
+    required this.metadata,
+    this.priority,
+  });
+}
+
+/// Nutrition task dialog with proper controller disposal
+class _NutritionTaskDialog extends StatefulWidget {
+  final String traineeId;
+  final String trainerId;
+  final String trainerName;
+  final void Function(_TaskData taskData) onAssign;
+
+  const _NutritionTaskDialog({
+    required this.traineeId,
+    required this.trainerId,
+    required this.trainerName,
+    required this.onAssign,
+  });
+
+  @override
+  State<_NutritionTaskDialog> createState() => _NutritionTaskDialogState();
+}
+
+class _NutritionTaskDialogState extends State<_NutritionTaskDialog> {
+  late final TextEditingController nameCtrl;
+  late final TextEditingController calCtrl;
+  late final TextEditingController proteinCtrl;
+  late final TextEditingController carbsCtrl;
+  late final TextEditingController fatCtrl;
+  late final TextEditingController dueCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    nameCtrl = TextEditingController();
+    calCtrl = TextEditingController(text: '500');
+    proteinCtrl = TextEditingController(text: '30');
+    carbsCtrl = TextEditingController(text: '50');
+    fatCtrl = TextEditingController(text: '15');
+    dueCtrl = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    calCtrl.dispose();
+    proteinCtrl.dispose();
+    carbsCtrl.dispose();
+    fatCtrl.dispose();
+    dueCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
+    );
+    if (date != null && mounted) {
+      setState(() {
+        dueCtrl.text = '${date.day}/${date.month}/${date.year}';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Assign Nutrition Task'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Meal Name'),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: calCtrl,
+                    decoration: const InputDecoration(labelText: 'Cal'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: proteinCtrl,
+                    decoration: const InputDecoration(labelText: 'Protein'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: carbsCtrl,
+                    decoration: const InputDecoration(labelText: 'Carbs'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: fatCtrl,
+                    decoration: const InputDecoration(labelText: 'Fat'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            TextField(
+              controller: dueCtrl,
+              readOnly: true,
+              decoration: const InputDecoration(
+                labelText: 'Due Date',
+                suffixIcon: Icon(Icons.calendar_today),
+              ),
+              onTap: _pickDate,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            DateTime? dueDate;
+            if (dueCtrl.text.isNotEmpty) {
+              final parts = dueCtrl.text.split('/');
+              if (parts.length == 3) {
+                dueDate = DateTime(
+                  int.parse(parts[2]),
+                  int.parse(parts[1]),
+                  int.parse(parts[0]),
+                );
+              }
+            }
+
+            final taskData = _TaskData(
+              title: nameCtrl.text.isEmpty ? 'Nutrition Task' : nameCtrl.text,
+              description: '${calCtrl.text} kcal | P:${proteinCtrl.text} C:${carbsCtrl.text} F:${fatCtrl.text}',
+              dueDate: dueDate,
+              metadata: {
+                'calories': int.tryParse(calCtrl.text) ?? 0,
+                'protein': int.tryParse(proteinCtrl.text) ?? 0,
+                'carbs': int.tryParse(carbsCtrl.text) ?? 0,
+                'fat': int.tryParse(fatCtrl.text) ?? 0,
+              },
+            );
+
+            widget.onAssign(taskData);
+            Navigator.pop(context);
+          },
+          child: const Text('Assign'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Workout task dialog with proper controller disposal
+class _WorkoutTaskDialog extends StatefulWidget {
+  final String traineeId;
+  final String trainerId;
+  final String trainerName;
+  final void Function(_TaskData taskData) onAssign;
+
+  const _WorkoutTaskDialog({
+    required this.traineeId,
+    required this.trainerId,
+    required this.trainerName,
+    required this.onAssign,
+  });
+
+  @override
+  State<_WorkoutTaskDialog> createState() => _WorkoutTaskDialogState();
+}
+
+class _WorkoutTaskDialogState extends State<_WorkoutTaskDialog> {
+  late final TextEditingController nameCtrl;
+  late final TextEditingController notesCtrl;
+  late final TextEditingController dueCtrl;
+  TaskPriority priority = TaskPriority.medium;
+
+  @override
+  void initState() {
+    super.initState();
+    nameCtrl = TextEditingController();
+    notesCtrl = TextEditingController();
+    dueCtrl = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    notesCtrl.dispose();
+    dueCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
+    );
+    if (date != null && mounted) {
+      setState(() {
+        dueCtrl.text = '${date.day}/${date.month}/${date.year}';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Assign Workout Task'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Workout Name'),
+            ),
+            TextField(
+              controller: notesCtrl,
+              decoration: const InputDecoration(labelText: 'Notes / Sets & Reps'),
+              maxLines: 2,
+            ),
+            TextField(
+              controller: dueCtrl,
+              readOnly: true,
+              decoration: const InputDecoration(
+                labelText: 'Due Date',
+                suffixIcon: Icon(Icons.calendar_today),
+              ),
+              onTap: _pickDate,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('Priority: '),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('Low'),
+                  selected: priority == TaskPriority.low,
+                  onSelected: (_) => setState(() => priority = TaskPriority.low),
+                ),
+                const SizedBox(width: 4),
+                ChoiceChip(
+                  label: const Text('Medium'),
+                  selected: priority == TaskPriority.medium,
+                  onSelected: (_) => setState(() => priority = TaskPriority.medium),
+                ),
+                const SizedBox(width: 4),
+                ChoiceChip(
+                  label: const Text('High'),
+                  selected: priority == TaskPriority.high,
+                  onSelected: (_) => setState(() => priority = TaskPriority.high),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            DateTime? dueDate;
+            if (dueCtrl.text.isNotEmpty) {
+              final parts = dueCtrl.text.split('/');
+              if (parts.length == 3) {
+                dueDate = DateTime(
+                  int.parse(parts[2]),
+                  int.parse(parts[1]),
+                  int.parse(parts[0]),
+                );
+              }
+            }
+
+            final taskData = _TaskData(
+              title: nameCtrl.text.isEmpty ? 'Workout Task' : nameCtrl.text,
+              description: notesCtrl.text,
+              dueDate: dueDate,
+              priority: priority,
+              metadata: const {},
+            );
+
+            widget.onAssign(taskData);
+            Navigator.pop(context);
+          },
+          child: const Text('Assign'),
+        ),
+      ],
     );
   }
 }
@@ -667,9 +851,9 @@ class _QrTab extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     'Scan to request connection',
-                    style: const TextStyle(color: textTertiary, fontSize: 14),
+                    style: TextStyle(color: textTertiary, fontSize: 14),
                   ),
                 ],
               ),
@@ -739,12 +923,14 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
       child: Column(
         children: [
           AppBar(
-            title: const Text('Scan Trainee QR'),
+            backgroundColor: bgColor,
+            elevation: 0,
+            title: const Text('مسح QR المتدرب', style: TextStyle(color: textPrimary)),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.close, color: textSecondary),
               ),
             ],
           ),
@@ -753,17 +939,18 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.red[50],
-                borderRadius: BorderRadius.circular(8),
+                color: errorColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(radiusMd),
+                border: Border.all(color: errorColor.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.error, color: Colors.red[700]),
+                  const Icon(Icons.error, color: errorColor),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       _error!,
-                      style: TextStyle(color: Colors.red[700]),
+                      style: const TextStyle(color: textPrimary),
                     ),
                   ),
                 ],
@@ -771,17 +958,17 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
             ),
           Expanded(
             child: _isProcessing
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: primaryColor))
                 : MobileScanner(
                     onDetect: _onDetect,
                   ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
+          const Padding(
+            padding: EdgeInsets.all(16),
             child: Text(
-              'Scan a trainee\'s QR code to send them a connection request',
+              'امسح QR code الخاص بالمتدلب لإرسال طلب تواصل',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: textSecondary),
             ),
           ),
         ],
@@ -801,17 +988,54 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
     });
 
     try {
-      // final payload = jsonDecode(raw) as Map<String, dynamic>;
+      // Parse trainee QR payload
+      final payload = jsonDecode(raw) as Map<String, dynamic>;
+      
+      // Validate payload structure
+      if (payload['type'] != 'trainee_qr' || payload['traineeId'] == null) {
+        throw Exception('QR code غير صالح');
+      }
 
-      // This would be for scanning trainee QR (reverse flow)
-      // For now, show coming soon
+      final traineeId = payload['traineeId'] as String;
+      final traineeName = payload['traineeName'] as String? ?? 'متدرب';
+      final traineeEmail = payload['traineeEmail'] as String? ?? '';
+
+      // Get trainer info from provider
+      final trainerAsync = ref.read(currentUserProvider);
+      final trainer = trainerAsync.value;
+      
+      if (trainer == null) {
+        throw Exception('معلومات المدرب غير متوفرة');
+      }
+
+      // Create reverse link request
+      final repo = ref.read(linkRequestRepositoryProvider);
+      await repo.createRequestByTrainer(
+        trainerId: trainer.id,
+        trainerName: trainer.name,
+        traineeId: traineeId,
+        traineeName: traineeName,
+        traineeEmail: traineeEmail,
+      );
+
+      // Success - close and notify
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم إرسال طلب التواصل بنجاح!'),
+            backgroundColor: successColor,
+          ),
+        );
+      }
+    } on LinkRequestException catch (e) {
       setState(() {
-        _error = 'This feature is coming in the next update';
+        _error = e.message;
         _isProcessing = false;
       });
     } catch (e) {
       setState(() {
-        _error = 'Invalid QR code';
+        _error = 'خطأ: ${e.toString()}';
         _isProcessing = false;
       });
     }

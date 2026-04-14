@@ -42,10 +42,10 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'التغذية',
                           style: TextStyle(
                             color: textPrimary,
@@ -54,8 +54,8 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                             letterSpacing: -0.5,
                           ),
                         ),
-                        const SizedBox(height: spaceSm),
-                        const Text(
+                        SizedBox(height: spaceSm),
+                        Text(
                           'تتبع وجباتك ووحداتك الغذائية',
                           style: TextStyle(
                             color: textSecondary,
@@ -280,365 +280,28 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
   }
 
   void _showAddMealDialog(BuildContext context, WidgetRef ref, String uid, String? initialMealType) {
-    final mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Pre-workout', 'Post-workout'];
-    String selectedMealType = initialMealType ?? 'Snack';
-    
-    final searchCtrl = TextEditingController();
-    final quantityCtrl = TextEditingController(text: '100');
-    FoodItem? selectedFood;
-    List<FoodItem> searchResults = [];
-    bool isSearching = false;
-    
-    // Debounce timer for search
-    Timer? searchTimer;
-
-    // Load food database
-    ref.read(allFoodsProvider.future).then((foods) {
-      // Pre-load complete
-    });
-
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          backgroundColor: surfaceColor,
-          title: Row(
-            children: [
-              const Expanded(child: Text('إضافة طعام')),
-              // AI Recognition Button
-              GestureDetector(
-                onTap: () => _showComingSoonDialog(context, 'التعرف بالكاميرا'),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(radiusSm),
-                    border: Border.all(color: primaryColor.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.camera_alt, color: primaryColor, size: 16),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'AI',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: primaryColor,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: const Text(
-                          'قريباً',
-                          style: TextStyle(
-                            color: Color(0xFF1A1A00),
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Meal Type Dropdown
-                DropdownButtonFormField<String>(
-                  value: selectedMealType,
-                  decoration: InputDecoration(
-                    labelText: 'نوع الوجبة',
-                    labelStyle: const TextStyle(color: textSecondary),
-                    filled: true,
-                    fillColor: surfaceColorLight,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(radiusSm),
-                      borderSide: const BorderSide(color: surfaceBorder),
-                    ),
-                  ),
-                  dropdownColor: surfaceColorLight,
-                  items: mealTypes.map((t) => DropdownMenuItem(
-                    value: t,
-                    child: Text(t, style: const TextStyle(color: textPrimary)),
-                  )).toList(),
-                  onChanged: (v) => setState(() => selectedMealType = v!),
-                ),
-                const SizedBox(height: 16),
-
-                // Food Search with Dropdown
-                TextField(
-                  controller: searchCtrl,
-                  style: const TextStyle(color: textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'ابحث عن طعام (اكتب أول حرفين على الأقل)',
-                    labelStyle: const TextStyle(color: textSecondary),
-                    hintText: 'مثال: دجاج، موز، أرز...',
-                    hintStyle: const TextStyle(color: textTertiary),
-                    filled: true,
-                    fillColor: surfaceColorLight,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(radiusSm),
-                      borderSide: const BorderSide(color: surfaceBorder),
-                    ),
-                    prefixIcon: const Icon(Icons.search, color: textSecondary),
-                    suffixIcon: searchCtrl.text.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              searchCtrl.clear();
-                              searchTimer?.cancel();
-                              setState(() {
-                                searchResults = [];
-                                selectedFood = null;
-                              });
-                            },
-                            icon: const Icon(Icons.clear, color: textSecondary),
-                          )
-                        : null,
-                  ),
-                  onChanged: (value) {
-                    // Cancel previous timer
-                    searchTimer?.cancel();
-                    
-                    if (value.length < 2) {
-                      setState(() {
-                        searchResults = [];
-                        isSearching = false;
-                      });
-                      return;
-                    }
-                    
-                    setState(() => isSearching = true);
-                    
-                    // Start new timer for debounce
-                    searchTimer = Timer(const Duration(milliseconds: 300), () async {
-                      final allFoods = await ref.read(allFoodsProvider.future);
-                      if (context.mounted) {
-                        setState(() {
-                          searchResults = FoodDatabase.getSuggestions(allFoods, value, limit: 10);
-                          isSearching = false;
-                        });
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                // Search Results Dropdown
-                if (isSearching)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                else if (searchResults.isNotEmpty)
-                  Container(
-                    constraints: const BoxConstraints(maxHeight: 200),
-                    decoration: BoxDecoration(
-                      color: surfaceColorLight,
-                      borderRadius: BorderRadius.circular(radiusSm),
-                      border: Border.all(color: surfaceBorder),
-                    ),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: searchResults.length,
-                      itemBuilder: (context, index) {
-                        final food = searchResults[index];
-                        final isSelected = selectedFood?.id == food.id;
-                        return ListTile(
-                          dense: true,
-                          selected: isSelected,
-                          selectedTileColor: primaryColor.withOpacity(0.1),
-                          title: Text(
-                            food.displayName,
-                            style: TextStyle(
-                              color: textPrimary,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            ),
-                          ),
-                          subtitle: Text(
-                            '${food.calories.toInt()} سعرة | ب:${food.protein.toInt()} ك:${food.carbs.toInt()} د:${food.fat.toInt()}',
-                            style: const TextStyle(color: textSecondary, fontSize: 12),
-                          ),
-                          trailing: Text(
-                            food.unit,
-                            style: const TextStyle(color: textTertiary, fontSize: 11),
-                          ),
-                          onTap: () => setState(() {
-                            selectedFood = food;
-                            searchResults = []; // Hide dropdown after selection
-                          }),
-                        );
-                      },
-                    ),
-                  )
-                else if (searchCtrl.text.length >= 2 && !isSearching)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: surfaceColorLight,
-                      borderRadius: BorderRadius.circular(radiusSm),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.search_off, color: textTertiary, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'لا توجد نتائج',
-                          style: TextStyle(color: textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // Selected Food Display
-                if (selectedFood != null) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(radiusMd),
-                      border: Border.all(color: primaryColor.withOpacity(0.3)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.check_circle, color: primaryColor, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                selectedFood!.displayName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'لكل 100${selectedFood!.unit}: ${selectedFood!.calories.toInt()} سعرة | بروتين: ${selectedFood!.protein.toInt()}g | كارب: ${selectedFood!.carbs.toInt()}g | دهون: ${selectedFood!.fat.toInt()}g',
-                          style: const TextStyle(color: textSecondary, fontSize: 12),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Text(
-                              'الكمية: ',
-                              style: TextStyle(color: textPrimary),
-                            ),
-                            SizedBox(
-                              width: 80,
-                              child: TextField(
-                                controller: quantityCtrl,
-                                keyboardType: TextInputType.number,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: textPrimary),
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: surfaceColor,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(radiusSm),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                                  suffixText: 'g',
-                                  suffixStyle: const TextStyle(color: textSecondary, fontSize: 12),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                searchTimer?.cancel();
-                context.pop();
-              },
-              child: const Text('إلغاء', style: TextStyle(color: textSecondary)),
-            ),
-            ElevatedButton(
-              onPressed: selectedFood == null
-                  ? null
-                  : () async {
-                      try {
-                        searchTimer?.cancel();
-                        final qty = double.tryParse(quantityCtrl.text);
-                        if (qty == null || qty <= 0) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('يرجى إدخال كمية صحيحة')),
-                            );
-                          }
-                          return;
-                        }
-                        
-                        final macros = selectedFood!.calculateMacros(qty);
-                        
-                        final log = NutritionLog(
-                          id: DateTime.now().millisecondsSinceEpoch.toString(),
-                          name: '$selectedMealType - ${selectedFood!.displayName}',
-                          calories: macros['calories']!.toInt(),
-                          protein: macros['protein']!.toInt(),
-                          carbs: macros['carbs']!.toInt(),
-                          fat: macros['fat']!.toInt(),
-                          loggedAt: DateTime.now(),
-                        );
-
-                        await ref.read(nutritionRepositoryProvider).logFood(
-                          uid: uid,
-                          log: log,
-                          mealType: selectedMealType,
-                        );
-
-                        if (context.mounted) {
-                          context.pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('تم إضافة ${selectedFood!.displayName} بنجاح'),
-                              backgroundColor: primaryColor,
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('خطأ: $e')),
-                          );
-                        }
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: const Color(0xFF1A1A00),
-              ),
-              child: const Text('إضافة'),
-            ),
-          ],
-        ),
+      builder: (context) => _AddMealDialog(
+        uid: uid,
+        initialMealType: initialMealType,
+        onAdd: (mealType, food, quantity) async {
+          final macros = food.calculateMacros(quantity);
+          final log = NutritionLog(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: '$mealType - ${food.displayName}',
+            calories: macros['calories']!.toInt(),
+            protein: macros['protein']!.toInt(),
+            carbs: macros['carbs']!.toInt(),
+            fat: macros['fat']!.toInt(),
+            loggedAt: DateTime.now(),
+          );
+          await ref.read(nutritionRepositoryProvider).logFood(
+            uid: uid,
+            log: log,
+            mealType: mealType,
+          );
+        },
       ),
     );
   }
@@ -988,13 +651,13 @@ class _MealSection extends StatelessWidget {
           ),
           if (logs.isNotEmpty) ...[
             const SizedBox(height: spaceMd),
-            Divider(color: surfaceBorder, thickness: 0.5),
+            const Divider(color: surfaceBorder, thickness: 0.5),
             const SizedBox(height: spaceSm),
             ...logs.map((log) => _MealItem(log: log)),
           ],
           if (logs.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: spaceMd),
+            const Padding(
+              padding: EdgeInsets.only(top: spaceMd),
               child: Text(
                 'لم يتم تسجيل طعام بعد',
                 style: TextStyle(
@@ -1118,7 +781,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                       ),
                     ),
                     Text(
-                      '${_waterIntake}مل / ${_goal}مل • $glasses كوب',
+                      '$_waterIntakeمل / $_goalمل • $glasses كوب',
                       style: const TextStyle(color: textSecondary, fontSize: 13),
                     ),
                   ],
@@ -1231,6 +894,391 @@ class _CircleActionBtn extends StatelessWidget {
           border: filled ? null : Border.all(color: surfaceBorder),
         ),
         child: Icon(icon, color: filled ? const Color(0xFF1A1A00) : textSecondary, size: 20),
+      ),
+    );
+  }
+}
+
+/// Add Meal Dialog with proper resource disposal
+class _AddMealDialog extends ConsumerStatefulWidget {
+  final String uid;
+  final String? initialMealType;
+  final Future<void> Function(String mealType, FoodItem food, double quantity) onAdd;
+
+  const _AddMealDialog({
+    required this.uid,
+    this.initialMealType,
+    required this.onAdd,
+  });
+
+  @override
+  ConsumerState<_AddMealDialog> createState() => _AddMealDialogState();
+}
+
+class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
+  late final TextEditingController searchCtrl;
+  late final TextEditingController quantityCtrl;
+  Timer? searchTimer;
+
+  final mealTypes = const ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Pre-workout', 'Post-workout'];
+  late String selectedMealType;
+  FoodItem? selectedFood;
+  List<FoodItem> searchResults = [];
+  bool isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    searchCtrl = TextEditingController();
+    quantityCtrl = TextEditingController(text: '100');
+    selectedMealType = widget.initialMealType ?? 'Snack';
+  }
+
+  @override
+  void dispose() {
+    searchTimer?.cancel();
+    searchCtrl.dispose();
+    quantityCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    searchTimer?.cancel();
+
+    if (value.length < 2) {
+      setState(() {
+        searchResults = [];
+        isSearching = false;
+      });
+      return;
+    }
+
+    setState(() => isSearching = true);
+
+    searchTimer = Timer(const Duration(milliseconds: 300), () async {
+      final allFoods = await ref.read(allFoodsProvider.future);
+      if (mounted) {
+        setState(() {
+          searchResults = FoodDatabase.getSuggestions(allFoods, value, limit: 10);
+          isSearching = false;
+        });
+      }
+    });
+  }
+
+  void _clearSearch() {
+    searchCtrl.clear();
+    searchTimer?.cancel();
+    setState(() {
+      searchResults = [];
+      selectedFood = null;
+    });
+  }
+
+  Future<void> _addFood() async {
+    if (selectedFood == null) return;
+
+    final qty = double.tryParse(quantityCtrl.text);
+    if (qty == null || qty <= 0) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('يرجى إدخال كمية صحيحة')),
+        );
+      }
+      return;
+    }
+
+    searchTimer?.cancel();
+    await widget.onAdd(selectedMealType, selectedFood!, qty);
+
+    if (mounted) {
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('تم إضافة ${selectedFood!.displayName} بنجاح'),
+          backgroundColor: primaryColor,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: surfaceColor,
+      title: Row(
+        children: [
+          const Expanded(child: Text('إضافة طعام')),
+          GestureDetector(
+            onTap: () => _showComingSoon(context, 'التعرف بالكاميرا'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(radiusSm),
+                border: Border.all(color: primaryColor.withOpacity(0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.camera_alt, color: primaryColor, size: 16),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'AI',
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: const Text(
+                      'قريباً',
+                      style: TextStyle(
+                        color: Color(0xFF1A1A00),
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButtonFormField<String>(
+              value: selectedMealType,
+              decoration: InputDecoration(
+                labelText: 'نوع الوجبة',
+                labelStyle: const TextStyle(color: textSecondary),
+                filled: true,
+                fillColor: surfaceColorLight,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(radiusSm),
+                  borderSide: const BorderSide(color: surfaceBorder),
+                ),
+              ),
+              dropdownColor: surfaceColorLight,
+              items: mealTypes.map((t) => DropdownMenuItem(
+                value: t,
+                child: Text(t, style: const TextStyle(color: textPrimary)),
+              )).toList(),
+              onChanged: (v) => setState(() => selectedMealType = v!),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: searchCtrl,
+              style: const TextStyle(color: textPrimary),
+              decoration: InputDecoration(
+                labelText: 'ابحث عن طعام (اكتب أول حرفين على الأقل)',
+                labelStyle: const TextStyle(color: textSecondary),
+                hintText: 'مثال: دجاج، موز، أرز...',
+                hintStyle: const TextStyle(color: textTertiary),
+                filled: true,
+                fillColor: surfaceColorLight,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(radiusSm),
+                  borderSide: const BorderSide(color: surfaceBorder),
+                ),
+                prefixIcon: const Icon(Icons.search, color: textSecondary),
+                suffixIcon: searchCtrl.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: _clearSearch,
+                        icon: const Icon(Icons.clear, color: textSecondary),
+                      )
+                    : null,
+              ),
+              onChanged: _onSearchChanged,
+            ),
+            const SizedBox(height: 8),
+            if (isSearching)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else if (searchResults.isNotEmpty)
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                decoration: BoxDecoration(
+                  color: surfaceColorLight,
+                  borderRadius: BorderRadius.circular(radiusSm),
+                  border: Border.all(color: surfaceBorder),
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: searchResults.length,
+                  itemBuilder: (context, index) {
+                    final food = searchResults[index];
+                    final isSelected = selectedFood?.id == food.id;
+                    return ListTile(
+                      dense: true,
+                      selected: isSelected,
+                      selectedTileColor: primaryColor.withOpacity(0.1),
+                      title: Text(
+                        food.displayName,
+                        style: TextStyle(
+                          color: textPrimary,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${food.calories.toInt()} سعرة | ب:${food.protein.toInt()} ك:${food.carbs.toInt()} د:${food.fat.toInt()}',
+                        style: const TextStyle(color: textSecondary, fontSize: 12),
+                      ),
+                      trailing: Text(
+                        food.unit,
+                        style: const TextStyle(color: textTertiary, fontSize: 11),
+                      ),
+                      onTap: () => setState(() {
+                        selectedFood = food;
+                        searchResults = [];
+                      }),
+                    );
+                  },
+                ),
+              )
+            else if (searchCtrl.text.length >= 2 && !isSearching)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: surfaceColorLight,
+                  borderRadius: BorderRadius.circular(radiusSm),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.search_off, color: textTertiary, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'لا توجد نتائج',
+                      style: TextStyle(color: textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            if (selectedFood != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(radiusMd),
+                  border: Border.all(color: primaryColor.withOpacity(0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: primaryColor, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            selectedFood!.displayName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'لكل 100${selectedFood!.unit}: ${selectedFood!.calories.toInt()} سعرة | بروتين: ${selectedFood!.protein.toInt()}g | كارب: ${selectedFood!.carbs.toInt()}g | دهون: ${selectedFood!.fat.toInt()}g',
+                      style: const TextStyle(color: textSecondary, fontSize: 12),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Text(
+                          'الكمية: ',
+                          style: TextStyle(color: textPrimary),
+                        ),
+                        SizedBox(
+                          width: 80,
+                          child: TextField(
+                            controller: quantityCtrl,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: textPrimary),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: surfaceColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(radiusSm),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              suffixText: 'g',
+                              suffixStyle: const TextStyle(color: textSecondary, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            searchTimer?.cancel();
+            context.pop();
+          },
+          child: const Text('إلغاء', style: TextStyle(color: textSecondary)),
+        ),
+        ElevatedButton(
+          onPressed: selectedFood == null ? null : _addFood,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryColor,
+            foregroundColor: const Color(0xFF1A1A00),
+          ),
+          child: const Text('إضافة'),
+        ),
+      ],
+    );
+  }
+
+  void _showComingSoon(BuildContext context, String feature) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: surfaceColor,
+        title: const Row(
+          children: [
+            Icon(Icons.construction, color: primaryColor),
+            SizedBox(width: 8),
+            Text('قريباً'),
+          ],
+        ),
+        content: Text(
+          'ميزة "$feature" قيد التطوير وستكون متاحة قريباً',
+          style: const TextStyle(color: textSecondary),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => context.pop(),
+            child: const Text('حسناً'),
+          ),
+        ],
       ),
     );
   }

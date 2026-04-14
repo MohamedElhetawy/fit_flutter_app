@@ -3,9 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:fitx/screens/auth/views/login_screen.dart';
 import 'package:fitx/screens/auth/views/signup_screen.dart';
 import 'package:fitx/screens/auth/views/forgot_password_screen.dart';
+import 'package:fitx/src/core/auth/app_role.dart';
 import 'package:fitx/src/core/auth/auth_controller.dart';
 import 'package:fitx/src/features/auth/presentation/role_selection_screen.dart';
 import 'package:fitx/src/features/dashboard/presentation/dashboard_shell.dart';
+import 'package:fitx/src/features/dashboard/presentation/super_admin_control_screen.dart';
+import 'package:fitx/src/features/trainer/presentation/trainer_dashboard_screen.dart';
+import 'package:fitx/src/features/gym/presentation/gym_dashboard_screen.dart';
 import 'package:fitx/src/features/profile/presentation/profile_screen_fitx.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -41,12 +45,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ────────────────────────────────────────────────────────
-      // Dashboard Routes (Main App with Bottom Navigation)
+      // Role-Based Dashboard Routes
       // ────────────────────────────────────────────────────────
+      
+      // Trainee Dashboard (Default)
       GoRoute(
         path: '/dashboard',
         name: 'dashboard',
         builder: (context, state) => const DashboardShell(),
+      ),
+      
+      // Trainer Dashboard
+      GoRoute(
+        path: '/trainer-dashboard',
+        name: 'trainerDashboard',
+        builder: (context, state) => const TrainerDashboardScreen(),
+      ),
+      
+      // Gym Dashboard
+      GoRoute(
+        path: '/gym-dashboard',
+        name: 'gymDashboard',
+        builder: (context, state) => const GymDashboardScreen(),
+      ),
+      
+      // Super Admin Control Panel
+      GoRoute(
+        path: '/admin-control',
+        name: 'adminControl',
+        builder: (context, state) => const SuperAdminControlScreen(),
       ),
 
       // ────────────────────────────────────────────────────────
@@ -61,7 +88,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
     redirect: (context, state) {
       final isLoggedIn = auth.value != null;
-      final hasRole = role.value != null;
+      final userRole = role.value;
+      final hasRole = userRole != null;
       final location = state.uri.path;
 
       // ────────────────────────────────────────────────────────
@@ -82,13 +110,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // ────────────────────────────────────────────────────────
-      // LOGGED IN WITH ROLE — redirect to dashboard from auth
+      // ROLE-BASED REDIRECTS: Send each role to their dashboard
       // ────────────────────────────────────────────────────────
-      if (hasRole &&
-          (location == '/login' ||
-              location == '/signup' ||
-              location == '/role-selection')) {
-        return '/dashboard';
+      if (hasRole) {
+        final isOnAuthPage = location == '/login' || 
+                            location == '/signup' || 
+                            location == '/role-selection';
+        
+        // Check if user is on their correct dashboard
+        final isOnCorrectDashboard = switch (userRole) {
+          AppRole.trainee => location == '/dashboard',
+          AppRole.trainer => location == '/trainer-dashboard',
+          AppRole.gym => location == '/gym-dashboard',
+          AppRole.admin || AppRole.superAdmin => location == '/admin-control',
+        };
+        
+        // If on auth page or wrong dashboard, redirect to correct one
+        if (isOnAuthPage || (location.startsWith('/') && !isOnCorrectDashboard && 
+            location != '/profile' && location != '/admin-control')) {
+          return switch (userRole) {
+            AppRole.trainee => '/dashboard',
+            AppRole.trainer => '/trainer-dashboard',
+            AppRole.gym => '/gym-dashboard',
+            AppRole.admin || AppRole.superAdmin => '/admin-control',
+          };
+        }
       }
 
       return null;

@@ -50,14 +50,14 @@ class StatisticsScreen extends ConsumerWidget {
 class _StatsAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(defaultPadding, spaceMd, defaultPadding, 0),
+    return const SliverPadding(
+      padding: EdgeInsets.fromLTRB(defaultPadding, spaceMd, defaultPadding, 0),
       sliver: SliverToBoxAdapter(
         child: Row(
           children: [
             _CircleActionBtn(icon: Icons.calendar_month_rounded, filled: true),
-            const Expanded(child: Text('الأداء', textAlign: TextAlign.center, style: TextStyle(color: textPrimary, fontSize: 18, fontWeight: FontWeight.bold))),
-            const SizedBox(width: 44), // Balance the row
+            Expanded(child: Text('الأداء', textAlign: TextAlign.center, style: TextStyle(color: textPrimary, fontSize: 18, fontWeight: FontWeight.bold))),
+            SizedBox(width: 44), // Balance the row
           ],
         ),
       ),
@@ -113,7 +113,7 @@ class _HealthScoreCard extends ConsumerWidget {
               ],
             ),
           ),
-          CircularProgressIndicator(value: 0.75, strokeWidth: 5, backgroundColor: surfaceBorder, valueColor: const AlwaysStoppedAnimation(primaryColor)),
+          const CircularProgressIndicator(value: 0.75, strokeWidth: 5, backgroundColor: surfaceBorder, valueColor: AlwaysStoppedAnimation(primaryColor)),
         ],
       ),
     );
@@ -174,6 +174,7 @@ class _CircleActionBtn extends StatelessWidget {
   final IconData icon;
   final bool filled;
   final VoidCallback? onTap;
+  // ignore: unused_element_parameter
   const _CircleActionBtn({required this.icon, this.filled = false, this.onTap});
   @override
   Widget build(BuildContext context) {

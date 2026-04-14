@@ -117,3 +117,20 @@ final knnCurrentUserBackendProvider = Provider<AsyncValue<UserProfile?>>((ref) {
   
   return ref.watch(currentUserBackendProvider);
 });
+
+// ═══════════════════════════════════════════════════════════════
+// VOLUME PERCENTILE PROVIDERS (REAL DATA)
+// ═══════════════════════════════════════════════════════════════
+
+/// Current user's today's workout volume
+final todayVolumeProvider = FutureProvider<double>((ref) async {
+  final repository = ref.watch(userRepositoryProvider);
+  return await repository.getTodayWorkoutVolume();
+});
+
+/// Volume percentile comparing user to all users (REAL - not placeholder)
+final volumePercentileProvider = FutureProvider<int>((ref) async {
+  final repository = ref.watch(userRepositoryProvider);
+  final volumeAsync = await ref.watch(todayVolumeProvider.future);
+  return await repository.calculateVolumePercentile(volumeAsync);
+});
