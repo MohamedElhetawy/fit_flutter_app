@@ -59,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withOpacity(0.08),
+                    primaryColor.withAlpha(20),
                     Colors.transparent,
                   ],
                 ),
@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withOpacity(0.06),
+                    primaryColor.withAlpha(15),
                     Colors.transparent,
                   ],
                 ),
@@ -110,18 +110,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       )),
                       child: Column(
                         children: [
-                          Text(
-                            'FitX',
-                            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                              color: primaryColor,
-                              shadows: [
-                                Shadow(
-                                  offset: const Offset(0, 8),
-                                  blurRadius: 16,
-                                  color: primaryColor.withOpacity(0.3),
-                                ),
-                              ],
-                            ),
+                          Image.asset(
+                            'assets/logo/Fit_X_Logo.png',
+                            height: 50,
+                            fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -434,7 +426,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          backgroundColor: surfaceColor.withOpacity(0.5),
+          backgroundColor: surfaceColor.withAlpha(128),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

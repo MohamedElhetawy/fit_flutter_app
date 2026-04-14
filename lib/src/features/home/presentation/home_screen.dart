@@ -169,7 +169,7 @@ class _WorkoutFeaturedCard extends ConsumerWidget {
       ),
       child: Stack(
         children: [
-          Positioned(right: -10, bottom: -10, child: Icon(Icons.fitness_center, size: 100, color: primaryColor.withOpacity(0.05))),
+          Positioned(right: -10, bottom: -10, child: Icon(Icons.fitness_center, size: 100, color: primaryColor.withAlpha(13))),
           Padding(
             padding: const EdgeInsets.all(spaceMd),
             child: Column(
@@ -232,7 +232,7 @@ class _CircularAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: primaryColor.withOpacity(0.3), width: 2), color: surfaceColor), child: const Icon(Icons.person, color: textSecondary, size: 22)),
+      child: Container(width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: primaryColor.withAlpha(77), width: 2), color: surfaceColor), child: const Icon(Icons.person, color: textSecondary, size: 22)),
     );
   }
 }
@@ -252,6 +252,6 @@ class _IconCircle extends StatelessWidget {
   const _IconCircle({required this.icon, required this.color});
   @override
   Widget build(BuildContext context) {
-    return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(shape: BoxShape.circle, color: color.withOpacity(0.1)), child: Icon(icon, color: color, size: 20));
+    return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(shape: BoxShape.circle, color: color.withAlpha(26)), child: Icon(icon, color: color, size: 20));
   }
 }

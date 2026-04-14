@@ -60,22 +60,19 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         child: CustomScrollView(
           slivers: [
             // Header
-            const SliverPadding(
-              padding: EdgeInsets.fromLTRB(defaultPadding, spaceLg, defaultPadding, 0),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(defaultPadding, spaceLg, defaultPadding, 0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'FitX',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Image.asset(
+                      'assets/logo/Fit_X_Logo.png',
+                      height: 45,
+                      fit: BoxFit.contain,
                     ),
-                    SizedBox(height: spaceSm),
-                    Text(
+                    const SizedBox(height: spaceSm),
+                    const Text(
                       'أهلاً بيك! اختار نوع حسابك',
                       style: TextStyle(
                         color: textPrimary,
@@ -83,8 +80,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: spaceSm),
-                    Text(
+                    const SizedBox(height: spaceSm),
+                    const Text(
                       'اختار دورك علشان نخصصلك تجربة مثالية',
                       style: TextStyle(
                         color: textSecondary,
@@ -261,7 +258,26 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   Future<void> _onContinue() async {
     if (_selectedRole == null) return;
 
-    // For Trainee/Trainer: Go to LinkingScreen
+    // For Trainee/Trainer with gym selected: Verify code and save with gym
+    if ((_selectedRole == AppRole.trainee || _selectedRole == AppRole.trainer) &&
+        _selectedGymId != null) {
+      final code = _codeController.text.trim();
+      if (code.length < 4) {
+        setState(() => _errorMessage = 'ادخل الكود الأول');
+        return;
+      }
+
+      final isValid = await _verifyGymCode(_selectedGymId!, code);
+      if (!isValid) {
+        setState(() => _errorMessage = 'كود غير صحيح');
+        return;
+      }
+
+      await _saveRoleWithGym(_selectedRole!, _selectedGymId!, _selectedGymName!);
+      return;
+    }
+
+    // For Trainee/Trainer without gym: Go to LinkingScreen
     if (_selectedRole == AppRole.trainee || _selectedRole == AppRole.trainer) {
       if (mounted) {
         Navigator.of(context).push(

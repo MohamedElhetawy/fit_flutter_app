@@ -71,7 +71,7 @@ class _LogInFormState extends State<LogInForm> {
               boxShadow: _emailHasFocus
                   ? [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.08),
+                        color: primaryColor.withAlpha(20),
                         blurRadius: 12,
                         spreadRadius: 0,
                         offset: const Offset(0, 2),
@@ -133,7 +133,7 @@ class _LogInFormState extends State<LogInForm> {
               boxShadow: _passwordHasFocus
                   ? [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.08),
+                        color: primaryColor.withAlpha(20),
                         blurRadius: 12,
                         spreadRadius: 0,
                         offset: const Offset(0, 2),

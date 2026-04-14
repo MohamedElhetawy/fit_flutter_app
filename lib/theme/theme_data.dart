@@ -33,7 +33,7 @@ const AppBarTheme appBarDarkTheme = AppBarTheme(
 
 ScrollbarThemeData scrollbarThemeData = ScrollbarThemeData(
   trackColor: WidgetStateProperty.all(surfaceBorder),
-  thumbColor: WidgetStateProperty.all(primaryColor.withOpacity(0.5)),
+  thumbColor: WidgetStateProperty.all(primaryColor.withAlpha(128)),
   radius: const Radius.circular(radiusFull),
   thickness: WidgetStateProperty.all(4),
 );

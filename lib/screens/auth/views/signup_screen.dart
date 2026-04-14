@@ -93,7 +93,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withOpacity(0.08),
+                    primaryColor.withAlpha(20),
                     Colors.transparent,
                   ],
                 ),
@@ -110,7 +110,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withOpacity(0.06),
+                    primaryColor.withAlpha(15),
                     Colors.transparent,
                   ],
                 ),
@@ -154,16 +154,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                               ),
                             ),
                           ),
-                          const Expanded(
+                          Expanded(
                             child: Center(
-                              child: Text(
-                                'FitX',
-                                style: TextStyle(
-                                  color: primaryColor,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 2,
-                                ),
+                              child: Image.asset(
+                                'assets/logo/Fit_X_Logo.png',
+                                height: 40,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ),
@@ -571,7 +567,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          backgroundColor: surfaceColor.withOpacity(0.5),
+          backgroundColor: surfaceColor.withAlpha(128),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitx/constants.dart';
@@ -22,8 +23,8 @@ class UserManagementScreen extends ConsumerStatefulWidget {
 class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   String _searchQuery = '';
   AppRole? _filterRole;
-  String? _filterGymId;
   bool _showDisabled = false;
+  Timer? _searchDebounce;
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +80,25 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
+
   Widget _buildFilters() {
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       child: Column(
         children: [
-          // Search
+          // Search with debounce
           TextField(
-            onChanged: (v) => setState(() => _searchQuery = v),
+            onChanged: (v) {
+              _searchDebounce?.cancel();
+              _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+                if (mounted) setState(() => _searchQuery = v);
+              });
+            },
             style: const TextStyle(color: textPrimary),
             decoration: InputDecoration(
               hintText: 'بحث بالاسم أو الإيميل...',
@@ -318,6 +330,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           : null,
     });
 
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(isCurrentlyDisabled ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم'),
@@ -358,6 +372,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         // Try to delete from Auth (requires Admin SDK)
         // This would need Cloud Function
         
+        if (!mounted) return;
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم حذف المستخدم'),
@@ -365,6 +381,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           ),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('خطأ في الحذف: $e'),
@@ -381,6 +398,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       'disabledAt': disable ? FieldValue.serverTimestamp() : null,
       'disabledBy': disable ? ref.read(authStateProvider).value?.uid : null,
     }, SetOptions(merge: true));
+
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -460,16 +479,16 @@ class _UserCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: spaceMd),
       decoration: BoxDecoration(
-        color: isDisabled ? surfaceColorLight.withOpacity(0.5) : surfaceColorLight,
+        color: isDisabled ? surfaceColorLight.withAlpha(128) : surfaceColorLight,
         borderRadius: BorderRadius.circular(radiusLg),
         border: Border.all(
-          color: isDisabled ? errorColor.withOpacity(0.3) : Colors.transparent,
+          color: isDisabled ? errorColor.withAlpha(77) : Colors.transparent,
         ),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(spaceMd),
         leading: CircleAvatar(
-          backgroundColor: roleColor.withOpacity(0.2),
+          backgroundColor: roleColor.withAlpha(51),
           child: Icon(
             _getRoleIcon(role),
             color: roleColor,
@@ -497,7 +516,7 @@ class _UserCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: roleColor.withOpacity(0.1),
+                    color: roleColor.withAlpha(26),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -679,7 +698,6 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   AppRole _selectedRole = AppRole.trainee;
-  String? _selectedGymId;
   bool _isLoading = false;
 
   @override
@@ -1157,7 +1175,6 @@ class _AssignGymDialogState extends ConsumerState<_AssignGymDialog> {
                   const SizedBox(height: spaceMd),
                   ...gyms.map((gym) {
                     final data = gym.data() as Map<String, dynamic>;
-                    final isSelected = gym.id == _selectedGymId;
 
                     return RadioListTile<String>(
                       title: Text(

@@ -94,7 +94,7 @@ class FitXIconCircle extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(26),
       ),
       child: Icon(icon, color: color, size: iconSize),
     );
@@ -123,7 +123,7 @@ class FitXAvatar extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: primaryColor.withOpacity(0.3), width: 2),
+          border: Border.all(color: primaryColor.withAlpha(77), width: 2),
           color: surfaceColor,
         ),
         child: Icon(icon, color: textSecondary, size: size * 0.5),

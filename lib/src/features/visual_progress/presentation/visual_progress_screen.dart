@@ -224,7 +224,7 @@ class VisualProgressScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: labelColor.withOpacity(0.2),
+            color: labelColor.withAlpha(51),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
@@ -262,7 +262,7 @@ class VisualProgressScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: successColor.withOpacity(0.2),
+              color: successColor.withAlpha(51),
               borderRadius: BorderRadius.circular(4),
             ),
             child: const Text(
@@ -365,7 +365,7 @@ class VisualProgressScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.2),
+                      color: primaryColor.withAlpha(51),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -475,7 +475,7 @@ class VisualProgressScreen extends ConsumerWidget {
         height: 48,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: primaryColor.withOpacity(0.2),
+          color: primaryColor.withAlpha(51),
         ),
         child: Icon(icon, color: primaryColor),
       ),
@@ -529,7 +529,7 @@ class VisualProgressScreen extends ConsumerWidget {
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close, color: Colors.white),
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.black.withOpacity(0.5),
+                      backgroundColor: Colors.black.withAlpha(128),
                     ),
                   ),
                 ),
@@ -545,7 +545,7 @@ class VisualProgressScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: primaryColor.withOpacity(0.2),
+                          color: primaryColor.withAlpha(51),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(

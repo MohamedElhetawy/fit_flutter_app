@@ -70,7 +70,7 @@ class BodyProgressScreen extends ConsumerWidget {
           aspectRatio: 1,
           child: url == null
               ? const ColoredBox(color: Colors.black12)
-              : Image.network(url, fit: BoxFit.cover),
+              : Image.network(url, fit: BoxFit.cover, cacheWidth: 300),
         ),
         const SizedBox(height: 6),
         Text(label),

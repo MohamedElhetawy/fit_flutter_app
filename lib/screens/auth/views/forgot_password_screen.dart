@@ -102,7 +102,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withOpacity(0.08),
+                    primaryColor.withAlpha(20),
                     Colors.transparent,
                   ],
                 ),
@@ -119,7 +119,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    primaryColor.withOpacity(0.06),
+                    primaryColor.withAlpha(15),
                     Colors.transparent,
                   ],
                 ),
@@ -219,10 +219,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                         child: Container(
                           padding: const EdgeInsets.all(spaceLg),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
+                            color: Colors.green.withAlpha(26),
                             borderRadius: BorderRadius.circular(radiusLg),
                             border: Border.all(
-                              color: Colors.green.withOpacity(0.3),
+                              color: Colors.green.withAlpha(77),
                               width: 1,
                             ),
                           ),
@@ -296,10 +296,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                                   Container(
                                     padding: const EdgeInsets.all(spaceSm),
                                     decoration: BoxDecoration(
-                                      color: errorColor.withOpacity(0.1),
+                                      color: errorColor.withAlpha(26),
                                       borderRadius: BorderRadius.circular(radiusSm),
                                       border: Border.all(
-                                        color: errorColor.withOpacity(0.3),
+                                        color: errorColor.withAlpha(77),
                                       ),
                                     ),
                                     child: Row(

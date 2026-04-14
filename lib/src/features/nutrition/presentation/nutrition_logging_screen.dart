@@ -607,7 +607,7 @@ class _MealSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.15),
+                  color: primaryColor.withAlpha(38),
                   borderRadius: BorderRadius.circular(radiusSm),
                 ),
                 child: Icon(icon, color: primaryColor, size: 18),
@@ -641,7 +641,7 @@ class _MealSection extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.15),
+                    color: primaryColor.withAlpha(38),
                     borderRadius: BorderRadius.circular(radiusXs),
                   ),
                   child: const Icon(Icons.add_rounded, color: primaryColor, size: 18),
@@ -763,7 +763,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withOpacity(0.2),
+                  color: Colors.blue.withAlpha(51),
                 ),
                 child: const Icon(Icons.water_drop_rounded, color: Colors.blue, size: 24),
               ),
@@ -825,7 +825,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                 child: Text(
                   '+250ml',
                   style: TextStyle(
-                    color: Colors.blue.withOpacity(0.8),
+                    color: Colors.blue.withAlpha(204),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -849,7 +849,7 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceSm),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.withOpacity(0.2) : surfaceColorLight,
+          color: isSelected ? Colors.blue.withAlpha(51) : surfaceColorLight,
           borderRadius: BorderRadius.circular(radiusSm),
           border: Border.all(
             color: isSelected ? Colors.blue : surfaceBorder,
@@ -1014,9 +1014,9 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.15),
+                color: primaryColor.withAlpha(38),
                 borderRadius: BorderRadius.circular(radiusSm),
-                border: Border.all(color: primaryColor.withOpacity(0.3)),
+                border: Border.all(color: primaryColor.withAlpha(77)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -1127,7 +1127,7 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                     return ListTile(
                       dense: true,
                       selected: isSelected,
-                      selectedTileColor: primaryColor.withOpacity(0.1),
+                      selectedTileColor: primaryColor.withAlpha(26),
                       title: Text(
                         food.displayName,
                         style: TextStyle(
@@ -1174,9 +1174,9 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: primaryColor.withAlpha(26),
                   borderRadius: BorderRadius.circular(radiusMd),
-                  border: Border.all(color: primaryColor.withOpacity(0.3)),
+                  border: Border.all(color: primaryColor.withAlpha(77)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

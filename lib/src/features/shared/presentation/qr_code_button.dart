@@ -30,7 +30,7 @@ class QrCodeButton extends ConsumerWidget {
         decoration: BoxDecoration(
           color: backgroundColor ?? surfaceColorLight,
           borderRadius: BorderRadius.circular(radiusSm),
-          border: Border.all(color: primaryColor.withOpacity(0.3)),
+          border: Border.all(color: primaryColor.withAlpha(77)),
         ),
         child: Icon(
           Icons.qr_code,
@@ -111,7 +111,7 @@ class _QrCodeModal extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.1),
+                        color: primaryColor.withAlpha(26),
                         borderRadius: BorderRadius.circular(radiusMd),
                       ),
                       child: const Icon(Icons.qr_code, color: primaryColor, size: 28),
@@ -156,7 +156,7 @@ class _QrCodeModal extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(radiusLg),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withAlpha(26),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),

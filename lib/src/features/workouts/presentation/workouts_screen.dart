@@ -145,7 +145,7 @@ class _MuscleGroupCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(radiusLg),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withAlpha(77),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -160,6 +160,7 @@ class _MuscleGroupCard extends StatelessWidget {
               Image.network(
                 muscleGroup.imageUrl,
                 fit: BoxFit.cover,
+                cacheWidth: 400, // Optimize memory usage for thumbnail
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Container(
@@ -190,8 +191,8 @@ class _MuscleGroupCard extends StatelessWidget {
                     colors: [
                       Colors.transparent,
                       Colors.transparent,
-                      bgColor.withOpacity(0.7),
-                      bgColor.withOpacity(0.95),
+                      bgColor.withAlpha(179),
+                      bgColor.withAlpha(242),
                     ],
                   ),
                 ),
@@ -222,7 +223,7 @@ class _MuscleGroupCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.2),
+                              color: primaryColor.withAlpha(51),
                               borderRadius: BorderRadius.circular(radiusXs),
                             ),
                             child: Text(
@@ -249,7 +250,7 @@ class _MuscleGroupCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: bgColor.withOpacity(0.6),
+                    color: bgColor.withAlpha(153),
                     borderRadius: BorderRadius.circular(radiusFull),
                   ),
                   child: const Icon(

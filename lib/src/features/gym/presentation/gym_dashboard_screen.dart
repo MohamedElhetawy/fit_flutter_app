@@ -16,8 +16,43 @@ class GymDashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<GymDashboardScreen> createState() => _GymDashboardScreenState();
 }
 
-class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
+class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen>
+    with SingleTickerProviderStateMixin {
   int _selectedTab = 0;
+  late final TabController _tabController;
+  final List<bool> _loadedTabs = [true, false, false, false];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(_onTabChanged);
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      final index = _tabController.index;
+      if (!_loadedTabs[index]) {
+        setState(() => _loadedTabs[index] = true);
+      }
+      setState(() => _selectedTab = index);
+    }
+  }
+
+  void _onTabTapped(int index) {
+    if (!_loadedTabs[index]) {
+      setState(() => _loadedTabs[index] = true);
+    }
+    setState(() => _selectedTab = index);
+    _tabController.animateTo(index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +82,14 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
           ),
         ],
         bottom: TabBar(
+          controller: _tabController,
           isScrollable: true,
           tabAlignment: TabAlignment.start,
           dividerColor: surfaceBorder,
           indicatorColor: primaryColor,
           labelColor: primaryColor,
           unselectedLabelColor: textSecondary,
-          onTap: (index) => setState(() => _selectedTab = index),
+          onTap: _onTabTapped,
           tabs: const [
             Tab(icon: Icon(Icons.dashboard), text: 'الرئيسية'),
             Tab(icon: Icon(Icons.people), text: 'المدربين'),
@@ -62,15 +98,22 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
           ],
         ),
       ),
-      body: IndexedStack(
-        index: _selectedTab,
-        children: [
-          _OverviewTab(uid: uid),
-          _TrainersTab(uid: uid),
-          _TraineesTab(uid: uid),
-          _FinanceTab(uid: uid),
-        ],
-      ),
+      body: _buildLazyTabBody(uid),
+    );
+  }
+
+  Widget _buildLazyTabBody(String uid) {
+    // Lazy loading: only build tabs that have been loaded
+    final tabs = [
+      _loadedTabs[0] ? _OverviewTab(uid: uid) : const SizedBox.shrink(),
+      _loadedTabs[1] ? _TrainersTab(uid: uid) : const SizedBox.shrink(),
+      _loadedTabs[2] ? _TraineesTab(uid: uid) : const SizedBox.shrink(),
+      _loadedTabs[3] ? _FinanceTab(uid: uid) : const SizedBox.shrink(),
+    ];
+
+    return IndexedStack(
+      index: _selectedTab,
+      children: tabs,
     );
   }
 }
@@ -99,8 +142,8 @@ class _OverviewTab extends ConsumerWidget {
           const SizedBox(height: spaceMd),
           
           // كارت الإحصائيات
-          ref.watch(_gymStatsProvider(uid)).when(
-            data: (stats) => _StatsGrid(stats: stats),
+          ref.watch(_gymDataProvider(uid)).when(
+            data: (data) => _StatsGrid(stats: data['stats'] ?? {}),
             loading: () => const FitXShimmerCard(height: 200),
             error: (_, __) => const _ErrorState(),
           ),
@@ -308,8 +351,8 @@ class _FinanceTab extends ConsumerWidget {
           ),
           const SizedBox(height: spaceMd),
           
-          ref.watch(_gymRevenueProvider(uid)).when(
-            data: (revenue) => _RevenueCard(revenue: revenue),
+          ref.watch(_gymDataProvider(uid)).when(
+            data: (data) => _RevenueCard(revenue: data['revenue'] ?? {}),
             loading: () => const FitXShimmerCard(height: 150),
             error: (_, __) => const _ErrorState(),
           ),
@@ -413,7 +456,7 @@ class _UserCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withAlpha(26),
               borderRadius: BorderRadius.circular(radiusMd),
             ),
             child: Icon(icon, color: primaryColor, size: 24),
@@ -557,17 +600,24 @@ class _ErrorState extends StatelessWidget {
 
 // ─── PROVIDERS ───────────────────────────────────────────────────────────
 
-/// إحصائيات الجيم
-final _gymStatsProvider = StreamProvider.family<Map<String, dynamic>, String>((ref, gymId) {
+/// بيانات الجيم المدمجة (إحصائيات + إيرادات من نفس الـ document)
+final _gymDataProvider = StreamProvider.family<Map<String, Map<String, dynamic>>, String>((ref, gymId) {
   final firestore = ref.watch(firestoreProvider);
   return firestore.collection('gyms').doc(gymId).snapshots().map((doc) {
-    if (!doc.exists) return {};
+    if (!doc.exists) return {'stats': {}, 'revenue': {}};
     final data = doc.data() ?? {};
     return {
-      'trainees': data['traineeCount'] ?? 0,
-      'trainers': data['trainerCount'] ?? 0,
-      'subscriptions': data['subscriptionCount'] ?? 0,
-      'revenue': data['totalRevenue'] ?? 0,
+      'stats': {
+        'trainees': data['traineeCount'] ?? 0,
+        'trainers': data['trainerCount'] ?? 0,
+        'subscriptions': data['subscriptionCount'] ?? 0,
+        'revenue': data['totalRevenue'] ?? 0,
+      },
+      'revenue': {
+        'total': data['totalRevenue'] ?? 0,
+        'monthly': data['monthlyRevenue'] ?? 0,
+        'activeSubscriptions': data['activeSubscriptionCount'] ?? 0,
+      },
     };
   });
 });
@@ -602,20 +652,6 @@ final _gymTraineesProvider = StreamProvider.family<List<Map<String, dynamic>>, S
             'email': doc.data()['email'] ?? '',
             'trainerName': doc.data()['trainerName'] ?? 'غير محدد',
           }).toList());
-});
-
-/// الإيرادات
-final _gymRevenueProvider = StreamProvider.family<Map<String, dynamic>, String>((ref, gymId) {
-  final firestore = ref.watch(firestoreProvider);
-  return firestore.collection('gyms').doc(gymId).snapshots().map((doc) {
-    if (!doc.exists) return {};
-    final data = doc.data() ?? {};
-    return {
-      'total': data['totalRevenue'] ?? 0,
-      'monthly': data['monthlyRevenue'] ?? 0,
-      'activeSubscriptions': data['activeSubscriptionCount'] ?? 0,
-    };
-  });
 });
 
 /// آخر النشاطات

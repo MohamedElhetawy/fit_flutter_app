@@ -124,7 +124,7 @@ class TasksScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withAlpha(51),
             borderRadius: BorderRadius.circular(radiusSm),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -330,7 +330,7 @@ class _TaskCard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: colors[task.status]?.withOpacity(0.2),
+        color: colors[task.status]?.withAlpha(51),
         borderRadius: BorderRadius.circular(radiusXs),
       ),
       child: Text(

@@ -85,7 +85,7 @@ class CodeDisplayScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(radiusLg),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryColor.withOpacity(0.3),
+                          color: primaryColor.withAlpha(77),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -111,7 +111,7 @@ class CodeDisplayScreen extends ConsumerWidget {
                         Text(
                           name,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withAlpha(230),
                             fontSize: 14,
                           ),
                         ),
@@ -123,7 +123,7 @@ class CodeDisplayScreen extends ConsumerWidget {
                             vertical: spaceMd,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withAlpha(51),
                             borderRadius: BorderRadius.circular(radiusMd),
                           ),
                           child: Text(

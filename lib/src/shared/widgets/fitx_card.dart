@@ -41,7 +41,7 @@ class FitXCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(
           color: accentGlow
-              ? primaryColor.withOpacity(0.3)
+              ? primaryColor.withAlpha(77)
               : surfaceBorder,
           width: 1,
         ),
@@ -49,7 +49,7 @@ class FitXCard extends StatelessWidget {
         boxShadow: accentGlow
             ? [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.08),
+                  color: primaryColor.withAlpha(20),
                   blurRadius: 24,
                   spreadRadius: 0,
                   offset: const Offset(0, 4),

@@ -1,17 +1,23 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'workout.dart';
+import 'workouts_local_data_source.dart';
 
 class WorkoutsRepository {
-  WorkoutsRepository(this._firestore);
+  WorkoutsRepository(this._localDataSource);
 
-  final FirebaseFirestore _firestore;
+  final WorkoutsLocalDataSource _localDataSource;
 
   Stream<List<Workout>> watchWorkouts() {
-    return _firestore.collection('workouts').snapshots().map((snapshot) {
-      return snapshot.docs
-          .map((doc) => Workout.fromMap(doc.id, doc.data()))
-          .toList(growable: false);
+    return _localDataSource.watchAllWorkouts().map((localWorkouts) {
+      return localWorkouts.map((local) {
+        return Workout(
+          id: local.originalId,
+          title: local.title,
+          coach: local.coach,
+          image: local.image,
+          price: local.price,
+          discountPercent: local.discountPercent,
+        );
+      }).toList();
     });
   }
 }

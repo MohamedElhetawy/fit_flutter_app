@@ -7,6 +7,9 @@ import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fitx/src/core/local_db/local_db_service.dart';
+import 'package:fitx/src/features/dashboard/data/dashboard_local_data_source.dart';
+import 'package:fitx/src/core/sync/sync_engine.dart';
 
 /// Supported Step Sources
 enum StepSource {
@@ -81,6 +84,7 @@ class UnifiedStepsService {
   bool _isInitialized = false;
   String? _userId;
   FirebaseFirestore? _firestore;
+  SyncEngine? _syncEngine;
 
   // Accelerometer tracking
   double _lastMagnitude = 0;
@@ -92,11 +96,12 @@ class UnifiedStepsService {
   int get currentSteps => _localSteps;
 
   /// Initialize service
-  Future<void> initialize({String? userId, FirebaseFirestore? firestore}) async {
+  Future<void> initialize({String? userId, FirebaseFirestore? firestore, SyncEngine? syncEngine}) async {
     if (_isInitialized) return;
 
     _userId = userId;
     _firestore = firestore;
+    _syncEngine = syncEngine;
 
     // 1. Load saved steps from local storage
     await _loadLocalSteps();
@@ -158,6 +163,17 @@ class UnifiedStepsService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('steps_total', _localSteps);
     _lastSavedSteps = _localSteps;
+
+    // Fast Sync to Isar local DB to ensure instant UI rendering
+    try {
+      final dataSource = DashboardLocalDataSource(LocalDbService().isar);
+      final today = DateTime.now();
+      final todayStr = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+      final calories = (_localSteps * 0.04).round(); // rough estimation
+      dataSource.updateStepsAndCaloriesSync(todayStr, _localSteps, calories);
+    } catch (e) {
+      // Ignore if local db hasn't initialized in catastrophic states
+    }
 
     // Also save detailed history
     await _saveStepsHistory();
@@ -431,23 +447,34 @@ class UnifiedStepsService {
 
   /// Sync local steps to cloud (Firestore)
   Future<void> _syncToCloud() async {
-    if (_userId == null || _firestore == null) return;
+    if (_userId == null) return;
     if (_localSteps == 0) return;
 
     try {
       final today = DateTime.now();
       final startOfDay = DateTime(today.year, today.month, today.day);
       
-      await _firestore!
-          .collection('users')
-          .doc(_userId)
-          .collection('daily_stats')
-          .doc(startOfDay.millisecondsSinceEpoch.toString())
-          .set({
+      final payload = {
         'steps': _localSteps,
         'stepsSource': 'unified_tracker',
         'lastSync': DateTime.now().toIso8601String(),
-      }, SetOptions(merge: true));
+      };
+      
+      if (_syncEngine != null) {
+        await _syncEngine!.enqueueEvent(
+          collectionName: 'users/{uid}/daily_stats',
+          recordId: startOfDay.millisecondsSinceEpoch.toString(),
+          operation: 'UPDATE',
+          payload: payload,
+        );
+      } else if (_firestore != null) {
+        await _firestore!
+            .collection('users')
+            .doc(_userId)
+            .collection('daily_stats')
+            .doc(startOfDay.millisecondsSinceEpoch.toString())
+            .set(payload, SetOptions(merge: true));
+      }
     } catch (e) {
       // Will retry on next sync cycle
     }

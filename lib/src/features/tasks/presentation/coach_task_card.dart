@@ -85,7 +85,7 @@ class CoachTaskCard extends ConsumerWidget {
                 Text(
                   'Waiting for your next task...',
                   style: TextStyle(
-                    color: textPrimary.withOpacity(0.7),
+                    color: textPrimary.withAlpha(179),
                     fontSize: 14,
                   ),
                 ),
@@ -379,7 +379,7 @@ class _PulsingBadgeState extends State<_PulsingBadge>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.4),
+                  color: primaryColor.withAlpha(102),
                   blurRadius: 8,
                   spreadRadius: 2,
                 ),

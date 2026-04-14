@@ -44,7 +44,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      primaryColor.withOpacity(0.2),
+                      primaryColor.withAlpha(51),
                       bgColor,
                     ],
                   ),
@@ -112,7 +112,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
             Icon(
               Icons.fitness_center_outlined,
               size: 64,
-              color: textSecondary.withOpacity(0.5),
+              color: textSecondary.withAlpha(128),
             ),
             const SizedBox(height: spaceLg),
             const Text(
@@ -290,7 +290,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withAlpha(51),
             borderRadius: BorderRadius.circular(radiusSm),
           ),
           child: Icon(icon, color: color, size: 18),
@@ -364,9 +364,9 @@ class WorkoutStatsScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withAlpha(51),
         borderRadius: BorderRadius.circular(radiusSm),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withAlpha(128)),
       ),
       child: Text(
         '$label: $count',

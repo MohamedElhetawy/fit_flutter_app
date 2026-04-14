@@ -143,6 +143,7 @@ class _ExerciseCard extends StatelessWidget {
                 exercise.gifUrl,
                 width: double.infinity,
                 fit: BoxFit.cover,
+                cacheWidth: 400, // Optimize for card thumbnail
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Container(
@@ -221,7 +222,7 @@ class _ExerciseCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withAlpha(38),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

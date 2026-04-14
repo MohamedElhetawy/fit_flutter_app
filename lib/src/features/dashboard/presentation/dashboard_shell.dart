@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fitx/constants.dart';
@@ -24,13 +23,14 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
     with SingleTickerProviderStateMixin {
   late final PageController _pageController;
   late final AnimationController _navAnimController;
+  late final List<bool> _loadedPages;
 
-  final _pages = const [
-    FitXHomeScreen(),
-    StatisticsScreen(),
-    TasksScreen(),
-    WorkoutsScreen(),
-    NutritionLoggingScreen(),
+  final _pageBuilders = const [
+    FitXHomeScreen.new,
+    StatisticsScreen.new,
+    TasksScreen.new,
+    WorkoutsScreen.new,
+    NutritionLoggingScreen.new,
   ];
 
   @override
@@ -41,6 +41,7 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     )..forward();
+    _loadedPages = [true, false, false, false, false]; // Only home loaded initially
 
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -56,6 +57,10 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
   }
 
   void _onTabTapped(int index) {
+    // Mark page as loaded before navigating
+    if (!_loadedPages[index]) {
+      setState(() => _loadedPages[index] = true);
+    }
     ref.read(dashboardTabProvider.notifier).state = index;
     _pageController.animateToPage(
       index,
@@ -73,10 +78,17 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
     return Scaffold(
       backgroundColor: bgColor,
       extendBody: true,
-      body: PageView(
+      body: PageView.builder(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: _pages,
+        itemCount: _pageBuilders.length,
+        itemBuilder: (context, index) {
+          // Lazy loading: only build page if it's been loaded before
+          if (!_loadedPages[index]) {
+            return const SizedBox.shrink(); // Empty placeholder
+          }
+          return _pageBuilders[index]();
+        },
         onPageChanged: (index) {
           if (index != currentIndex) {
             ref.read(dashboardTabProvider.notifier).state = index;
@@ -93,28 +105,21 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
           .animate(CurvedAnimation(parent: _navAnimController, curve: Curves.easeOutCubic)),
       child: Container(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: surfaceBorder.withOpacity(0.5), width: 0.5)),
+          color: const Color(0xCC1A1A1A), // Semi-transparent surface (80% opacity)
+          border: Border(top: BorderSide(color: surfaceBorder.withAlpha(128), width: 0.5)),
         ),
-        child: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              color: surfaceColor.withOpacity(0.8),
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-              child: SizedBox(
-                height: 70,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _NavItem(icon: Icons.home_filled, label: 'الرئيسية', isSelected: currentIndex == 0, onTap: () => _onTabTapped(0)),
-                    _NavItem(icon: Icons.bar_chart_rounded, label: 'الإحصائيات', isSelected: currentIndex == 1, onTap: () => _onTabTapped(1)),
-                    _NavItem(icon: Icons.assignment_rounded, label: 'المهام', isSelected: currentIndex == 2, onTap: () => _onTabTapped(2), badgeCount: unreadCount),
-                    _NavItem(icon: Icons.fitness_center_rounded, label: 'التمارين', isSelected: currentIndex == 3, onTap: () => _onTabTapped(3)),
-                    _NavItem(icon: Icons.restaurant_rounded, label: 'التغذية', isSelected: currentIndex == 4, onTap: () => _onTabTapped(4)),
-                  ],
-                ),
-              ),
-            ),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+        child: SizedBox(
+          height: 70,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavItem(icon: Icons.home_filled, label: 'الرئيسية', isSelected: currentIndex == 0, onTap: () => _onTabTapped(0)),
+              _NavItem(icon: Icons.bar_chart_rounded, label: 'الإحصائيات', isSelected: currentIndex == 1, onTap: () => _onTabTapped(1)),
+              _NavItem(icon: Icons.assignment_rounded, label: 'المهام', isSelected: currentIndex == 2, onTap: () => _onTabTapped(2), badgeCount: unreadCount),
+              _NavItem(icon: Icons.fitness_center_rounded, label: 'التمارين', isSelected: currentIndex == 3, onTap: () => _onTabTapped(3)),
+              _NavItem(icon: Icons.restaurant_rounded, label: 'التغذية', isSelected: currentIndex == 4, onTap: () => _onTabTapped(4)),
+            ],
           ),
         ),
       ),

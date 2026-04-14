@@ -30,7 +30,7 @@ class MuscleAnglesScreen extends ConsumerWidget {
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: bgColor.withOpacity(0.8),
+            color: bgColor.withAlpha(204),
             borderRadius: BorderRadius.circular(radiusMd),
           ),
           child: IconButton(
@@ -52,6 +52,7 @@ class MuscleAnglesScreen extends ConsumerWidget {
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  cacheWidth: 600, // Optimize for header image
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Container(
@@ -87,8 +88,8 @@ class MuscleAnglesScreen extends ConsumerWidget {
                         end: Alignment.topCenter,
                         colors: [
                           bgColor,
-                          bgColor.withOpacity(0.8),
-                          bgColor.withOpacity(0.4),
+                          bgColor.withAlpha(204),
+                          bgColor.withAlpha(102),
                           Colors.transparent,
                         ],
                       ),
@@ -229,8 +230,8 @@ class _MuscleAngleCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  primaryColor.withOpacity(0.3),
-                  primaryColor.withOpacity(0.1),
+                  primaryColor.withAlpha(77),
+                  primaryColor.withAlpha(26),
                 ],
               ),
               borderRadius: BorderRadius.circular(radiusMd),

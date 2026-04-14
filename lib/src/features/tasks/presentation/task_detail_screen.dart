@@ -269,12 +269,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           padding: const EdgeInsets.all(spaceSm),
           decoration: BoxDecoration(
             color: item.isChecked
-                ? primaryColor.withOpacity(0.1)
+                ? primaryColor.withAlpha(26)
                 : surfaceColorLight,
             borderRadius: BorderRadius.circular(radiusMd),
             border: Border.all(
               color: item.isChecked
-                  ? primaryColor.withOpacity(0.3)
+                  ? primaryColor.withAlpha(77)
                   : surfaceBorder,
             ),
           ),
@@ -337,7 +337,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             borderRadius: BorderRadius.circular(radiusLg),
           ),
           elevation: canComplete ? 4 : 0,
-          shadowColor: canComplete ? primaryColor.withOpacity(0.4) : null,
+          shadowColor: canComplete ? primaryColor.withAlpha(102) : null,
         ),
         child: _isCompleting
             ? const SizedBox(

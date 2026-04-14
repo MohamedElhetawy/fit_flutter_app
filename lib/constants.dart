@@ -97,7 +97,7 @@ const Curve defaultCurve = Curves.easeOutCubic;
 // ── Shadows ──────────────────────────────────────────────────
 List<BoxShadow> get accentGlow => [
       BoxShadow(
-        color: primaryColor.withOpacity(0.25),
+        color: primaryColor.withAlpha(64),
         blurRadius: 20,
         spreadRadius: 0,
         offset: const Offset(0, 4),
@@ -106,7 +106,7 @@ List<BoxShadow> get accentGlow => [
 
 List<BoxShadow> get subtleShadow => [
       BoxShadow(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withAlpha(77),
         blurRadius: 16,
         spreadRadius: 0,
         offset: const Offset(0, 4),

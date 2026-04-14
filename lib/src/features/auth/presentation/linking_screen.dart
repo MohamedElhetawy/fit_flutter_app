@@ -38,59 +38,70 @@ class _LinkingScreenState extends ConsumerState<LinkingScreen> {
           style: TextStyle(color: textPrimary, fontWeight: FontWeight.bold),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(defaultPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'اختار طريقة الربط',
-                style: TextStyle(
-                  color: textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(defaultPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'اختار طريقة الربط',
+                    style: TextStyle(
+                      color: textPrimary,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: spaceSm),
+                  const Text(
+                    'هل انت تابع لجيم معين أو مدرب؟',
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: spaceLg),
+
+                  // 3 Cards for linking options
+                  _LinkingCard(
+                    title: 'تابع لجيم',
+                    subtitle: 'ادخل كود الجيم للانضمام',
+                    icon: Icons.business,
+                    gradient: const [Color(0xFF4A5568), Color(0xFF718096)],
+                    onTap: _isLoading ? () {} : () => _navigateToGymCode(context),
+                  ),
+                  const SizedBox(height: spaceMd),
+
+                  _LinkingCard(
+                    title: 'تابع لمدرب',
+                    subtitle: 'ادخل كود المدرب مباشرة',
+                    icon: Icons.school,
+                    gradient: const [Color(0xFF6B8E23), Color(0xFF8FBC8F)],
+                    onTap: _isLoading ? () {} : () => _navigateToTrainerCode(context, null),
+                  ),
+                  const SizedBox(height: spaceMd),
+
+                  _LinkingCard(
+                    title: 'مستقل (بدون)',
+                    subtitle: 'استخدم التطبيق بشكل مستقل',
+                    icon: Icons.person_outline,
+                    gradient: const [Color(0xFF805AD5), Color(0xFFB794F6)],
+                    onTap: _isLoading ? () {} : () => _completeAsIndependent(context),
+                  ),
+                ],
               ),
-              const SizedBox(height: spaceSm),
-              const Text(
-                'هل انت تابع لجيم معين أو مدرب؟',
-                style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: spaceLg),
-              
-              // 3 Cards for linking options
-              _LinkingCard(
-                title: 'تابع لجيم',
-                subtitle: 'ادخل كود الجيم للانضمام',
-                icon: Icons.business,
-                gradient: const [Color(0xFF4A5568), Color(0xFF718096)],
-                onTap: () => _navigateToGymCode(context),
-              ),
-              const SizedBox(height: spaceMd),
-              
-              _LinkingCard(
-                title: 'تابع لمدرب',
-                subtitle: 'ادخل كود المدرب مباشرة',
-                icon: Icons.school,
-                gradient: const [Color(0xFF6B8E23), Color(0xFF8FBC8F)],
-                onTap: () => _navigateToTrainerCode(context, null),
-              ),
-              const SizedBox(height: spaceMd),
-              
-              _LinkingCard(
-                title: 'مستقل (بدون)',
-                subtitle: 'استخدم التطبيق بشكل مستقل',
-                icon: Icons.person_outline,
-                gradient: const [Color(0xFF805AD5), Color(0xFFB794F6)],
-                onTap: () => _completeAsIndependent(context),
-              ),
-            ],
+            ),
           ),
-        ),
+          if (_isLoading)
+            Container(
+              color: bgColor.withAlpha(179),
+              child: const Center(
+                child: CircularProgressIndicator(color: primaryColor),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -214,7 +225,7 @@ class _LinkingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(radiusLg),
           boxShadow: [
             BoxShadow(
-              color: gradient[0].withOpacity(0.3),
+              color: gradient[0].withAlpha(77),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -225,7 +236,7 @@ class _LinkingCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withAlpha(51),
                 borderRadius: BorderRadius.circular(radiusMd),
               ),
               child: Icon(icon, color: Colors.white, size: 32),
@@ -247,7 +258,7 @@ class _LinkingCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withAlpha(230),
                       fontSize: 14,
                     ),
                   ),
@@ -808,14 +819,14 @@ class _OptionCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: surfaceColorLight,
           borderRadius: BorderRadius.circular(radiusLg),
-          border: Border.all(color: color.withOpacity(0.3), width: 2),
+          border: Border.all(color: color.withAlpha(77), width: 2),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withAlpha(26),
                 borderRadius: BorderRadius.circular(radiusMd),
               ),
               child: Icon(icon, color: color, size: 28),

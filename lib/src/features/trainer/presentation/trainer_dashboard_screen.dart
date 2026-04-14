@@ -806,18 +806,30 @@ class _HistoryRequestCard extends StatelessWidget {
 }
 
 /// Tab 3: QR Code Generation (Secure)
-class _QrTab extends StatelessWidget {
+class _QrTab extends StatefulWidget {
   final dynamic user;
   final String uid;
 
   const _QrTab({required this.user, required this.uid});
 
   @override
-  Widget build(BuildContext context) {
-    // Create secure payload
+  State<_QrTab> createState() => _QrTabState();
+}
+
+class _QrTabState extends State<_QrTab> {
+  late final String _payloadJson;
+
+  @override
+  void initState() {
+    super.initState();
+    // Generate QR payload once during init
     const crypto = QrCryptoService(secretKey: 'fitx-secure-qr-key-v1-do-not-share');
-    final payload = crypto.generatePayload(trainerId: uid);
-    final payloadJson = jsonEncode(payload);
+    final payload = crypto.generatePayload(trainerId: widget.uid);
+    _payloadJson = jsonEncode(payload);
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Center(
       child: Padding(
@@ -832,7 +844,7 @@ class _QrTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withAlpha(26),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -841,13 +853,13 @@ class _QrTab extends StatelessWidget {
               child: Column(
                 children: [
                   QrImageView(
-                    data: payloadJson,
+                    data: _payloadJson,
                     size: 220,
                     backgroundColor: Colors.white,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    user?.name ?? 'Trainer',
+                    widget.user?.name ?? 'Trainer',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 4),
@@ -897,7 +909,7 @@ class _QrTab extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _TraineeQrScannerSheet(trainerId: uid),
+      builder: (context) => _TraineeQrScannerSheet(trainerId: widget.uid),
     );
   }
 }
@@ -939,9 +951,9 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: errorColor.withOpacity(0.1),
+                color: errorColor.withAlpha(26),
                 borderRadius: BorderRadius.circular(radiusMd),
-                border: Border.all(color: errorColor.withOpacity(0.3)),
+                border: Border.all(color: errorColor.withAlpha(77)),
               ),
               child: Row(
                 children: [

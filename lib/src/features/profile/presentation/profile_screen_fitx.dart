@@ -47,9 +47,9 @@ class ProfileScreenFitX extends ConsumerWidget {
                     height: 56,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor.withOpacity(0.15),
+                      color: primaryColor.withAlpha(38),
                       border: Border.all(
-                        color: primaryColor.withOpacity(0.4),
+                        color: primaryColor.withAlpha(102),
                         width: 2,
                       ),
                     ),
@@ -114,7 +114,7 @@ class ProfileScreenFitX extends ConsumerWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: successColor.withOpacity(0.15),
+                      color: successColor.withAlpha(38),
                       borderRadius: BorderRadius.circular(radiusSm),
                     ),
                     child: const Icon(
@@ -140,7 +140,7 @@ class ProfileScreenFitX extends ConsumerWidget {
                         Text(
                           'Compare your transformation',
                           style: TextStyle(
-                            color: textSecondary.withOpacity(0.8),
+                            color: textSecondary.withAlpha(204),
                             fontSize: 13,
                           ),
                         ),
@@ -472,26 +472,21 @@ class ProfileScreenFitX extends ConsumerWidget {
       builder: (context) => AlertDialog(
         backgroundColor: surfaceColor,
         title: const Text('About FitX', style: TextStyle(color: textPrimary)),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.fitness_center, color: primaryColor, size: 64),
-            SizedBox(height: spaceMd),
-            Text(
-              'FitX',
-              style: TextStyle(
-                color: textPrimary,
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
+            Image.asset(
+              'assets/logo/Fit_X_Logo.png',
+              height: 50,
+              fit: BoxFit.contain,
             ),
-            SizedBox(height: spaceXs),
-            Text(
+            const SizedBox(height: spaceXs),
+            const Text(
               'Version 1.0.0',
               style: TextStyle(color: textSecondary),
             ),
-            SizedBox(height: spaceMd),
-            Text(
+            const SizedBox(height: spaceMd),
+            const Text(
               'Your ultimate fitness companion for tracking workouts, nutrition, and progress.',
               textAlign: TextAlign.center,
               style: TextStyle(color: textSecondary, fontSize: 14),

@@ -48,7 +48,7 @@ OutlineInputBorder secodaryOutlineInputBorder(BuildContext context) {
   return OutlineInputBorder(
     borderRadius: const BorderRadius.all(Radius.circular(radiusMd)),
     borderSide: BorderSide(
-      color: Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.15),
+      color: Theme.of(context).textTheme.bodyLarge!.color!.withAlpha(38),
     ),
   );
 }

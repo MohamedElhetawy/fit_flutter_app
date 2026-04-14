@@ -41,12 +41,18 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.13
   path_provider: ^2.1.5
   crypto: ^3.0.6
+  connectivity_plus: ^6.0.3
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^4.0.0
+  build_runner: ^2.4.9
+  isar_generator: ^3.1.0+1
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
@@ -78,3 +84,25 @@ flutter:
           weight: 700
         - asset: assets/fonts/grandis_extended/GrandisExtended-Black.ttf
           weight: 900
+
+# Launcher Icons Configuration
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo/FitX_app_logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0A0A0C"
+  adaptive_icon_foreground: "assets/logo/FitX_app_logo.png"
+  web:
+    generate: true
+    image_path: "assets/logo/FitX_app_logo.png"
+    background_color: "#0A0A0C"
+    theme_color: "#CDDC39"
+  windows:
+    generate: true
+    image_path: "assets/logo/FitX_app_logo.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/logo/FitX_app_logo.png"

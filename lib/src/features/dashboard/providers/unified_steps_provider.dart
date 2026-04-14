@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../../../core/sync/sync_engine.dart';
 import '../data/unified_steps_service.dart';
 
 /// Unified Steps Service Provider
@@ -14,10 +15,10 @@ final unifiedStepsServiceProvider = Provider<UnifiedStepsService>((ref) {
       service.initialize(
         userId: user.uid,
         firestore: ref.read(firestoreProvider),
+        syncEngine: ref.read(syncEngineProvider),
       );
     }
-  });
-  
+  });  
   ref.onDispose(() => service.dispose());
   return service;
 });

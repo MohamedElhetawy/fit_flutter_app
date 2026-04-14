@@ -159,7 +159,7 @@ class _ActivityAnalysisCard extends StatelessWidget {
           Container(
             height: 140,
             width: double.infinity,
-            decoration: BoxDecoration(color: surfaceColorLight.withOpacity(0.3), borderRadius: BorderRadius.circular(radiusMd)),
+            decoration: BoxDecoration(color: surfaceColorLight.withAlpha(77), borderRadius: BorderRadius.circular(radiusMd)),
             child: const Center(child: Icon(Icons.show_chart, color: primaryColor, size: 40)),
           ),
         ],
