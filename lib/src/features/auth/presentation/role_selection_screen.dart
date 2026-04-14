@@ -6,6 +6,7 @@ import 'package:fitx/src/core/auth/app_role.dart';
 import 'package:fitx/src/core/auth/auth_controller.dart';
 import 'package:fitx/src/core/providers/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'linking_screen.dart';
 
 /// Modern Role Selection Screen with secure gym code verification
 /// Super Admin is auto-detected by email
@@ -21,7 +22,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   String? _selectedGymId;
   String? _selectedGymName;
   final _codeController = TextEditingController();
-  bool _isVerifying = false;
+  final bool _isVerifying = false;
   String? _errorMessage;
 
   @override
@@ -258,31 +259,28 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   }
 
   Future<void> _onContinue() async {
-    if (!_canProceed()) return;
+    if (_selectedRole == null) return;
 
-    setState(() => _isVerifying = true);
-
-    try {
-      // Verify gym code
-      final isValid = await _verifyGymCode(_selectedGymId!, _codeController.text.trim());
-      
-      if (!isValid) {
-        setState(() {
-          _errorMessage = 'الكود غير صحيح. حاول تاني.';
-          _isVerifying = false;
-        });
-        return;
+    // For Trainee/Trainer: Go to LinkingScreen
+    if (_selectedRole == AppRole.trainee || _selectedRole == AppRole.trainer) {
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => LinkingScreen(selectedRole: _selectedRole!),
+          ),
+        );
       }
-
-      // Save role with gym info
-      await _saveRoleWithGym(_selectedRole!, _selectedGymId!, _selectedGymName!);
-      
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'حدث خطأ. حاول تاني.';
-        _isVerifying = false;
-      });
+      return;
     }
+
+    // For Gym: Save and go to dashboard (Gym will get code generated)
+    if (_selectedRole == AppRole.gym) {
+      await _saveRole(_selectedRole!);
+      return;
+    }
+
+    // For Admin/SuperAdmin: Save and go to dashboard
+    await _saveRole(_selectedRole!);
   }
 
   Future<bool> _verifyGymCode(String gymId, String code) async {
@@ -299,8 +297,40 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
 
   Future<void> _saveRole(AppRole role) async {
     await ref.read(authControllerProvider.notifier).saveRole(role);
+    
+    // Generate access code for ALL users (trainee, trainer, gym)
+    await _generateAccessCode();
+    
     if (mounted) {
-      context.go('/dashboard');
+      _navigateToDashboard(role);
+    }
+  }
+
+  Future<void> _generateAccessCode() async {
+    final user = ref.read(authStateProvider).value;
+    if (user == null) return;
+    
+    final firestore = ref.read(firestoreProvider);
+    final code = (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
+    
+    await firestore.collection('users').doc(user.uid).update({
+      'accessCode': code,
+      'qrData': 'fitx:${user.uid}:$code',
+      'codeGeneratedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  void _navigateToDashboard(AppRole role) {
+    switch (role) {
+      case AppRole.trainee:
+        context.go('/dashboard');
+      case AppRole.trainer:
+        context.go('/trainer-dashboard');
+      case AppRole.gym:
+        context.go('/gym-dashboard');
+      case AppRole.admin:
+      case AppRole.superAdmin:
+        context.go('/admin-control');
     }
   }
 
