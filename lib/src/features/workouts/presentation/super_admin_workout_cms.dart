@@ -1,26 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitx/constants.dart';
-import 'package:fitx/src/core/providers/firebase_providers.dart';
-
-final workoutsCmsProvider = StreamProvider<List<Map<String, dynamic>>>((ref) {
-  return ref
-      .watch(firestoreProvider)
-      .collection('workouts')
-      .limit(50)
-      .snapshots()
-      .map((s) => s.docs
-          .map((d) => <String, dynamic>{'id': d.id, ...d.data()})
-          .toList(growable: false));
-});
+import 'package:fitx/src/features/workouts/data/workouts_backend_providers.dart';
+import 'package:fitx/src/features/workouts/data/workout.dart';
 
 class SuperAdminWorkoutCms extends ConsumerWidget {
   const SuperAdminWorkoutCms({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workouts = ref.watch(workoutsCmsProvider);
+    final workouts = ref.watch(workoutsBackendStreamProvider);
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.all(defaultPadding),
@@ -30,7 +19,7 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
               Text('Workout CMS', style: Theme.of(context).textTheme.headlineSmall),
               const Spacer(),
               ElevatedButton.icon(
-                onPressed: () => _openEditor(context, ref),
+                onPressed: () => _openEditor(context, ref, null),
                 icon: const Icon(Icons.add),
                 label: const Text('Add Workout'),
               ),
@@ -45,8 +34,8 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
                     .map(
                       (item) => Card(
                         child: ListTile(
-                          title: Text((item['title'] ?? 'Workout').toString()),
-                          subtitle: Text((item['coach'] ?? 'Coach').toString()),
+                          title: Text(item.title),
+                          subtitle: Text(item.coach),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -57,11 +46,7 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
                               IconButton(
                                 icon: const Icon(Icons.delete, color: errorColor),
                                 onPressed: () async {
-                                  await ref
-                                      .read(firestoreProvider)
-                                      .collection('workouts')
-                                      .doc(item['id'].toString())
-                                      .delete();
+                                  await ref.read(workoutsBackendRepositoryProvider).deleteWorkout(item.id);
                                 },
                               ),
                             ],
@@ -83,13 +68,12 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
   Future<void> _openEditor(
     BuildContext context,
     WidgetRef ref, [
-    Map<String, dynamic>? data,
+    Workout? data,
   ]) async {
-    final title = TextEditingController(text: data?['title']?.toString() ?? '');
-    final coach = TextEditingController(text: data?['coach']?.toString() ?? '');
-    final price = TextEditingController(
-        text: (data?['price'] as num?)?.toDouble().toString() ?? '0');
-    final image = TextEditingController(text: data?['image']?.toString() ?? '');
+    final title = TextEditingController(text: data?.title ?? '');
+    final coach = TextEditingController(text: data?.coach ?? '');
+    final price = TextEditingController(text: data?.price.toString() ?? '0');
+    final image = TextEditingController(text: data?.image ?? '');
 
     await showDialog(
       context: context,
@@ -121,13 +105,9 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
                 'updatedAt': DateTime.now().toIso8601String(),
               };
               if (data == null) {
-                await ref.read(firestoreProvider).collection('workouts').add(payload);
+                await ref.read(workoutsBackendRepositoryProvider).addWorkout(payload);
               } else {
-                await ref
-                    .read(firestoreProvider)
-                    .collection('workouts')
-                    .doc(data['id'].toString())
-                    .set(payload, SetOptions(merge: true));
+                await ref.read(workoutsBackendRepositoryProvider).updateWorkout(data.id, payload);
               }
               if (context.mounted) Navigator.pop(context);
             },

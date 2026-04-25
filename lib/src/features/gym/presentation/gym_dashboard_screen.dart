@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitx/constants.dart';
 import 'package:fitx/src/core/auth/auth_controller.dart';
-import 'package:fitx/src/core/providers/firebase_providers.dart';
 import 'package:fitx/src/shared/widgets/fitx_card.dart';
 import 'package:fitx/src/shared/widgets/fitx_shimmer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// Firestore provider is used in the data layer; presentation consumes typed providers.
+import 'package:fitx/src/features/gym/data/gym_providers.dart';
+import 'package:fitx/src/features/gym/data/gym_models.dart';
 
 /// Gym Dashboard - للمديرين والجيمات
 /// إحصائيات الجيم، المدربين، المتدربين، الاشتراكات
@@ -142,8 +143,8 @@ class _OverviewTab extends ConsumerWidget {
           const SizedBox(height: spaceMd),
           
           // كارت الإحصائيات
-          ref.watch(_gymDataProvider(uid)).when(
-            data: (data) => _StatsGrid(stats: data['stats'] ?? {}),
+          ref.watch(gymOverviewProvider(uid)).when(
+            data: (overview) => _StatsGrid(stats: overview.stats),
             loading: () => const FitXShimmerCard(height: 200),
             error: (_, __) => const _ErrorState(),
           ),
@@ -161,7 +162,7 @@ class _OverviewTab extends ConsumerWidget {
           ),
           const SizedBox(height: spaceMd),
           
-          ref.watch(_recentActivitiesProvider(uid)).when(
+          ref.watch(gymActivitiesProvider(uid)).when(
             data: (activities) => _ActivitiesList(activities: activities),
             loading: () => const FitXShimmerCard(height: 150),
             error: (_, __) => const SizedBox.shrink(),
@@ -174,7 +175,7 @@ class _OverviewTab extends ConsumerWidget {
 
 /// شبكة الإحصائيات
 class _StatsGrid extends StatelessWidget {
-  final Map<String, dynamic> stats;
+  final GymStats stats;
   
   const _StatsGrid({required this.stats});
 
@@ -190,25 +191,25 @@ class _StatsGrid extends StatelessWidget {
       children: [
         _StatCard(
           title: 'المتدربين',
-          value: stats['trainees']?.toString() ?? '0',
+          value: stats.trainees.toString(),
           icon: Icons.fitness_center,
           color: Colors.blue,
         ),
         _StatCard(
           title: 'المدربين',
-          value: stats['trainers']?.toString() ?? '0',
+          value: stats.trainers.toString(),
           icon: Icons.school,
           color: Colors.green,
         ),
         _StatCard(
           title: 'الاشتراكات',
-          value: stats['subscriptions']?.toString() ?? '0',
+          value: stats.subscriptions.toString(),
           icon: Icons.card_membership,
           color: primaryColor,
         ),
         _StatCard(
           title: 'الإيرادات',
-          value: '${stats['revenue'] ?? 0} ج.م',
+          value: '${stats.revenue} ج.م',
           icon: Icons.attach_money,
           color: Colors.orange,
         ),
@@ -264,7 +265,7 @@ class _TrainersTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(_gymTrainersProvider(uid)).when(
+    return ref.watch(gymTrainersProvider(uid)).when(
       data: (trainers) {
         if (trainers.isEmpty) {
           return const _EmptyState(message: 'لا يوجد مدربين مرتبطين بالجيم');
@@ -275,9 +276,9 @@ class _TrainersTab extends ConsumerWidget {
           itemBuilder: (context, index) {
             final trainer = trainers[index];
             return _UserCard(
-              name: trainer['name'] ?? 'بدون اسم',
-              email: trainer['email'] ?? '',
-              subtitle: '${trainer['trainees'] ?? 0} متدرب',
+              name: trainer.name,
+              email: trainer.email,
+              subtitle: '${trainer.traineeCount} متدرب',
               icon: Icons.school,
             );
           },
@@ -300,7 +301,7 @@ class _TraineesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(_gymTraineesProvider(uid)).when(
+    return ref.watch(gymTraineesProvider(uid)).when(
       data: (trainees) {
         if (trainees.isEmpty) {
           return const _EmptyState(message: 'لا يوجد متدربين في الجيم');
@@ -311,9 +312,9 @@ class _TraineesTab extends ConsumerWidget {
           itemBuilder: (context, index) {
             final trainee = trainees[index];
             return _UserCard(
-              name: trainee['name'] ?? 'بدون اسم',
-              email: trainee['email'] ?? '',
-              subtitle: 'مدرب: ${trainee['trainerName'] ?? 'غير محدد'}',
+              name: trainee.name,
+              email: trainee.email,
+              subtitle: 'مدرب: ${trainee.trainerName}',
               icon: Icons.fitness_center,
             );
           },
@@ -351,8 +352,8 @@ class _FinanceTab extends ConsumerWidget {
           ),
           const SizedBox(height: spaceMd),
           
-          ref.watch(_gymDataProvider(uid)).when(
-            data: (data) => _RevenueCard(revenue: data['revenue'] ?? {}),
+          ref.watch(gymOverviewProvider(uid)).when(
+            data: (overview) => _RevenueCard(revenue: overview.revenue),
             loading: () => const FitXShimmerCard(height: 150),
             error: (_, __) => const _ErrorState(),
           ),
@@ -364,7 +365,7 @@ class _FinanceTab extends ConsumerWidget {
 
 /// كارت الإيرادات
 class _RevenueCard extends StatelessWidget {
-  final Map<String, dynamic> revenue;
+  final GymRevenue revenue;
   
   const _RevenueCard({required this.revenue});
 
@@ -375,17 +376,17 @@ class _RevenueCard extends StatelessWidget {
         children: [
           _RevenueRow(
             label: 'إجمالي الإيرادات',
-            value: '${revenue['total'] ?? 0} ج.م',
+            value: '${revenue.total} ج.م',
             isBold: true,
           ),
           const Divider(color: surfaceBorder),
           _RevenueRow(
             label: 'هذا الشهر',
-            value: '${revenue['monthly'] ?? 0} ج.م',
+            value: '${revenue.monthly} ج.م',
           ),
           _RevenueRow(
             label: 'الاشتراكات النشطة',
-            value: '${revenue['activeSubscriptions'] ?? 0}',
+            value: '${revenue.activeSubscriptions}',
           ),
         ],
       ),
@@ -497,7 +498,7 @@ class _UserCard extends StatelessWidget {
 
 /// قائمة النشاطات
 class _ActivitiesList extends StatelessWidget {
-  final List<Map<String, dynamic>> activities;
+  final List<GymActivity> activities;
 
   const _ActivitiesList({required this.activities});
 
@@ -510,19 +511,19 @@ class _ActivitiesList extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                _getActivityIcon(activity['type']),
+                _getActivityIcon(activity.type),
                 color: primaryColor,
                 size: 20,
               ),
               const SizedBox(width: spaceMd),
               Expanded(
                 child: Text(
-                  activity['message'] ?? '',
+                  activity.message,
                   style: const TextStyle(color: textPrimary, fontSize: 14),
                 ),
               ),
               Text(
-                _formatTime(activity['timestamp']),
+                _formatTime(activity.timestamp),
                 style: const TextStyle(color: textTertiary, fontSize: 12),
               ),
             ],
@@ -542,11 +543,10 @@ class _ActivitiesList extends StatelessWidget {
     };
   }
 
-  String _formatTime(Timestamp? timestamp) {
-    if (timestamp == null) return '';
+  String _formatTime(DateTime timestamp) {
     final now = DateTime.now();
-    final diff = now.difference(timestamp.toDate());
-    
+    final diff = now.difference(timestamp);
+
     if (diff.inMinutes < 60) return '${diff.inMinutes} د';
     if (diff.inHours < 24) return '${diff.inHours} س';
     return '${diff.inDays} ي';
@@ -598,71 +598,4 @@ class _ErrorState extends StatelessWidget {
   }
 }
 
-// ─── PROVIDERS ───────────────────────────────────────────────────────────
-
-/// بيانات الجيم المدمجة (إحصائيات + إيرادات من نفس الـ document)
-final _gymDataProvider = StreamProvider.family<Map<String, Map<String, dynamic>>, String>((ref, gymId) {
-  final firestore = ref.watch(firestoreProvider);
-  return firestore.collection('gyms').doc(gymId).snapshots().map((doc) {
-    if (!doc.exists) return {'stats': {}, 'revenue': {}};
-    final data = doc.data() ?? {};
-    return {
-      'stats': {
-        'trainees': data['traineeCount'] ?? 0,
-        'trainers': data['trainerCount'] ?? 0,
-        'subscriptions': data['subscriptionCount'] ?? 0,
-        'revenue': data['totalRevenue'] ?? 0,
-      },
-      'revenue': {
-        'total': data['totalRevenue'] ?? 0,
-        'monthly': data['monthlyRevenue'] ?? 0,
-        'activeSubscriptions': data['activeSubscriptionCount'] ?? 0,
-      },
-    };
-  });
-});
-
-/// المدربين
-final _gymTrainersProvider = StreamProvider.family<List<Map<String, dynamic>>, String>((ref, gymId) {
-  final firestore = ref.watch(firestoreProvider);
-  return firestore
-      .collection('users')
-      .where('gymId', isEqualTo: gymId)
-      .where('role', isEqualTo: 'trainer')
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => {
-            'id': doc.id,
-            'name': doc.data()['name'] ?? 'بدون اسم',
-            'email': doc.data()['email'] ?? '',
-            'trainees': doc.data()['traineeCount'] ?? 0,
-          }).toList());
-});
-
-/// المتدربين
-final _gymTraineesProvider = StreamProvider.family<List<Map<String, dynamic>>, String>((ref, gymId) {
-  final firestore = ref.watch(firestoreProvider);
-  return firestore
-      .collection('users')
-      .where('gymId', isEqualTo: gymId)
-      .where('role', isEqualTo: 'trainee')
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => {
-            'id': doc.id,
-            'name': doc.data()['name'] ?? 'بدون اسم',
-            'email': doc.data()['email'] ?? '',
-            'trainerName': doc.data()['trainerName'] ?? 'غير محدد',
-          }).toList());
-});
-
-/// آخر النشاطات
-final _recentActivitiesProvider = StreamProvider.family<List<Map<String, dynamic>>, String>((ref, gymId) {
-  final firestore = ref.watch(firestoreProvider);
-  return firestore
-      .collection('gyms')
-      .doc(gymId)
-      .collection('activities')
-      .orderBy('timestamp', descending: true)
-      .limit(10)
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
-});
+// Providers moved to data layer: lib/src/features/gym/data/gym_providers.dart

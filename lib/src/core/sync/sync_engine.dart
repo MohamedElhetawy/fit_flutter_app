@@ -8,6 +8,7 @@ import '../network/connectivity_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/firebase_providers.dart';
+import '../providers/local_db_provider.dart';
 
 final syncEngineProvider = Provider<SyncEngine>((ref) {
   final connectivityStatus = ref.watch(connectivityStatusProvider);
@@ -21,6 +22,24 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
     engine.processQueue();
   }
   
+  return engine;
+});
+
+/// Async provider variant that waits for an initialized Isar instance.
+final syncEngineAsyncProvider = FutureProvider<SyncEngine>((ref) async {
+  final connectivityStatus = ref.watch(connectivityStatusProvider);
+  final firestore = ref.watch(firestoreProvider);
+  final auth = ref.watch(firebaseAuthProvider);
+
+  final isar = await ref.watch(isarProvider.future);
+
+  final engine = SyncEngine(isar, firestore, auth);
+
+  // Re-trigger sync queue if network comes online
+  if (connectivityStatus == CustomNetworkStatus.on) {
+    engine.processQueue();
+  }
+
   return engine;
 });
 
