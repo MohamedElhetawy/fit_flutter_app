@@ -20,6 +20,6 @@ void main() {
       ),
     );
 
-    expect(find.text('Select your role'), findsOneWidget);
+    expect(find.text('أهلاً بيك! اختار نوع حسابك'), findsOneWidget);
   });
 }
