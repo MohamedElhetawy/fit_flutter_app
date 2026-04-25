@@ -17,7 +17,8 @@ class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
 
   @override
-  ConsumerState<UserManagementScreen> createState() => _UserManagementScreenState();
+  ConsumerState<UserManagementScreen> createState() =>
+      _UserManagementScreenState();
 }
 
 class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
@@ -61,7 +62,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         children: [
           // Search & Filters
           _buildFilters(),
-          
+
           // Users List
           Expanded(
             child: _buildUsersList(),
@@ -113,7 +114,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
             ),
           ),
           const SizedBox(height: spaceMd),
-          
+
           // Filter Chips
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -153,7 +154,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
             ),
           ),
           const SizedBox(height: spaceSm),
-          
+
           // Show disabled toggle
           Row(
             children: [
@@ -188,7 +189,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           final name = (data['name'] ?? '').toString().toLowerCase();
           final email = (data['email'] ?? '').toString().toLowerCase();
           final query = _searchQuery.toLowerCase();
-          
+
           return name.contains(query) || email.contains(query);
         }).toList();
 
@@ -214,7 +215,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           itemBuilder: (context, index) {
             final doc = docs[index];
             final data = doc.data() as Map<String, dynamic>;
-            
+
             return _UserCard(
               userId: doc.id,
               data: data,
@@ -231,7 +232,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   }
 
   Stream<QuerySnapshot> _getUsersStream() {
-    var query = ref.read(firestoreProvider)
+    var query = ref
+        .read(firestoreProvider)
         .collection('users')
         .orderBy('createdAt', descending: true);
 
@@ -257,24 +259,29 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     );
   }
 
-  void _showEditUserDialog(BuildContext context, String userId, Map<String, dynamic> data) {
+  void _showEditUserDialog(
+      BuildContext context, String userId, Map<String, dynamic> data) {
     showDialog(
       context: context,
       builder: (context) => _EditUserDialog(userId: userId, data: data),
     );
   }
 
-  void _showChangeRoleDialog(BuildContext context, String userId, Map<String, dynamic> data) {
+  void _showChangeRoleDialog(
+      BuildContext context, String userId, Map<String, dynamic> data) {
     showDialog(
       context: context,
-      builder: (context) => _ChangeRoleDialog(userId: userId, currentRole: data['role'] ?? 'trainee'),
+      builder: (context) => _ChangeRoleDialog(
+          userId: userId, currentRole: data['role'] ?? 'trainee'),
     );
   }
 
-  void _showAssignGymDialog(BuildContext context, String userId, Map<String, dynamic> data) {
+  void _showAssignGymDialog(
+      BuildContext context, String userId, Map<String, dynamic> data) {
     showDialog(
       context: context,
-      builder: (context) => _AssignGymDialog(userId: userId, currentGymId: data['gymId']),
+      builder: (context) =>
+          _AssignGymDialog(userId: userId, currentGymId: data['gymId']),
     );
   }
 
@@ -316,31 +323,30 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   // Actions
   // ───────────────────────────────────────────────────────────────────────────
 
-  Future<void> _toggleUserStatus(String userId, Map<String, dynamic> data) async {
+  Future<void> _toggleUserStatus(
+      String userId, Map<String, dynamic> data) async {
     final isCurrentlyDisabled = data['isDisabled'] ?? false;
-    
-    await ref.read(firestoreProvider)
-        .collection('users')
-        .doc(userId)
-        .update({
+
+    await ref.read(firestoreProvider).collection('users').doc(userId).update({
       'isDisabled': !isCurrentlyDisabled,
       'disabledAt': !isCurrentlyDisabled ? FieldValue.serverTimestamp() : null,
-      'disabledBy': !isCurrentlyDisabled 
-          ? ref.read(authStateProvider).value?.uid 
-          : null,
+      'disabledBy':
+          !isCurrentlyDisabled ? ref.read(authStateProvider).value?.uid : null,
     });
 
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(isCurrentlyDisabled ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم'),
+        content: Text(
+            isCurrentlyDisabled ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم'),
         backgroundColor: isCurrentlyDisabled ? Colors.green : errorColor,
       ),
     );
   }
 
-  Future<void> _confirmDeleteUser(String userId, Map<String, dynamic> data) async {
+  Future<void> _confirmDeleteUser(
+      String userId, Map<String, dynamic> data) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -367,11 +373,15 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     if (confirmed == true) {
       try {
         // Delete from Firestore
-        await ref.read(firestoreProvider).collection('users').doc(userId).delete();
-        
+        await ref
+            .read(firestoreProvider)
+            .collection('users')
+            .doc(userId)
+            .delete();
+
         // Try to delete from Auth (requires Admin SDK)
         // This would need Cloud Function
-        
+
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -393,7 +403,11 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   }
 
   Future<void> _setGlobalDisable(bool disable) async {
-    await ref.read(firestoreProvider).collection('app_config').doc('global').set({
+    await ref
+        .read(firestoreProvider)
+        .collection('app_config')
+        .doc('global')
+        .set({
       'isDisabled': disable,
       'disabledAt': disable ? FieldValue.serverTimestamp() : null,
       'disabledBy': disable ? ref.read(authStateProvider).value?.uid : null,
@@ -403,7 +417,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(disable ? 'تم تعطيل التطبيق عالمياً' : 'تم تفعيل التطبيق'),
+        content:
+            Text(disable ? 'تم تعطيل التطبيق عالمياً' : 'تم تفعيل التطبيق'),
         backgroundColor: disable ? errorColor : Colors.green,
       ),
     );
@@ -475,11 +490,12 @@ class _UserCard extends StatelessWidget {
     final isDisabled = data['isDisabled'] ?? false;
     final role = data['role'] as String? ?? 'trainee';
     final roleColor = _getRoleColor(role);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: spaceMd),
       decoration: BoxDecoration(
-        color: isDisabled ? surfaceColorLight.withAlpha(128) : surfaceColorLight,
+        color:
+            isDisabled ? surfaceColorLight.withAlpha(128) : surfaceColorLight,
         borderRadius: BorderRadius.circular(radiusLg),
         border: Border.all(
           color: isDisabled ? errorColor.withAlpha(77) : Colors.transparent,
@@ -514,7 +530,8 @@ class _UserCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: roleColor.withAlpha(26),
                     borderRadius: BorderRadius.circular(4),
@@ -568,7 +585,8 @@ class _UserCard extends StatelessWidget {
               value: 'role',
               child: Row(
                 children: [
-                  Icon(Icons.admin_panel_settings, color: primaryColor, size: 20),
+                  Icon(Icons.admin_panel_settings,
+                      color: primaryColor, size: 20),
                   SizedBox(width: 8),
                   Text('تغيير الدور', style: TextStyle(color: textPrimary)),
                 ],
@@ -588,16 +606,11 @@ class _UserCard extends StatelessWidget {
               value: 'disable',
               child: Row(
                 children: [
-                  Icon(
-                    isDisabled ? Icons.check_circle : Icons.block, 
-                    color: isDisabled ? Colors.green : errorColor, 
-                    size: 20
-                  ),
+                  Icon(isDisabled ? Icons.check_circle : Icons.block,
+                      color: isDisabled ? Colors.green : errorColor, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    isDisabled ? 'تفعيل' : 'تعطيل', 
-                    style: const TextStyle(color: textPrimary)
-                  ),
+                  Text(isDisabled ? 'تفعيل' : 'تعطيل',
+                      style: const TextStyle(color: textPrimary)),
                 ],
               ),
             ),
@@ -712,7 +725,8 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: bgColor,
-      title: const Text('إنشاء مستخدم جديد', style: TextStyle(color: textPrimary)),
+      title:
+          const Text('إنشاء مستخدم جديد', style: TextStyle(color: textPrimary)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -782,7 +796,8 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1A1A00)),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Color(0xFF1A1A00)),
                 )
               : const Text('إنشاء', style: TextStyle(color: Color(0xFF1A1A00))),
         ),
@@ -791,9 +806,12 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
   }
 
   Future<void> _createUser() async {
-    if (_nameCtrl.text.isEmpty || _emailCtrl.text.isEmpty || _passwordCtrl.text.isEmpty) {
+    if (_nameCtrl.text.isEmpty ||
+        _emailCtrl.text.isEmpty ||
+        _passwordCtrl.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى ملء جميع الحقول'), backgroundColor: errorColor),
+        const SnackBar(
+            content: Text('يرجى ملء جميع الحقول'), backgroundColor: errorColor),
       );
       return;
     }
@@ -802,7 +820,8 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
 
     try {
       // Create user in Firebase Auth
-      final authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final authResult =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailCtrl.text.trim(),
         password: _passwordCtrl.text,
       );
@@ -818,8 +837,10 @@ class _CreateUserDialogState extends ConsumerState<_CreateUserDialog> {
         'createdAt': FieldValue.serverTimestamp(),
         'createdBy': ref.read(authStateProvider).value?.uid,
         'isDisabled': false,
-        'accessCode': (100000 + DateTime.now().millisecondsSinceEpoch % 900000).toString(),
-        'qrData': 'fitx:$uid:${(100000 + DateTime.now().millisecondsSinceEpoch % 900000)}',
+        'accessCode': (100000 + DateTime.now().millisecondsSinceEpoch % 900000)
+            .toString(),
+        'qrData':
+            'fitx:$uid:${(100000 + DateTime.now().millisecondsSinceEpoch % 900000)}',
       });
 
       if (mounted) {
@@ -940,7 +961,8 @@ class _EditUserDialogState extends ConsumerState<_EditUserDialog> {
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1A1A00)),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Color(0xFF1A1A00)),
                 )
               : const Text('حفظ', style: TextStyle(color: Color(0xFF1A1A00))),
         ),
@@ -952,7 +974,11 @@ class _EditUserDialogState extends ConsumerState<_EditUserDialog> {
     setState(() => _isLoading = true);
 
     try {
-      await ref.read(firestoreProvider).collection('users').doc(widget.userId).update({
+      await ref
+          .read(firestoreProvider)
+          .collection('users')
+          .doc(widget.userId)
+          .update({
         'name': _nameCtrl.text.trim(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -1049,7 +1075,8 @@ class _ChangeRoleDialogState extends ConsumerState<_ChangeRoleDialog> {
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1A1A00)),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Color(0xFF1A1A00)),
                 )
               : const Text('حفظ', style: TextStyle(color: Color(0xFF1A1A00))),
         ),
@@ -1066,7 +1093,11 @@ class _ChangeRoleDialogState extends ConsumerState<_ChangeRoleDialog> {
     setState(() => _isLoading = true);
 
     try {
-      await ref.read(firestoreProvider).collection('users').doc(widget.userId).update({
+      await ref
+          .read(firestoreProvider)
+          .collection('users')
+          .doc(widget.userId)
+          .update({
         'role': _selectedRole.name,
         'roleChangedAt': FieldValue.serverTimestamp(),
       });
@@ -1144,7 +1175,8 @@ class _AssignGymDialogState extends ConsumerState<_AssignGymDialog> {
       content: SizedBox(
         width: double.maxFinite,
         child: StreamBuilder<QuerySnapshot>(
-          stream: ref.read(firestoreProvider)
+          stream: ref
+              .read(firestoreProvider)
               .collection('gyms')
               .where('isActive', isEqualTo: true)
               .snapshots(),
@@ -1183,7 +1215,8 @@ class _AssignGymDialogState extends ConsumerState<_AssignGymDialog> {
                       ),
                       subtitle: Text(
                         data['location'] ?? '',
-                        style: const TextStyle(color: textTertiary, fontSize: 12),
+                        style:
+                            const TextStyle(color: textTertiary, fontSize: 12),
                       ),
                       value: gym.id,
                       groupValue: _selectedGymId,
@@ -1194,7 +1227,8 @@ class _AssignGymDialogState extends ConsumerState<_AssignGymDialog> {
                   if (_selectedGymId != null)
                     TextButton(
                       onPressed: () => setState(() => _selectedGymId = null),
-                      child: const Text('إلغاء تعيين الجيم', style: TextStyle(color: errorColor)),
+                      child: const Text('إلغاء تعيين الجيم',
+                          style: TextStyle(color: errorColor)),
                     ),
                 ],
               ),
@@ -1214,7 +1248,8 @@ class _AssignGymDialogState extends ConsumerState<_AssignGymDialog> {
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1A1A00)),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Color(0xFF1A1A00)),
                 )
               : const Text('حفظ', style: TextStyle(color: Color(0xFF1A1A00))),
         ),
@@ -1228,21 +1263,30 @@ class _AssignGymDialogState extends ConsumerState<_AssignGymDialog> {
     try {
       if (_selectedGymId == null) {
         // Remove gym assignment
-        await ref.read(firestoreProvider).collection('users').doc(widget.userId).update({
+        await ref
+            .read(firestoreProvider)
+            .collection('users')
+            .doc(widget.userId)
+            .update({
           'gymId': FieldValue.delete(),
           'gymName': FieldValue.delete(),
           'updatedAt': FieldValue.serverTimestamp(),
         });
       } else {
         // Get gym name
-        final gymDoc = await ref.read(firestoreProvider)
+        final gymDoc = await ref
+            .read(firestoreProvider)
             .collection('gyms')
             .doc(_selectedGymId)
             .get();
-        
+
         final gymName = gymDoc.data()?['name'] ?? 'بدون اسم';
 
-        await ref.read(firestoreProvider).collection('users').doc(widget.userId).update({
+        await ref
+            .read(firestoreProvider)
+            .collection('users')
+            .doc(widget.userId)
+            .update({
           'gymId': _selectedGymId,
           'gymName': gymName,
           'updatedAt': FieldValue.serverTimestamp(),

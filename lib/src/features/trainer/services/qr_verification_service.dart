@@ -53,7 +53,8 @@ class QrVerificationService {
   }
 
   /// Marks a nonce as used (call this after successful verification and link request creation)
-  Future<void> markUsed(String nonce, {
+  Future<void> markUsed(
+    String nonce, {
     required String usedByUserId,
     required String trainerId,
   }) async {
@@ -61,7 +62,9 @@ class QrVerificationService {
       'usedAt': DateTime.now().toIso8601String(),
       'usedBy': usedByUserId,
       'trainerId': trainerId,
-      'expiresAt': DateTime.now().add(const Duration(days: 30)).toIso8601String(), // Keep for 30 days then delete
+      'expiresAt': DateTime.now()
+          .add(const Duration(days: 30))
+          .toIso8601String(), // Keep for 30 days then delete
     });
   }
 

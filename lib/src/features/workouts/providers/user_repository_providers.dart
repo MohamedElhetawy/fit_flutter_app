@@ -20,7 +20,7 @@ final currentUserBackendProvider = FutureProvider<UserProfile?>((ref) async {
 final currentUserStreamProvider = StreamProvider<UserProfile?>((ref) {
   final repository = ref.watch(userRepositoryProvider);
   final uid = repository.currentUserId;
-  
+
   if (uid == null) return Stream.value(null);
 
   return ref
@@ -47,25 +47,31 @@ final allUsersBackendStreamProvider = StreamProvider<List<UserProfile>>((ref) {
 });
 
 /// Current user's exercise history from backend
-final currentUserExerciseHistoryProvider = FutureProvider<List<UserExerciseHistory>>((ref) async {
+final currentUserExerciseHistoryProvider =
+    FutureProvider<List<UserExerciseHistory>>((ref) async {
   final repository = ref.watch(userRepositoryProvider);
   return await repository.getAllExerciseHistory();
 });
 
 /// Stream of current user's exercise history (real-time)
-final exerciseHistoryStreamProvider = StreamProvider<List<UserExerciseHistory>>((ref) {
+final exerciseHistoryStreamProvider =
+    StreamProvider<List<UserExerciseHistory>>((ref) {
   final repository = ref.watch(userRepositoryProvider);
   return repository.watchExerciseStats();
 });
 
 /// Get exercise history for a specific exercise
-final exerciseHistoryForExerciseProvider = FutureProvider.family<UserExerciseHistory?, String>((ref, exerciseId) async {
+final exerciseHistoryForExerciseProvider =
+    FutureProvider.family<UserExerciseHistory?, String>(
+        (ref, exerciseId) async {
   final repository = ref.watch(userRepositoryProvider);
   return await repository.getExerciseHistory(exerciseId);
 });
 
 /// Similar users from backend (with caching)
-final similarUsersBackendProvider = FutureProvider.family<List<UserProfile>, SimilarUsersFilter>((ref, filter) async {
+final similarUsersBackendProvider =
+    FutureProvider.family<List<UserProfile>, SimilarUsersFilter>(
+        (ref, filter) async {
   final repository = ref.watch(userRepositoryProvider);
   return await repository.getSimilarUsers(
     goal: filter.goal,
@@ -95,14 +101,15 @@ class SimilarUsersFilter {
 
 /// K-NN enabled provider - uses backend data
 /// This replaces the mock data provider in knn_providers.dart
-final knnAllUsersBackendProvider = Provider<AsyncValue<List<UserProfile>>>((ref) {
+final knnAllUsersBackendProvider =
+    Provider<AsyncValue<List<UserProfile>>>((ref) {
   // Use real-time stream if available, otherwise fallback to future
   final streamAsync = ref.watch(allUsersBackendStreamProvider);
-  
+
   if (streamAsync.hasValue) {
     return streamAsync;
   }
-  
+
   // Fallback to one-time fetch
   return ref.watch(allUsersBackendProvider);
 });
@@ -110,11 +117,11 @@ final knnAllUsersBackendProvider = Provider<AsyncValue<List<UserProfile>>>((ref)
 /// Current user for K-NN from backend
 final knnCurrentUserBackendProvider = Provider<AsyncValue<UserProfile?>>((ref) {
   final streamAsync = ref.watch(currentUserStreamProvider);
-  
+
   if (streamAsync.hasValue) {
     return streamAsync;
   }
-  
+
   return ref.watch(currentUserBackendProvider);
 });
 

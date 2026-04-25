@@ -55,7 +55,8 @@ class ManualStepsNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 /// Provider for manual steps operations
-final manualStepsProvider = StateNotifierProvider<ManualStepsNotifier, AsyncValue<void>>((ref) {
+final manualStepsProvider =
+    StateNotifierProvider<ManualStepsNotifier, AsyncValue<void>>((ref) {
   final service = ref.watch(pedometerServiceProvider);
   return ManualStepsNotifier(service);
 });

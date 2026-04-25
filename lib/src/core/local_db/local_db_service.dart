@@ -23,7 +23,7 @@ class LocalDbService {
 
   Future<void> init() async {
     if (_isInit) return;
-    
+
     final dir = await getApplicationDocumentsDirectory();
     _isar = await Isar.open(
       [
@@ -45,7 +45,7 @@ class LocalDbService {
       _isInit = false;
     }
   }
-  
+
   /// Wipe all data (e.g., on logout)
   Future<void> wipeAll() async {
     if (!_isInit) return;

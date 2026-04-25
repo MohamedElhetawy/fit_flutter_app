@@ -6,7 +6,8 @@ import '../domain/progress_photo.dart';
 
 /// Service for backing up photos to Google Drive
 class GoogleDriveBackupService {
-  static final GoogleDriveBackupService _instance = GoogleDriveBackupService._internal();
+  static final GoogleDriveBackupService _instance =
+      GoogleDriveBackupService._internal();
   factory GoogleDriveBackupService() => _instance;
   GoogleDriveBackupService._internal();
 

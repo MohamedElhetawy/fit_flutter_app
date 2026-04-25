@@ -14,14 +14,14 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
   final connectivityStatus = ref.watch(connectivityStatusProvider);
   final firestore = ref.watch(firestoreProvider);
   final auth = ref.watch(firebaseAuthProvider);
-  
+
   final engine = SyncEngine(LocalDbService().isar, firestore, auth);
-  
+
   // Re-trigger sync queue if network comes online
   if (connectivityStatus == CustomNetworkStatus.on) {
     engine.processQueue();
   }
-  
+
   return engine;
 });
 
@@ -87,7 +87,7 @@ class SyncEngine {
 
       for (final event in pendingEvents) {
         bool success = await _uploadToFirebase(event);
-        
+
         if (success) {
           await _isar.writeTxn(() async {
             await _isar.syncEvents.delete(event.id);
@@ -134,11 +134,11 @@ class SyncEngine {
         await docRef.delete();
         return true;
       }
-      
+
       return false; // Unknown operation type
     } catch (e) {
       debugPrint('SyncEngine Upload Error: $e');
-      return false; 
+      return false;
     }
   }
 }

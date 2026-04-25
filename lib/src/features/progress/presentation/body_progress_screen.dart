@@ -42,13 +42,16 @@ class BodyProgressScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.all(defaultPadding),
             children: [
-              Text('First vs Latest', style: Theme.of(context).textTheme.titleLarge),
+              Text('First vs Latest',
+                  style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: defaultPadding),
               Row(
                 children: [
-                  Expanded(child: _photoCard(first['url']?.toString(), 'First')),
+                  Expanded(
+                      child: _photoCard(first['url']?.toString(), 'First')),
                   const SizedBox(width: 8),
-                  Expanded(child: _photoCard(latest['url']?.toString(), 'Latest')),
+                  Expanded(
+                      child: _photoCard(latest['url']?.toString(), 'Latest')),
                 ],
               ),
               const SizedBox(height: defaultPadding),
@@ -78,9 +81,11 @@ class BodyProgressScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _capturePhoto(BuildContext context, WidgetRef ref, String uid) async {
+  Future<void> _capturePhoto(
+      BuildContext context, WidgetRef ref, String uid) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    final image =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
     if (image == null) return;
 
     final file = File(image.path);

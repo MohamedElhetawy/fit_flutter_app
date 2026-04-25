@@ -51,11 +51,13 @@ class BackupController extends AsyncNotifier<String?> {
       final snapshot = <String, dynamic>{
         'uid': uid,
         'user': userDoc.data(),
-        'workouts': workouts.docs.map((d) => {'id': d.id, ...d.data()}).toList(),
+        'workouts':
+            workouts.docs.map((d) => {'id': d.id, ...d.data()}).toList(),
         'subscriptions':
             subscriptions.docs.map((d) => {'id': d.id, ...d.data()}).toList(),
         'tasks': tasks.docs.map((d) => {'id': d.id, ...d.data()}).toList(),
-        'nutrition': nutrition.docs.map((d) => {'id': d.id, ...d.data()}).toList(),
+        'nutrition':
+            nutrition.docs.map((d) => {'id': d.id, ...d.data()}).toList(),
       };
 
       await ref.read(localStorageServiceProvider).saveSnapshot(uid, snapshot);
@@ -75,7 +77,8 @@ class BackupController extends AsyncNotifier<String?> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final firestore = ref.read(firestoreProvider);
-      final backup = await ref.read(driveBackupServiceProvider).downloadBackup(uid);
+      final backup =
+          await ref.read(driveBackupServiceProvider).downloadBackup(uid);
       if (backup == null) return 'No backup found in Drive';
 
       final batch = firestore.batch();
@@ -106,7 +109,11 @@ class BackupController extends AsyncNotifier<String?> {
         final id = map.remove('id')?.toString();
         if (id == null) continue;
         batch.set(
-          firestore.collection('users').doc(uid).collection('nutrition_logs').doc(id),
+          firestore
+              .collection('users')
+              .doc(uid)
+              .collection('nutrition_logs')
+              .doc(id),
           map,
           SetOptions(merge: true),
         );

@@ -28,7 +28,8 @@ class DashboardStatsRepository {
   Future<DashboardStats> getTrainerStats() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) {
-      return DashboardStats(totalUsers: 0, activeSubscriptions: 0, totalWorkouts: 0);
+      return DashboardStats(
+          totalUsers: 0, activeSubscriptions: 0, totalWorkouts: 0);
     }
     final users = await _firestore
         .collection('users')
@@ -57,7 +58,8 @@ class DashboardStatsRepository {
   Future<DashboardStats> getUserStats() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) {
-      return DashboardStats(totalUsers: 0, activeSubscriptions: 0, totalWorkouts: 0);
+      return DashboardStats(
+          totalUsers: 0, activeSubscriptions: 0, totalWorkouts: 0);
     }
     final workouts = await _firestore
         .collection('workouts')

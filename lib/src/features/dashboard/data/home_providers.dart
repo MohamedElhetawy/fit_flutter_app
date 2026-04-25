@@ -5,7 +5,7 @@ import 'package:fitx/src/core/providers/firebase_providers.dart';
 import 'package:fitx/src/features/dashboard/domain/user_progress.dart';
 import 'package:fitx/src/features/dashboard/domain/daily_workout.dart';
 import 'package:fitx/src/features/dashboard/domain/activity.dart';
-import 'package:fitx/src/core/local_db/local_db_service.dart';
+import 'package:fitx/src/core/providers/local_db_provider.dart';
 import 'package:fitx/src/features/dashboard/data/dashboard_local_data_source.dart';
 import 'package:fitx/src/core/sync/sync_engine.dart';
 
@@ -56,17 +56,21 @@ class DailyHealthMetrics {
 
 // ─── PROVIDERS ────────────────────────────────────────────
 
-final dashboardLocalDataSourceProvider = Provider((ref) => DashboardLocalDataSource(LocalDbService().isar));
+final dashboardLocalDataSourceProvider =
+    FutureProvider<DashboardLocalDataSource>((ref) async {
+  final isar = await ref.watch(isarProvider.future);
+  return DashboardLocalDataSource(isar);
+});
 
-final dailyHealthProvider = StreamProvider<DailyHealthMetrics>((ref) {
-  final dataSource = ref.watch(dashboardLocalDataSourceProvider);
-  
+final dailyHealthProvider = StreamProvider<DailyHealthMetrics>((ref) async* {
+  final dataSource = await ref.watch(dashboardLocalDataSourceProvider.future);
   final now = DateTime.now();
-  final todayStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  final todayStr =
+      "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
-  return dataSource.watchTodayStats(todayStr).map((stat) {
+  yield* dataSource.watchTodayStats(todayStr).map((stat) {
     if (stat == null) return DailyHealthMetrics(date: now);
-    
+
     return DailyHealthMetrics(
       steps: stat.steps,
       caloriesBurned: stat.activeCalories,
@@ -84,14 +88,17 @@ final recentActivitiesProvider = StreamProvider<List<Activity>>((ref) {
   final user = ref.watch(authStateProvider).value;
   if (user == null) return Stream.value([]);
 
-  return ref.watch(firestoreProvider)
+  return ref
+      .watch(firestoreProvider)
       .collection('users')
       .doc(user.uid)
       .collection('activities')
       .orderBy('timestamp', descending: true)
       .limit(5)
       .snapshots()
-      .map((snap) => snap.docs.map((doc) => Activity.fromMap(doc.data(), doc.id)).toList());
+      .map((snap) => snap.docs
+          .map((doc) => Activity.fromMap(doc.data(), doc.id))
+          .toList());
 });
 
 final todayWorkoutProvider = StreamProvider<DailyWorkout?>((ref) {
@@ -101,21 +108,25 @@ final todayWorkoutProvider = StreamProvider<DailyWorkout?>((ref) {
   final now = DateTime.now();
   final startOfDay = DateTime(now.year, now.month, now.day);
 
-  return ref.watch(firestoreProvider)
+  return ref
+      .watch(firestoreProvider)
       .collection('users')
       .doc(user.uid)
       .collection('workouts')
       .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
       .limit(1)
       .snapshots()
-      .map((snap) => snap.docs.isEmpty ? null : DailyWorkout.fromMap(snap.docs.first.data(), snap.docs.first.id));
+      .map((snap) => snap.docs.isEmpty
+          ? null
+          : DailyWorkout.fromMap(snap.docs.first.data(), snap.docs.first.id));
 });
 
 final userProgressProvider = StreamProvider<UserProgress?>((ref) {
   final user = ref.watch(authStateProvider).value;
   if (user == null) return Stream.value(null);
 
-  return ref.watch(firestoreProvider)
+  return ref
+      .watch(firestoreProvider)
       .collection('users')
       .doc(user.uid)
       .collection('progress')
@@ -128,19 +139,22 @@ final userProgressProvider = StreamProvider<UserProgress?>((ref) {
 
 class DailyStatsRepository {
   DailyStatsRepository(this._localDataSource, this._syncEngine);
-  
+
   final DashboardLocalDataSource _localDataSource;
   final SyncEngine _syncEngine;
 
   Future<void> addWater(String uid, double amountLiters) async {
     final todayStr = _getTodayStr();
     final hydrationMl = (amountLiters * 1000).toInt();
-    
-    final totalHydration = await _localDataSource.addHydration(todayStr, hydrationMl);
-    
+
+    final totalHydration =
+        await _localDataSource.addHydration(todayStr, hydrationMl);
+
     final now = DateTime.now();
-    final startOfDayMs = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch.toString();
-    
+    final startOfDayMs = DateTime(now.year, now.month, now.day)
+        .millisecondsSinceEpoch
+        .toString();
+
     await _syncEngine.enqueueEvent(
       collectionName: 'users/{uid}/daily_stats',
       recordId: startOfDayMs,
@@ -160,10 +174,12 @@ class DailyStatsRepository {
   }
 }
 
-final dailyStatsRepositoryProvider = Provider((ref) => DailyStatsRepository(
-  ref.watch(dashboardLocalDataSourceProvider),
-  ref.watch(syncEngineProvider),
-));
+final dailyStatsRepositoryProvider =
+    FutureProvider<DailyStatsRepository>((ref) async {
+  final dataSource = await ref.watch(dashboardLocalDataSourceProvider.future);
+  final engine = await ref.watch(syncEngineAsyncProvider.future);
+  return DailyStatsRepository(dataSource, engine);
+});
 
 class AppUserProfile {
   final String uid;
@@ -184,6 +200,10 @@ class AppUserProfile {
 final currentUserProfileProvider = StreamProvider<AppUserProfile?>((ref) {
   final user = ref.watch(authStateProvider).value;
   if (user == null) return Stream.value(null);
-  return ref.watch(firestoreProvider).collection('users').doc(user.uid)
-      .snapshots().map((snap) => snap.exists ? AppUserProfile.fromMap(snap.data()!) : null);
+  return ref
+      .watch(firestoreProvider)
+      .collection('users')
+      .doc(user.uid)
+      .snapshots()
+      .map((snap) => snap.exists ? AppUserProfile.fromMap(snap.data()!) : null);
 });

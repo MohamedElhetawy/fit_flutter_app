@@ -97,9 +97,7 @@ class _LogInFormState extends State<LogInForm> {
                   child: Icon(
                     Icons.email_outlined,
                     size: 20,
-                    color: _emailHasFocus
-                        ? primaryColor
-                        : textTertiary,
+                    color: _emailHasFocus ? primaryColor : textTertiary,
                   ),
                 ),
                 prefixIconConstraints: const BoxConstraints(
@@ -158,9 +156,7 @@ class _LogInFormState extends State<LogInForm> {
                   child: Icon(
                     Icons.lock_outline_rounded,
                     size: 20,
-                    color: _passwordHasFocus
-                        ? primaryColor
-                        : textTertiary,
+                    color: _passwordHasFocus ? primaryColor : textTertiary,
                   ),
                 ),
                 prefixIconConstraints: const BoxConstraints(

@@ -35,7 +35,7 @@ class UserRepository {
   /// Get all users for K-NN (excluding current user)
   Future<List<UserProfile>> getAllUsersForKNN() async {
     final uid = currentUserId;
-    
+
     final snapshot = await _firestore
         .collection('users')
         .where('profileComplete', isEqualTo: true)
@@ -161,8 +161,10 @@ class UserRepository {
       final currentAvgReps = data['avgReps'] ?? 0;
 
       // Calculate new averages
-      final newAvgWeight = ((currentAvgWeight * (totalSets - 1)) + weight) / totalSets;
-      final newAvgReps = ((currentAvgReps * (totalSets - 1)) + reps) ~/ totalSets;
+      final newAvgWeight =
+          ((currentAvgWeight * (totalSets - 1)) + weight) / totalSets;
+      final newAvgReps =
+          ((currentAvgReps * (totalSets - 1)) + reps) ~/ totalSets;
       final bestOneRepMax = (data['bestOneRepMax'] ?? 0.0) > oneRepMax
           ? data['bestOneRepMax']
           : oneRepMax;
@@ -240,7 +242,8 @@ class UserRepository {
   }
 
   /// Get exercise history for a specific user (for K-NN)
-  Future<List<UserExerciseHistory>> getUserExerciseHistory(String userId) async {
+  Future<List<UserExerciseHistory>> getUserExerciseHistory(
+      String userId) async {
     final snapshot = await _firestore
         .collection('users')
         .doc(userId)
@@ -367,7 +370,7 @@ class UserRepository {
     try {
       final now = DateTime.now();
       final startOfDay = DateTime(now.year, now.month, now.day);
-      
+
       // Get all users' workout volumes for today
       final snapshot = await _firestore
           .collectionGroup('daily_stats')
@@ -376,13 +379,13 @@ class UserRepository {
           .get();
 
       final volumes = <double>[];
-      
+
       for (final doc in snapshot.docs) {
         final data = doc.data();
         // Calculate estimated volume from steps + calories burned
         final steps = (data['steps'] ?? 0) as int;
         final caloriesBurned = (data['caloriesBurned'] ?? 0) as int;
-        
+
         // Estimate workout volume: calories * 0.5 + steps * 0.1
         final estimatedVolume = (caloriesBurned * 0.5) + (steps * 0.1);
         volumes.add(estimatedVolume);
@@ -394,11 +397,11 @@ class UserRepository {
 
       // Sort volumes
       volumes.sort();
-      
+
       // Calculate percentile
       final countBelow = volumes.where((v) => v < userVolume).length;
       final percentile = ((countBelow / volumes.length) * 100).round();
-      
+
       // Clamp between 0-100
       return percentile.clamp(0, 100);
     } catch (e) {
@@ -426,7 +429,7 @@ class UserRepository {
     final data = doc.data()!;
     final caloriesBurned = (data['caloriesBurned'] ?? 0) as int;
     final steps = (data['steps'] ?? 0) as int;
-    
+
     // Estimate volume
     return (caloriesBurned * 0.5) + (steps * 0.1);
   }

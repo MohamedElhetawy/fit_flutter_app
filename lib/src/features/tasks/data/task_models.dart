@@ -14,7 +14,8 @@ class Task {
   final DateTime? startedAt;
   final DateTime? completedAt;
   final String? qrNonce; // If created via QR scan
-  final Map<String, dynamic>? metadata; // Workout details, nutrition macros, etc.
+  final Map<String, dynamic>?
+      metadata; // Workout details, nutrition macros, etc.
   final List<TaskComment> comments;
   final bool isRead; // NEW: Whether user has viewed the task
   final List<TaskItem> items; // NEW: Checkable items for task completion
@@ -51,7 +52,8 @@ class Task {
       description: map['description']?.toString(),
       status: _parseTaskStatus(map['status']?.toString()),
       priority: _parseTaskPriority(map['priority']?.toString()),
-      createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
+          DateTime.now(),
       dueDate: DateTime.tryParse(map['dueDate']?.toString() ?? ''),
       startedAt: DateTime.tryParse(map['startedAt']?.toString() ?? ''),
       completedAt: DateTime.tryParse(map['completedAt']?.toString() ?? ''),
@@ -123,15 +125,19 @@ class Task {
   bool get canStart => status == TaskStatus.pending;
 
   /// Can transition to completed?
-  bool get canComplete => status == TaskStatus.inProgress || status == TaskStatus.pending;
+  bool get canComplete =>
+      status == TaskStatus.inProgress || status == TaskStatus.pending;
 
   /// Can transition to cancelled?
-  bool get canCancel => status == TaskStatus.pending || status == TaskStatus.inProgress;
+  bool get canCancel =>
+      status == TaskStatus.pending || status == TaskStatus.inProgress;
 
   /// Is overdue?
   bool get isOverdue {
     if (dueDate == null) return false;
-    if (status == TaskStatus.completed || status == TaskStatus.cancelled) return false;
+    if (status == TaskStatus.completed || status == TaskStatus.cancelled) {
+      return false;
+    }
     return DateTime.now().isAfter(dueDate!);
   }
 }
@@ -163,7 +169,8 @@ class TaskComment {
       authorId: map['authorId']?.toString() ?? '',
       authorName: map['authorName']?.toString() ?? '',
       content: map['content']?.toString() ?? '',
-      createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
+          DateTime.now(),
     );
   }
 

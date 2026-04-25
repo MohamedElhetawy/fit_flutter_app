@@ -36,11 +36,13 @@ class TrainerDashboardScreen extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: bgColor,
           elevation: 0,
-          title: const Text('مركز المدرب', style: TextStyle(color: textPrimary)),
+          title:
+              const Text('مركز المدرب', style: TextStyle(color: textPrimary)),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout, color: textSecondary),
-              onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+              onPressed: () =>
+                  ref.read(authControllerProvider.notifier).signOut(),
             ),
           ],
           bottom: TabBar(
@@ -56,7 +58,8 @@ class TrainerDashboardScreen extends ConsumerWidget {
                     error: (_, __) => false,
                   ),
                   label: pendingCount.when(
-                    data: (c) => Text('$c', style: const TextStyle(color: Colors.white)),
+                    data: (c) =>
+                        Text('$c', style: const TextStyle(color: Colors.white)),
                     loading: () => null,
                     error: (_, __) => null,
                   ),
@@ -92,7 +95,9 @@ class _TraineesTab extends ConsumerWidget {
 
     return requestsAsync.when(
       data: (requests) {
-        final accepted = requests.where((r) => r.status == LinkRequestStatus.accepted).toList();
+        final accepted = requests
+            .where((r) => r.status == LinkRequestStatus.accepted)
+            .toList();
 
         if (accepted.isEmpty) {
           return const Center(
@@ -186,15 +191,15 @@ class _TraineeCard extends ConsumerWidget {
         trainerName: trainer?.name ?? 'Trainer',
         onAssign: (taskData) {
           ref.read(taskCreateControllerProvider.notifier).createTask(
-            userId: request.traineeId,
-            assignedById: request.trainerId,
-            assignedByName: trainer?.name ?? 'Trainer',
-            type: TaskType.nutrition,
-            title: taskData.title,
-            description: taskData.description,
-            dueDate: taskData.dueDate,
-            metadata: taskData.metadata,
-          );
+                userId: request.traineeId,
+                assignedById: request.trainerId,
+                assignedByName: trainer?.name ?? 'Trainer',
+                type: TaskType.nutrition,
+                title: taskData.title,
+                description: taskData.description,
+                dueDate: taskData.dueDate,
+                metadata: taskData.metadata,
+              );
         },
       ),
     );
@@ -210,15 +215,15 @@ class _TraineeCard extends ConsumerWidget {
         trainerName: trainer?.name ?? 'Trainer',
         onAssign: (taskData) {
           ref.read(taskCreateControllerProvider.notifier).createTask(
-            userId: request.traineeId,
-            assignedById: request.trainerId,
-            assignedByName: trainer?.name ?? 'Trainer',
-            type: TaskType.workout,
-            title: taskData.title,
-            description: taskData.description,
-            priority: taskData.priority ?? TaskPriority.medium,
-            dueDate: taskData.dueDate,
-          );
+                userId: request.traineeId,
+                assignedById: request.trainerId,
+                assignedByName: trainer?.name ?? 'Trainer',
+                type: TaskType.workout,
+                title: taskData.title,
+                description: taskData.description,
+                priority: taskData.priority ?? TaskPriority.medium,
+                dueDate: taskData.dueDate,
+              );
         },
       ),
     );
@@ -233,8 +238,12 @@ class _LinkRequestsTab extends ConsumerWidget {
 
     return requestsAsync.when(
       data: (requests) {
-        final pending = requests.where((r) => r.status == LinkRequestStatus.pending).toList();
-        final history = requests.where((r) => r.status != LinkRequestStatus.pending).toList();
+        final pending = requests
+            .where((r) => r.status == LinkRequestStatus.pending)
+            .toList();
+        final history = requests
+            .where((r) => r.status != LinkRequestStatus.pending)
+            .toList();
 
         return ListView(
           padding: const EdgeInsets.all(defaultPadding),
@@ -262,7 +271,8 @@ class _LinkRequestsTab extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 64),
-                    Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
+                    Icon(Icons.inbox_outlined,
+                        size: 64, color: Colors.grey[400]),
                     const SizedBox(height: 16),
                     const Text(
                       'No requests yet',
@@ -310,7 +320,8 @@ class _PendingRequestCard extends ConsumerWidget {
                     children: [
                       Text(
                         request.traineeName,
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 16),
                       ),
                       Text(
                         request.traineeEmail,
@@ -337,7 +348,8 @@ class _PendingRequestCard extends ConsumerWidget {
                       onPressed: () => _showDeclineDialog(context, ref),
                       icon: const Icon(Icons.close),
                       label: const Text('Decline'),
-                      style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                      style:
+                          OutlinedButton.styleFrom(foregroundColor: Colors.red),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -348,7 +360,8 @@ class _PendingRequestCard extends ConsumerWidget {
                           .acceptRequest(request.id),
                       icon: const Icon(Icons.check),
                       label: const Text('Accept'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
                     ),
                   ),
                 ],
@@ -366,9 +379,9 @@ class _PendingRequestCard extends ConsumerWidget {
         requestId: request.id,
         onDecline: (reason) {
           ref.read(linkRequestControllerProvider.notifier).declineRequest(
-            request.id,
-            reason: reason,
-          );
+                request.id,
+                reason: reason,
+              );
         },
       ),
     );
@@ -599,7 +612,8 @@ class _NutritionTaskDialogState extends State<_NutritionTaskDialog> {
 
             final taskData = _TaskData(
               title: nameCtrl.text.isEmpty ? 'Nutrition Task' : nameCtrl.text,
-              description: '${calCtrl.text} kcal | P:${proteinCtrl.text} C:${carbsCtrl.text} F:${fatCtrl.text}',
+              description:
+                  '${calCtrl.text} kcal | P:${proteinCtrl.text} C:${carbsCtrl.text} F:${fatCtrl.text}',
               dueDate: dueDate,
               metadata: {
                 'calories': int.tryParse(calCtrl.text) ?? 0,
@@ -687,7 +701,8 @@ class _WorkoutTaskDialogState extends State<_WorkoutTaskDialog> {
             ),
             TextField(
               controller: notesCtrl,
-              decoration: const InputDecoration(labelText: 'Notes / Sets & Reps'),
+              decoration:
+                  const InputDecoration(labelText: 'Notes / Sets & Reps'),
               maxLines: 2,
             ),
             TextField(
@@ -707,19 +722,22 @@ class _WorkoutTaskDialogState extends State<_WorkoutTaskDialog> {
                 ChoiceChip(
                   label: const Text('Low'),
                   selected: priority == TaskPriority.low,
-                  onSelected: (_) => setState(() => priority = TaskPriority.low),
+                  onSelected: (_) =>
+                      setState(() => priority = TaskPriority.low),
                 ),
                 const SizedBox(width: 4),
                 ChoiceChip(
                   label: const Text('Medium'),
                   selected: priority == TaskPriority.medium,
-                  onSelected: (_) => setState(() => priority = TaskPriority.medium),
+                  onSelected: (_) =>
+                      setState(() => priority = TaskPriority.medium),
                 ),
                 const SizedBox(width: 4),
                 ChoiceChip(
                   label: const Text('High'),
                   selected: priority == TaskPriority.high,
-                  onSelected: (_) => setState(() => priority = TaskPriority.high),
+                  onSelected: (_) =>
+                      setState(() => priority = TaskPriority.high),
                 ),
               ],
             ),
@@ -823,14 +841,14 @@ class _QrTabState extends State<_QrTab> {
   void initState() {
     super.initState();
     // Generate QR payload once during init
-    const crypto = QrCryptoService(secretKey: 'fitx-secure-qr-key-v1-do-not-share');
+    const crypto =
+        QrCryptoService(secretKey: 'fitx-secure-qr-key-v1-do-not-share');
     final payload = crypto.generatePayload(trainerId: widget.uid);
     _payloadJson = jsonEncode(payload);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(defaultPadding),
@@ -921,10 +939,12 @@ class _TraineeQrScannerSheet extends ConsumerStatefulWidget {
   const _TraineeQrScannerSheet({required this.trainerId});
 
   @override
-  ConsumerState<_TraineeQrScannerSheet> createState() => _TraineeQrScannerSheetState();
+  ConsumerState<_TraineeQrScannerSheet> createState() =>
+      _TraineeQrScannerSheetState();
 }
 
-class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> {
+class _TraineeQrScannerSheetState
+    extends ConsumerState<_TraineeQrScannerSheet> {
   bool _isProcessing = false;
   String? _error;
 
@@ -937,7 +957,8 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
           AppBar(
             backgroundColor: bgColor,
             elevation: 0,
-            title: const Text('مسح QR المتدرب', style: TextStyle(color: textPrimary)),
+            title: const Text('مسح QR المتدرب',
+                style: TextStyle(color: textPrimary)),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -970,7 +991,8 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
             ),
           Expanded(
             child: _isProcessing
-                ? const Center(child: CircularProgressIndicator(color: primaryColor))
+                ? const Center(
+                    child: CircularProgressIndicator(color: primaryColor))
                 : MobileScanner(
                     onDetect: _onDetect,
                   ),
@@ -1002,7 +1024,7 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
     try {
       // Parse trainee QR payload
       final payload = jsonDecode(raw) as Map<String, dynamic>;
-      
+
       // Validate payload structure
       if (payload['type'] != 'trainee_qr' || payload['traineeId'] == null) {
         throw Exception('QR code غير صالح');
@@ -1015,7 +1037,7 @@ class _TraineeQrScannerSheetState extends ConsumerState<_TraineeQrScannerSheet> 
       // Get trainer info from provider
       final trainerAsync = ref.read(currentUserProvider);
       final trainer = trainerAsync.value;
-      
+
       if (trainer == null) {
         throw Exception('معلومات المدرب غير متوفرة');
       }

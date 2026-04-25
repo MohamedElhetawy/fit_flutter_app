@@ -29,14 +29,16 @@ final qrVerificationServiceProvider = Provider<QrVerificationService>((ref) {
 });
 
 /// Stream of incoming requests for trainer
-final trainerIncomingRequestsProvider = StreamProvider<List<LinkRequest>>((ref) {
+final trainerIncomingRequestsProvider =
+    StreamProvider<List<LinkRequest>>((ref) {
   final uid = ref.watch(authStateProvider).value?.uid;
   if (uid == null) return Stream.value(const []);
   return ref.watch(linkRequestRepoProvider).watchTrainerRequests(uid);
 });
 
 /// Stream of outgoing requests for trainee
-final traineeOutgoingRequestsProvider = StreamProvider<List<LinkRequest>>((ref) {
+final traineeOutgoingRequestsProvider =
+    StreamProvider<List<LinkRequest>>((ref) {
   final uid = ref.watch(authStateProvider).value?.uid;
   if (uid == null) return Stream.value(const []);
   return ref.watch(linkRequestRepoProvider).watchTraineeRequests(uid);
@@ -50,7 +52,8 @@ final trainerPendingRequestCountProvider = StreamProvider<int>((ref) {
 });
 
 /// Controller for creating link requests via QR
-final linkRequestControllerProvider = AsyncNotifierProvider<LinkRequestController, void>(
+final linkRequestControllerProvider =
+    AsyncNotifierProvider<LinkRequestController, void>(
   LinkRequestController.new,
 );
 
@@ -59,7 +62,8 @@ class LinkRequestController extends AsyncNotifier<void> {
   Future<void> build() async {}
 
   LinkRequestRepository get _repo => ref.read(linkRequestRepoProvider);
-  QrVerificationService get _qrService => ref.read(qrVerificationServiceProvider);
+  QrVerificationService get _qrService =>
+      ref.read(qrVerificationServiceProvider);
 
   /// Create a link request after scanning valid QR
   Future<void> createFromQrScan({
@@ -74,7 +78,8 @@ class LinkRequestController extends AsyncNotifier<void> {
       // Step 1: Verify QR is valid
       final verification = await _qrService.verify(qrPayload);
       if (verification != QrVerificationResult.valid) {
-        throw LinkRequestException('Invalid or expired QR code: ${verification.name}');
+        throw LinkRequestException(
+            'Invalid or expired QR code: ${verification.name}');
       }
 
       final trainerId = _qrService.extractTrainerId(qrPayload);

@@ -40,9 +40,7 @@ class FitXCard extends StatelessWidget {
         color: color ?? surfaceColor,
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(
-          color: accentGlow
-              ? primaryColor.withAlpha(77)
-              : surfaceBorder,
+          color: accentGlow ? primaryColor.withAlpha(77) : surfaceBorder,
           width: 1,
         ),
         gradient: gradient,

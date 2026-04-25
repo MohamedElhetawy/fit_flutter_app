@@ -79,7 +79,8 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: textSecondary),
-            onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+            onPressed: () =>
+                ref.read(authControllerProvider.notifier).signOut(),
           ),
         ],
         bottom: TabBar(
@@ -141,16 +142,16 @@ class _OverviewTab extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: spaceMd),
-          
+
           // كارت الإحصائيات
           ref.watch(gymOverviewProvider(uid)).when(
-            data: (overview) => _StatsGrid(stats: overview.stats),
-            loading: () => const FitXShimmerCard(height: 200),
-            error: (_, __) => const _ErrorState(),
-          ),
-          
+                data: (overview) => _StatsGrid(stats: overview.stats),
+                loading: () => const FitXShimmerCard(height: 200),
+                error: (_, __) => const _ErrorState(),
+              ),
+
           const SizedBox(height: spaceLg),
-          
+
           // آخر النشاطات
           const Text(
             'آخر النشاطات',
@@ -161,12 +162,12 @@ class _OverviewTab extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: spaceMd),
-          
+
           ref.watch(gymActivitiesProvider(uid)).when(
-            data: (activities) => _ActivitiesList(activities: activities),
-            loading: () => const FitXShimmerCard(height: 150),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
+                data: (activities) => _ActivitiesList(activities: activities),
+                loading: () => const FitXShimmerCard(height: 150),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
         ],
       ),
     );
@@ -176,7 +177,7 @@ class _OverviewTab extends ConsumerWidget {
 /// شبكة الإحصائيات
 class _StatsGrid extends StatelessWidget {
   final GymStats stats;
-  
+
   const _StatsGrid({required this.stats});
 
   @override
@@ -266,31 +267,32 @@ class _TrainersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(gymTrainersProvider(uid)).when(
-      data: (trainers) {
-        if (trainers.isEmpty) {
-          return const _EmptyState(message: 'لا يوجد مدربين مرتبطين بالجيم');
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(defaultPadding),
-          itemCount: trainers.length,
-          itemBuilder: (context, index) {
-            final trainer = trainers[index];
-            return _UserCard(
-              name: trainer.name,
-              email: trainer.email,
-              subtitle: '${trainer.traineeCount} متدرب',
-              icon: Icons.school,
+          data: (trainers) {
+            if (trainers.isEmpty) {
+              return const _EmptyState(
+                  message: 'لا يوجد مدربين مرتبطين بالجيم');
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.all(defaultPadding),
+              itemCount: trainers.length,
+              itemBuilder: (context, index) {
+                final trainer = trainers[index];
+                return _UserCard(
+                  name: trainer.name,
+                  email: trainer.email,
+                  subtitle: '${trainer.traineeCount} متدرب',
+                  icon: Icons.school,
+                );
+              },
             );
           },
+          loading: () => ListView.builder(
+            padding: const EdgeInsets.all(defaultPadding),
+            itemCount: 3,
+            itemBuilder: (_, __) => const FitXShimmerCard(height: 80),
+          ),
+          error: (_, __) => const _ErrorState(),
         );
-      },
-      loading: () => ListView.builder(
-        padding: const EdgeInsets.all(defaultPadding),
-        itemCount: 3,
-        itemBuilder: (_, __) => const FitXShimmerCard(height: 80),
-      ),
-      error: (_, __) => const _ErrorState(),
-    );
   }
 }
 
@@ -302,31 +304,31 @@ class _TraineesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(gymTraineesProvider(uid)).when(
-      data: (trainees) {
-        if (trainees.isEmpty) {
-          return const _EmptyState(message: 'لا يوجد متدربين في الجيم');
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(defaultPadding),
-          itemCount: trainees.length,
-          itemBuilder: (context, index) {
-            final trainee = trainees[index];
-            return _UserCard(
-              name: trainee.name,
-              email: trainee.email,
-              subtitle: 'مدرب: ${trainee.trainerName}',
-              icon: Icons.fitness_center,
+          data: (trainees) {
+            if (trainees.isEmpty) {
+              return const _EmptyState(message: 'لا يوجد متدربين في الجيم');
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.all(defaultPadding),
+              itemCount: trainees.length,
+              itemBuilder: (context, index) {
+                final trainee = trainees[index];
+                return _UserCard(
+                  name: trainee.name,
+                  email: trainee.email,
+                  subtitle: 'مدرب: ${trainee.trainerName}',
+                  icon: Icons.fitness_center,
+                );
+              },
             );
           },
+          loading: () => ListView.builder(
+            padding: const EdgeInsets.all(defaultPadding),
+            itemCount: 3,
+            itemBuilder: (_, __) => const FitXShimmerCard(height: 80),
+          ),
+          error: (_, __) => const _ErrorState(),
         );
-      },
-      loading: () => ListView.builder(
-        padding: const EdgeInsets.all(defaultPadding),
-        itemCount: 3,
-        itemBuilder: (_, __) => const FitXShimmerCard(height: 80),
-      ),
-      error: (_, __) => const _ErrorState(),
-    );
   }
 }
 
@@ -351,12 +353,11 @@ class _FinanceTab extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: spaceMd),
-          
           ref.watch(gymOverviewProvider(uid)).when(
-            data: (overview) => _RevenueCard(revenue: overview.revenue),
-            loading: () => const FitXShimmerCard(height: 150),
-            error: (_, __) => const _ErrorState(),
-          ),
+                data: (overview) => _RevenueCard(revenue: overview.revenue),
+                loading: () => const FitXShimmerCard(height: 150),
+                error: (_, __) => const _ErrorState(),
+              ),
         ],
       ),
     );
@@ -366,7 +367,7 @@ class _FinanceTab extends ConsumerWidget {
 /// كارت الإيرادات
 class _RevenueCard extends StatelessWidget {
   final GymRevenue revenue;
-  
+
   const _RevenueCard({required this.revenue});
 
   @override

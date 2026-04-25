@@ -16,10 +16,12 @@ class NutritionLoggingScreen extends ConsumerStatefulWidget {
   const NutritionLoggingScreen({super.key});
 
   @override
-  ConsumerState<NutritionLoggingScreen> createState() => _NutritionLoggingScreenState();
+  ConsumerState<NutritionLoggingScreen> createState() =>
+      _NutritionLoggingScreenState();
 }
 
-class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen> {
+class _NutritionLoggingScreenState
+    extends ConsumerState<NutritionLoggingScreen> {
   DateTime _selectedDate = DateTime.now();
 
   @override
@@ -28,7 +30,8 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
     if (uid == null) return const SizedBox.shrink();
 
     final goalsAsync = ref.watch(dailyMacroGoalsProvider(uid));
-    final logsAsync = ref.watch(dailyNutritionLogsProvider((uid: uid, date: _selectedDate)));
+    final logsAsync =
+        ref.watch(dailyNutritionLogsProvider((uid: uid, date: _selectedDate)));
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -38,7 +41,8 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
           slivers: [
             // Custom Header
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(defaultPadding, spaceMd, defaultPadding, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  defaultPadding, spaceMd, defaultPadding, 0),
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
@@ -87,11 +91,19 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
             SliverToBoxAdapter(
               child: goalsAsync.when(
                 data: (goals) => logsAsync.when(
-                  data: (logs) => _MacroProgressHeader(goals: goals, logs: logs),
-                  loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator(color: primaryColor))),
+                  data: (logs) =>
+                      _MacroProgressHeader(goals: goals, logs: logs),
+                  loading: () => const SizedBox(
+                      height: 120,
+                      child: Center(
+                          child:
+                              CircularProgressIndicator(color: primaryColor))),
                   error: (_, __) => const SizedBox.shrink(),
                 ),
-                loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator(color: primaryColor))),
+                loading: () => const SizedBox(
+                    height: 120,
+                    child: Center(
+                        child: CircularProgressIndicator(color: primaryColor))),
                 error: (_, __) => const SizedBox.shrink(),
               ),
             ),
@@ -101,13 +113,15 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
 
             // Add Food Button
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: defaultPadding, vertical: spaceMd),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: defaultPadding, vertical: spaceMd),
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () => _showAddMealDialog(context, ref, uid, null),
+                        onPressed: () =>
+                            _showAddMealDialog(context, ref, uid, null),
                         icon: const Icon(Icons.add, size: 18),
                         label: const Text('إضافة وجبة'),
                         style: ElevatedButton.styleFrom(
@@ -123,7 +137,8 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                     const SizedBox(width: spaceSm),
                     _CircleActionBtn(
                       icon: Icons.camera_alt,
-                      onTap: () => _showComingSoonDialog(context, 'التعرف بالكاميرا'),
+                      onTap: () =>
+                          _showComingSoonDialog(context, 'التعرف بالكاميرا'),
                     ),
                   ],
                 ),
@@ -137,14 +152,18 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                 sliver: _MealsSliver(
                   logs: logs,
                   selectedDate: _selectedDate,
-                  onAddMeal: (mealType) => _showAddMealDialog(context, ref, uid, mealType),
+                  onAddMeal: (mealType) =>
+                      _showAddMealDialog(context, ref, uid, mealType),
                 ),
               ),
               loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator(color: primaryColor)),
+                child: Center(
+                    child: CircularProgressIndicator(color: primaryColor)),
               ),
               error: (e, _) => SliverFillRemaining(
-                child: Center(child: Text('خطأ: $e', style: const TextStyle(color: textPrimary))),
+                child: Center(
+                    child: Text('خطأ: $e',
+                        style: const TextStyle(color: textPrimary))),
               ),
             ),
 
@@ -158,8 +177,9 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
   }
 
   void _showMacroGoalsDialog(BuildContext context, WidgetRef ref, String uid) {
-    final goals = ref.read(dailyMacroGoalsProvider(uid)).valueOrNull ?? const MacroGoal(calories: 2200, protein: 140, carbs: 230, fat: 70);
-    
+    final goals = ref.read(dailyMacroGoalsProvider(uid)).valueOrNull ??
+        const MacroGoal(calories: 2200, protein: 140, carbs: 230, fat: 70);
+
     final calCtrl = TextEditingController(text: goals.calories.toString());
     final proteinCtrl = TextEditingController(text: goals.protein.toString());
     final carbsCtrl = TextEditingController(text: goals.carbs.toString());
@@ -176,29 +196,34 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
             children: [
               TextField(
                 controller: calCtrl,
-                decoration: const InputDecoration(labelText: 'السعرات', suffixText: 'kcal'),
+                decoration: const InputDecoration(
+                    labelText: 'السعرات', suffixText: 'kcal'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: proteinCtrl,
-                decoration: const InputDecoration(labelText: 'البروتين', suffixText: 'g'),
+                decoration: const InputDecoration(
+                    labelText: 'البروتين', suffixText: 'g'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: carbsCtrl,
-                decoration: const InputDecoration(labelText: 'الكارب', suffixText: 'g'),
+                decoration:
+                    const InputDecoration(labelText: 'الكارب', suffixText: 'g'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: fatCtrl,
-                decoration: const InputDecoration(labelText: 'الدهون', suffixText: 'g'),
+                decoration:
+                    const InputDecoration(labelText: 'الدهون', suffixText: 'g'),
                 keyboardType: TextInputType.number,
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => context.pop(), child: const Text('إلغاء')),
+          TextButton(
+              onPressed: () => context.pop(), child: const Text('إلغاء')),
           ElevatedButton(
             onPressed: () async {
               try {
@@ -206,8 +231,11 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                 final protein = int.tryParse(proteinCtrl.text);
                 final carbs = int.tryParse(carbsCtrl.text);
                 final fat = int.tryParse(fatCtrl.text);
-                
-                if (calories == null || protein == null || carbs == null || fat == null) {
+
+                if (calories == null ||
+                    protein == null ||
+                    carbs == null ||
+                    fat == null) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('يرجى إدخال أرقام صحيحة')),
@@ -215,27 +243,32 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
                   }
                   return;
                 }
-                
+
                 if (calories <= 0 || protein < 0 || carbs < 0 || fat < 0) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('القيم لازم تكون أرقام موجبة')),
+                      const SnackBar(
+                          content: Text('القيم لازم تكون أرقام موجبة')),
                     );
                   }
                   return;
                 }
-                
+
                 final newGoals = MacroGoal(
                   calories: calories,
                   protein: protein,
                   carbs: carbs,
                   fat: fat,
                 );
-                await ref.read(nutritionRepositoryProvider).updateMacroGoals(uid, newGoals);
+                await ref
+                    .read(nutritionRepositoryProvider)
+                    .updateMacroGoals(uid, newGoals);
                 if (context.mounted) {
                   context.pop();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('تم تحديث الأهداف بنجاح'), backgroundColor: primaryColor),
+                    const SnackBar(
+                        content: Text('تم تحديث الأهداف بنجاح'),
+                        backgroundColor: primaryColor),
                   );
                 }
               } catch (e) {
@@ -279,7 +312,8 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
     );
   }
 
-  void _showAddMealDialog(BuildContext context, WidgetRef ref, String uid, String? initialMealType) {
+  void _showAddMealDialog(BuildContext context, WidgetRef ref, String uid,
+      String? initialMealType) {
     showDialog(
       context: context,
       builder: (context) => _AddMealDialog(
@@ -297,10 +331,10 @@ class _NutritionLoggingScreenState extends ConsumerState<NutritionLoggingScreen>
             loggedAt: DateTime.now(),
           );
           await ref.read(nutritionRepositoryProvider).logFood(
-            uid: uid,
-            log: log,
-            mealType: mealType,
-          );
+                uid: uid,
+                log: log,
+                mealType: mealType,
+              );
         },
       ),
     );
@@ -324,12 +358,14 @@ class _DateSelector extends StatelessWidget {
         selectedDate.year == DateTime.now().year;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: defaultPadding, vertical: spaceMd),
+      padding: const EdgeInsets.symmetric(
+          horizontal: defaultPadding, vertical: spaceMd),
       child: Row(
         children: [
           _CircleActionBtn(
             icon: Icons.chevron_left_rounded,
-            onTap: () => onDateChanged(selectedDate.subtract(const Duration(days: 1))),
+            onTap: () =>
+                onDateChanged(selectedDate.subtract(const Duration(days: 1))),
           ),
           Expanded(
             child: InkWell(
@@ -365,9 +401,11 @@ class _DateSelector extends StatelessWidget {
           ),
           _CircleActionBtn(
             icon: Icons.chevron_right_rounded,
-            onTap: selectedDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))
+            onTap: selectedDate
+                    .isAfter(DateTime.now().subtract(const Duration(days: 1)))
                 ? null
-                : () => onDateChanged(selectedDate.add(const Duration(days: 1))),
+                : () =>
+                    onDateChanged(selectedDate.add(const Duration(days: 1))),
           ),
         ],
       ),
@@ -375,7 +413,15 @@ class _DateSelector extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    final days = ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+    final days = [
+      'الاثنين',
+      'الثلاثاء',
+      'الأربعاء',
+      'الخميس',
+      'الجمعة',
+      'السبت',
+      'الأحد'
+    ];
     return days[date.weekday - 1];
   }
 }
@@ -393,7 +439,8 @@ class _MacroProgressHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalCalories = logs.fold<int>(0, (sum, log) => sum + log.calories);
-    final totalProtein = logs.fold<int>(0, (sum, log) => sum + log.protein.toInt());
+    final totalProtein =
+        logs.fold<int>(0, (sum, log) => sum + log.protein.toInt());
     final totalCarbs = logs.fold<int>(0, (sum, log) => sum + log.carbs.toInt());
     final totalFat = logs.fold<int>(0, (sum, log) => sum + log.fat.toInt());
 
@@ -523,8 +570,15 @@ class _MealsSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mealOrder = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Pre-workout', 'Post-workout'];
-    
+    final mealOrder = [
+      'Breakfast',
+      'Lunch',
+      'Dinner',
+      'Snack',
+      'Pre-workout',
+      'Post-workout'
+    ];
+
     final grouped = <String, List<NutritionLog>>{};
     for (final mealType in mealOrder) {
       grouped[mealType] = logs.where((log) {
@@ -539,9 +593,11 @@ class _MealsSliver extends StatelessWidget {
           case 'snack':
             return logName.contains('snack') || logName.contains('وجبة خفيفة');
           case 'pre-workout':
-            return logName.contains('pre-workout') || logName.contains('قبل التمرين');
+            return logName.contains('pre-workout') ||
+                logName.contains('قبل التمرين');
           case 'post-workout':
-            return logName.contains('post-workout') || logName.contains('بعد التمرين');
+            return logName.contains('post-workout') ||
+                logName.contains('بعد التمرين');
           default:
             return false;
         }
@@ -644,7 +700,8 @@ class _MealSection extends StatelessWidget {
                     color: primaryColor.withAlpha(38),
                     borderRadius: BorderRadius.circular(radiusXs),
                   ),
-                  child: const Icon(Icons.add_rounded, color: primaryColor, size: 18),
+                  child: const Icon(Icons.add_rounded,
+                      color: primaryColor, size: 18),
                 ),
               ),
             ],
@@ -747,7 +804,8 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
     final glasses = (_waterIntake / 250).floor();
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: defaultPadding, vertical: spaceSm),
+      margin: const EdgeInsets.symmetric(
+          horizontal: defaultPadding, vertical: spaceSm),
       padding: const EdgeInsets.all(spaceMd),
       decoration: BoxDecoration(
         color: surfaceColor,
@@ -765,7 +823,8 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                   shape: BoxShape.circle,
                   color: Colors.blue.withAlpha(51),
                 ),
-                child: const Icon(Icons.water_drop_rounded, color: Colors.blue, size: 24),
+                child: const Icon(Icons.water_drop_rounded,
+                    color: Colors.blue, size: 24),
               ),
               const SizedBox(width: spaceMd),
               Expanded(
@@ -782,7 +841,8 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
                     ),
                     Text(
                       '$_waterIntakeمل / $_goalمل • $glasses كوب',
-                      style: const TextStyle(color: textSecondary, fontSize: 13),
+                      style:
+                          const TextStyle(color: textSecondary, fontSize: 13),
                     ),
                   ],
                 ),
@@ -817,7 +877,8 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
             children: [
               IconButton(
                 onPressed: () => _addWater(-250),
-                icon: const Icon(Icons.remove_circle_outline, color: errorColor),
+                icon:
+                    const Icon(Icons.remove_circle_outline, color: errorColor),
                 iconSize: 32,
               ),
               Container(
@@ -847,7 +908,8 @@ class _HydrationTrackerState extends State<_HydrationTracker> {
     return GestureDetector(
       onTap: () => _addWater(amount - (_waterIntake % amount)),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceSm),
+        padding:
+            const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceSm),
         decoration: BoxDecoration(
           color: isSelected ? Colors.blue.withAlpha(51) : surfaceColorLight,
           borderRadius: BorderRadius.circular(radiusSm),
@@ -887,13 +949,15 @@ class _CircleActionBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 44, height: 44,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           color: filled ? primaryColor : surfaceColor,
           borderRadius: BorderRadius.circular(radiusSm),
           border: filled ? null : Border.all(color: surfaceBorder),
         ),
-        child: Icon(icon, color: filled ? const Color(0xFF1A1A00) : textSecondary, size: 20),
+        child: Icon(icon,
+            color: filled ? const Color(0xFF1A1A00) : textSecondary, size: 20),
       ),
     );
   }
@@ -903,7 +967,8 @@ class _CircleActionBtn extends StatelessWidget {
 class _AddMealDialog extends ConsumerStatefulWidget {
   final String uid;
   final String? initialMealType;
-  final Future<void> Function(String mealType, FoodItem food, double quantity) onAdd;
+  final Future<void> Function(String mealType, FoodItem food, double quantity)
+      onAdd;
 
   const _AddMealDialog({
     required this.uid,
@@ -920,7 +985,14 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
   late final TextEditingController quantityCtrl;
   Timer? searchTimer;
 
-  final mealTypes = const ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Pre-workout', 'Post-workout'];
+  final mealTypes = const [
+    'Breakfast',
+    'Lunch',
+    'Dinner',
+    'Snack',
+    'Pre-workout',
+    'Post-workout'
+  ];
   late String selectedMealType;
   FoodItem? selectedFood;
   List<FoodItem> searchResults = [];
@@ -959,7 +1031,8 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
       final allFoods = await ref.read(allFoodsProvider.future);
       if (mounted) {
         setState(() {
-          searchResults = FoodDatabase.getSuggestions(allFoods, value, limit: 10);
+          searchResults =
+              FoodDatabase.getSuggestions(allFoods, value, limit: 10);
           isSearching = false;
         });
       }
@@ -1033,7 +1106,8 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                   ),
                   const SizedBox(width: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                     decoration: BoxDecoration(
                       color: primaryColor,
                       borderRadius: BorderRadius.circular(3),
@@ -1071,10 +1145,13 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                 ),
               ),
               dropdownColor: surfaceColorLight,
-              items: mealTypes.map((t) => DropdownMenuItem(
-                value: t,
-                child: Text(t, style: const TextStyle(color: textPrimary)),
-              )).toList(),
+              items: mealTypes
+                  .map((t) => DropdownMenuItem(
+                        value: t,
+                        child:
+                            Text(t, style: const TextStyle(color: textPrimary)),
+                      ))
+                  .toList(),
               onChanged: (v) => setState(() => selectedMealType = v!),
             ),
             const SizedBox(height: 16),
@@ -1132,16 +1209,19 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                         food.displayName,
                         style: TextStyle(
                           color: textPrimary,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                       subtitle: Text(
                         '${food.calories.toInt()} سعرة | ب:${food.protein.toInt()} ك:${food.carbs.toInt()} د:${food.fat.toInt()}',
-                        style: const TextStyle(color: textSecondary, fontSize: 12),
+                        style:
+                            const TextStyle(color: textSecondary, fontSize: 12),
                       ),
                       trailing: Text(
                         food.unit,
-                        style: const TextStyle(color: textTertiary, fontSize: 11),
+                        style:
+                            const TextStyle(color: textTertiary, fontSize: 11),
                       ),
                       onTap: () => setState(() {
                         selectedFood = food;
@@ -1183,7 +1263,8 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.check_circle, color: primaryColor, size: 20),
+                        const Icon(Icons.check_circle,
+                            color: primaryColor, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -1200,7 +1281,8 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                     const SizedBox(height: 8),
                     Text(
                       'لكل 100${selectedFood!.unit}: ${selectedFood!.calories.toInt()} سعرة | بروتين: ${selectedFood!.protein.toInt()}g | كارب: ${selectedFood!.carbs.toInt()}g | دهون: ${selectedFood!.fat.toInt()}g',
-                      style: const TextStyle(color: textSecondary, fontSize: 12),
+                      style:
+                          const TextStyle(color: textSecondary, fontSize: 12),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -1222,9 +1304,11 @@ class _AddMealDialogState extends ConsumerState<_AddMealDialog> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(radiusSm),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               suffixText: 'g',
-                              suffixStyle: const TextStyle(color: textSecondary, fontSize: 12),
+                              suffixStyle: const TextStyle(
+                                  color: textSecondary, fontSize: 12),
                             ),
                           ),
                         ),

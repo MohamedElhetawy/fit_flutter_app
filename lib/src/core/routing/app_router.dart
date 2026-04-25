@@ -47,28 +47,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ────────────────────────────────────────────────────────
       // Role-Based Dashboard Routes
       // ────────────────────────────────────────────────────────
-      
+
       // Trainee Dashboard (Default)
       GoRoute(
         path: '/dashboard',
         name: 'dashboard',
         builder: (context, state) => const DashboardShell(),
       ),
-      
+
       // Trainer Dashboard
       GoRoute(
         path: '/trainer-dashboard',
         name: 'trainerDashboard',
         builder: (context, state) => const TrainerDashboardScreen(),
       ),
-      
+
       // Gym Dashboard
       GoRoute(
         path: '/gym-dashboard',
         name: 'gymDashboard',
         builder: (context, state) => const GymDashboardScreen(),
       ),
-      
+
       // Super Admin Control Panel
       GoRoute(
         path: '/admin-control',
@@ -85,7 +85,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ProfileScreenFitX(),
       ),
     ],
-
     redirect: (context, state) {
       final isLoggedIn = auth.value != null;
       final userRole = role.value;
@@ -96,7 +95,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // NOT LOGGED IN — redirect to login
       // ────────────────────────────────────────────────────────
       if (!isLoggedIn) {
-        if (location == '/login' || location == '/signup' || location == '/forgot-password') {
+        if (location == '/login' ||
+            location == '/signup' ||
+            location == '/forgot-password') {
           return null; // Allow access to auth pages
         }
         return '/login';
@@ -113,10 +114,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ROLE-BASED REDIRECTS: Send each role to their dashboard
       // ────────────────────────────────────────────────────────
       if (hasRole) {
-        final isOnAuthPage = location == '/login' || 
-                            location == '/signup' || 
-                            location == '/role-selection';
-        
+        final isOnAuthPage = location == '/login' ||
+            location == '/signup' ||
+            location == '/role-selection';
+
         // Check if user is on their correct dashboard
         final isOnCorrectDashboard = switch (userRole) {
           AppRole.trainee => location == '/dashboard',
@@ -124,10 +125,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           AppRole.gym => location == '/gym-dashboard',
           AppRole.admin || AppRole.superAdmin => location == '/admin-control',
         };
-        
+
         // If on auth page or wrong dashboard, redirect to correct one
-        if (isOnAuthPage || (location.startsWith('/') && !isOnCorrectDashboard && 
-            location != '/profile' && location != '/admin-control')) {
+        if (isOnAuthPage ||
+            (location.startsWith('/') &&
+                !isOnCorrectDashboard &&
+                location != '/profile' &&
+                location != '/admin-control')) {
           return switch (userRole) {
             AppRole.trainee => '/dashboard',
             AppRole.trainer => '/trainer-dashboard',

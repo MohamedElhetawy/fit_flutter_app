@@ -6,7 +6,8 @@ import '../domain/progress_photo.dart';
 
 /// Service for managing progress photos locally
 class ProgressPhotoService {
-  static final ProgressPhotoService _instance = ProgressPhotoService._internal();
+  static final ProgressPhotoService _instance =
+      ProgressPhotoService._internal();
   factory ProgressPhotoService() => _instance;
   ProgressPhotoService._internal();
 
@@ -27,9 +28,7 @@ class ProgressPhotoService {
   Future<List<ProgressPhoto>> getPhotos() async {
     final prefs = await SharedPreferences.getInstance();
     final photosJson = prefs.getStringList(_photosKey) ?? [];
-    return photosJson
-        .map((json) => ProgressPhoto.fromJson(json))
-        .toList()
+    return photosJson.map((json) => ProgressPhoto.fromJson(json)).toList()
       ..sort((a, b) => b.dateTaken.compareTo(a.dateTaken));
   }
 
@@ -137,7 +136,7 @@ class ProgressPhotoService {
   /// Clear all photos (use with caution)
   Future<void> clearAllPhotos() async {
     final photos = await getPhotos();
-    
+
     // Delete all files
     for (final photo in photos) {
       final file = File(photo.localPath);

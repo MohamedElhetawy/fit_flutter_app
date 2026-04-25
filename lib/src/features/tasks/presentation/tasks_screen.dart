@@ -64,12 +64,10 @@ class TasksScreen extends ConsumerWidget {
                 ),
               ),
               data: (tasks) {
-                final workoutTasks = tasks
-                    .where((t) => t.type == TaskType.workout)
-                    .toList();
-                final nutritionTasks = tasks
-                    .where((t) => t.type == TaskType.nutrition)
-                    .toList();
+                final workoutTasks =
+                    tasks.where((t) => t.type == TaskType.workout).toList();
+                final nutritionTasks =
+                    tasks.where((t) => t.type == TaskType.nutrition).toList();
 
                 return SliverPadding(
                   padding: const EdgeInsets.all(defaultPadding),

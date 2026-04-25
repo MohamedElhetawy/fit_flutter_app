@@ -22,7 +22,8 @@ final progressPhotosProvider = FutureProvider<List<ProgressPhoto>>((ref) async {
 });
 
 /// Provider for comparison photos (first and last)
-final comparisonPhotosProvider = FutureProvider<List<ProgressPhoto>>((ref) async {
+final comparisonPhotosProvider =
+    FutureProvider<List<ProgressPhoto>>((ref) async {
   final service = ref.watch(progressPhotoServiceProvider);
   return await service.getComparisonPhotos();
 });
@@ -77,7 +78,9 @@ class PhotosNotifier extends StateNotifier<AsyncValue<List<ProgressPhoto>>> {
 }
 
 /// State notifier provider for photos
-final photosNotifierProvider = StateNotifierProvider<PhotosNotifier, AsyncValue<List<ProgressPhoto>>>((ref) {
+final photosNotifierProvider =
+    StateNotifierProvider<PhotosNotifier, AsyncValue<List<ProgressPhoto>>>(
+        (ref) {
   final service = ref.watch(progressPhotoServiceProvider);
   return PhotosNotifier(service);
 });
@@ -86,13 +89,16 @@ final photosNotifierProvider = StateNotifierProvider<PhotosNotifier, AsyncValue<
 final backupStatusProvider = StateProvider<String?>((ref) => null);
 
 /// Provider to perform Google Drive backup
-final backupToDriveProvider = FutureProvider.family<Map<String, String?>, GoogleSignIn>((ref, googleSignIn) async {
+final backupToDriveProvider =
+    FutureProvider.family<Map<String, String?>, GoogleSignIn>(
+        (ref, googleSignIn) async {
   final driveService = ref.watch(googleDriveServiceProvider);
   final photoService = ref.watch(progressPhotoServiceProvider);
-  
+
   // Update status
-  ref.read(backupStatusProvider.notifier).state = 'جاري الاتصال بـ Google Drive...';
-  
+  ref.read(backupStatusProvider.notifier).state =
+      'جاري الاتصال بـ Google Drive...';
+
   // Initialize Google Drive
   final initialized = await driveService.initialize(googleSignIn);
   if (!initialized) {
@@ -104,12 +110,13 @@ final backupToDriveProvider = FutureProvider.family<Map<String, String?>, Google
   final photosToBackup = await photoService.getPhotosNeedingBackup();
 
   if (photosToBackup.isEmpty) {
-    ref.read(backupStatusProvider.notifier).state = 'لا توجد صور جديدة للنسخ الاحتياطي';
+    ref.read(backupStatusProvider.notifier).state =
+        'لا توجد صور جديدة للنسخ الاحتياطي';
     return {};
   }
 
   // Backup photos
-  ref.read(backupStatusProvider.notifier).state = 
+  ref.read(backupStatusProvider.notifier).state =
       'جاري نسخ ${photosToBackup.length} صورة احتياطياً...';
   final results = await driveService.backupPhotos(photosToBackup);
 
@@ -122,7 +129,7 @@ final backupToDriveProvider = FutureProvider.family<Map<String, String?>, Google
     }
   }
 
-  ref.read(backupStatusProvider.notifier).state = 
+  ref.read(backupStatusProvider.notifier).state =
       'تم نسخ $successCount من ${photosToBackup.length} صورة';
 
   // Refresh photos list

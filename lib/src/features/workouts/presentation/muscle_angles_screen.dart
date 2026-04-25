@@ -19,7 +19,8 @@ class MuscleAnglesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final muscleAnglesAsync = ref.watch(muscleAnglesForGroupProvider(muscleGroup.nameEn));
+    final muscleAnglesAsync =
+        ref.watch(muscleAnglesForGroupProvider(muscleGroup.nameEn));
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -34,7 +35,8 @@ class MuscleAnglesScreen extends ConsumerWidget {
             borderRadius: BorderRadius.circular(radiusMd),
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: textPrimary, size: 20),
+            icon:
+                const Icon(Icons.arrow_back_ios, color: textPrimary, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
         ),

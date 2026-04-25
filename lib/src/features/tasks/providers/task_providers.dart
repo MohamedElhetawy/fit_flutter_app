@@ -2,7 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/auth_controller.dart';
 import '../data/task_models.dart';
-import '../data/task_repository.dart' show TaskRepository, TaskException, taskRepositoryProvider;
+import '../data/task_repository.dart'
+    show TaskRepository, TaskException, taskRepositoryProvider;
 
 /// Stream of all tasks for current user
 final userTasksProvider = StreamProvider<List<Task>>((ref) {
@@ -12,7 +13,8 @@ final userTasksProvider = StreamProvider<List<Task>>((ref) {
 });
 
 /// Stream of tasks by status
-final userTasksByStatusProvider = StreamProvider.family<List<Task>, TaskStatus>((ref, status) {
+final userTasksByStatusProvider =
+    StreamProvider.family<List<Task>, TaskStatus>((ref, status) {
   final uid = ref.watch(authStateProvider).value?.uid;
   if (uid == null) return Stream.value(const []);
   return ref.watch(taskRepositoryProvider).watchUserTasksByStatus(uid, status);
@@ -79,7 +81,8 @@ class TaskActionController extends FamilyAsyncNotifier<void, String> {
     });
   }
 
-  Future<void> addComment({required String authorName, required String content}) async {
+  Future<void> addComment(
+      {required String authorName, required String content}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await _repo.addComment(
@@ -94,7 +97,8 @@ class TaskActionController extends FamilyAsyncNotifier<void, String> {
 }
 
 /// Controller for creating tasks (trainer use)
-final taskCreateControllerProvider = AsyncNotifierProvider<TaskCreateController, String?>(
+final taskCreateControllerProvider =
+    AsyncNotifierProvider<TaskCreateController, String?>(
   TaskCreateController.new,
 );
 
@@ -117,7 +121,7 @@ class TaskCreateController extends AsyncNotifier<String?> {
     Map<String, dynamic>? metadata,
   }) async {
     state = const AsyncLoading();
-    
+
     try {
       final id = await _repo.createTask(
         userId: userId,
@@ -131,7 +135,7 @@ class TaskCreateController extends AsyncNotifier<String?> {
         qrNonce: qrNonce,
         metadata: metadata,
       );
-      
+
       state = const AsyncData(null);
       return id;
     } catch (e, st) {
@@ -188,7 +192,8 @@ class CoachTaskController extends FamilyAsyncNotifier<void, String> {
       if (task.items.isNotEmpty) {
         final allChecked = task.items.every((item) => item.isChecked);
         if (!allChecked) {
-          throw TaskException('Please complete all items before marking task complete');
+          throw TaskException(
+              'Please complete all items before marking task complete');
         }
       }
 

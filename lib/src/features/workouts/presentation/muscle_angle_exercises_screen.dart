@@ -168,7 +168,11 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        exercise.nameAr.substring(0, exercise.nameAr.length > 15 ? 15 : exercise.nameAr.length),
+                        exercise.nameAr.substring(
+                            0,
+                            exercise.nameAr.length > 15
+                                ? 15
+                                : exercise.nameAr.length),
                         style: const TextStyle(
                           color: textSecondary,
                           fontSize: 11,

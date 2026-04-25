@@ -16,7 +16,8 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Text('Workout CMS', style: Theme.of(context).textTheme.headlineSmall),
+              Text('Workout CMS',
+                  style: Theme.of(context).textTheme.headlineSmall),
               const Spacer(),
               ElevatedButton.icon(
                 onPressed: () => _openEditor(context, ref, null),
@@ -41,12 +42,16 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.edit),
-                                onPressed: () => _openEditor(context, ref, item),
+                                onPressed: () =>
+                                    _openEditor(context, ref, item),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete, color: errorColor),
+                                icon:
+                                    const Icon(Icons.delete, color: errorColor),
                                 onPressed: () async {
-                                  await ref.read(workoutsBackendRepositoryProvider).deleteWorkout(item.id);
+                                  await ref
+                                      .read(workoutsBackendRepositoryProvider)
+                                      .deleteWorkout(item.id);
                                 },
                               ),
                             ],
@@ -83,10 +88,18 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: title, decoration: const InputDecoration(labelText: 'Title')),
-              TextField(controller: coach, decoration: const InputDecoration(labelText: 'Coach')),
-              TextField(controller: price, decoration: const InputDecoration(labelText: 'Price')),
-              TextField(controller: image, decoration: const InputDecoration(labelText: 'Image URL')),
+              TextField(
+                  controller: title,
+                  decoration: const InputDecoration(labelText: 'Title')),
+              TextField(
+                  controller: coach,
+                  decoration: const InputDecoration(labelText: 'Coach')),
+              TextField(
+                  controller: price,
+                  decoration: const InputDecoration(labelText: 'Price')),
+              TextField(
+                  controller: image,
+                  decoration: const InputDecoration(labelText: 'Image URL')),
             ],
           ),
         ),
@@ -105,9 +118,13 @@ class SuperAdminWorkoutCms extends ConsumerWidget {
                 'updatedAt': DateTime.now().toIso8601String(),
               };
               if (data == null) {
-                await ref.read(workoutsBackendRepositoryProvider).addWorkout(payload);
+                await ref
+                    .read(workoutsBackendRepositoryProvider)
+                    .addWorkout(payload);
               } else {
-                await ref.read(workoutsBackendRepositoryProvider).updateWorkout(data.id, payload);
+                await ref
+                    .read(workoutsBackendRepositoryProvider)
+                    .updateWorkout(data.id, payload);
               }
               if (context.mounted) Navigator.pop(context);
             },

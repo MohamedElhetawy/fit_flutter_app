@@ -41,7 +41,13 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     )..forward();
-    _loadedPages = [true, false, false, false, false]; // Only home loaded initially
+    _loadedPages = [
+      true,
+      false,
+      false,
+      false,
+      false
+    ]; // Only home loaded initially
 
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -102,11 +108,14 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
   Widget _buildBottomNav(int currentIndex, int unreadCount) {
     return SlideTransition(
       position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
-          .animate(CurvedAnimation(parent: _navAnimController, curve: Curves.easeOutCubic)),
+          .animate(CurvedAnimation(
+              parent: _navAnimController, curve: Curves.easeOutCubic)),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xCC1A1A1A), // Semi-transparent surface (80% opacity)
-          border: Border(top: BorderSide(color: surfaceBorder.withAlpha(128), width: 0.5)),
+          color:
+              const Color(0xCC1A1A1A), // Semi-transparent surface (80% opacity)
+          border: Border(
+              top: BorderSide(color: surfaceBorder.withAlpha(128), width: 0.5)),
         ),
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         child: SizedBox(
@@ -114,11 +123,32 @@ class _DashboardShellState extends ConsumerState<DashboardShell>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(icon: Icons.home_filled, label: 'الرئيسية', isSelected: currentIndex == 0, onTap: () => _onTabTapped(0)),
-              _NavItem(icon: Icons.bar_chart_rounded, label: 'الإحصائيات', isSelected: currentIndex == 1, onTap: () => _onTabTapped(1)),
-              _NavItem(icon: Icons.assignment_rounded, label: 'المهام', isSelected: currentIndex == 2, onTap: () => _onTabTapped(2), badgeCount: unreadCount),
-              _NavItem(icon: Icons.fitness_center_rounded, label: 'التمارين', isSelected: currentIndex == 3, onTap: () => _onTabTapped(3)),
-              _NavItem(icon: Icons.restaurant_rounded, label: 'التغذية', isSelected: currentIndex == 4, onTap: () => _onTabTapped(4)),
+              _NavItem(
+                  icon: Icons.home_filled,
+                  label: 'الرئيسية',
+                  isSelected: currentIndex == 0,
+                  onTap: () => _onTabTapped(0)),
+              _NavItem(
+                  icon: Icons.bar_chart_rounded,
+                  label: 'الإحصائيات',
+                  isSelected: currentIndex == 1,
+                  onTap: () => _onTabTapped(1)),
+              _NavItem(
+                  icon: Icons.assignment_rounded,
+                  label: 'المهام',
+                  isSelected: currentIndex == 2,
+                  onTap: () => _onTabTapped(2),
+                  badgeCount: unreadCount),
+              _NavItem(
+                  icon: Icons.fitness_center_rounded,
+                  label: 'التمارين',
+                  isSelected: currentIndex == 3,
+                  onTap: () => _onTabTapped(3)),
+              _NavItem(
+                  icon: Icons.restaurant_rounded,
+                  label: 'التغذية',
+                  isSelected: currentIndex == 4,
+                  onTap: () => _onTabTapped(4)),
             ],
           ),
         ),
@@ -155,22 +185,35 @@ class _NavItem extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Icon(icon, color: isSelected ? primaryColor : textTertiary, size: 26),
+                Icon(icon,
+                    color: isSelected ? primaryColor : textTertiary, size: 26),
                 if (badgeCount > 0)
                   Positioned(
                     right: -6,
                     top: -4,
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                      child: Text('$badgeCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                      decoration: const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle),
+                      constraints:
+                          const BoxConstraints(minWidth: 16, minHeight: 16),
+                      child: Text('$badgeCount',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center),
                     ),
                   ),
               ],
             ),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(color: isSelected ? primaryColor : textTertiary, fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+            Text(label,
+                style: TextStyle(
+                    color: isSelected ? primaryColor : textTertiary,
+                    fontSize: 10,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal)),
           ],
         ),
       ),

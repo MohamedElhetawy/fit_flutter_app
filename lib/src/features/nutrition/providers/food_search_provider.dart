@@ -11,22 +11,23 @@ final allFoodsProvider = FutureProvider<List<FoodItem>>((ref) async {
 final foodSearchQueryProvider = StateProvider<String>((ref) => '');
 
 /// Debounced search provider - waits 300ms after typing stops
-final debouncedFoodSearchProvider = StreamProvider<List<FoodItem>>((ref) async* {
+final debouncedFoodSearchProvider =
+    StreamProvider<List<FoodItem>>((ref) async* {
   final query = ref.watch(foodSearchQueryProvider);
-  
+
   // Wait 300ms for debounce
   await Future.delayed(const Duration(milliseconds: 300));
-  
+
   // Check if query still matches (user might have typed more)
   final currentQuery = ref.read(foodSearchQueryProvider);
   if (query != currentQuery) return;
-  
+
   // Need at least 2 characters to search
   if (query.length < 2) {
     yield [];
     return;
   }
-  
+
   final allFoods = await ref.watch(allFoodsProvider.future);
   final results = FoodDatabase.getSuggestions(allFoods, query, limit: 15);
   yield results;
@@ -41,7 +42,7 @@ final foodQuantityProvider = StateProvider<double>((ref) => 1.0);
 /// Notifier for managing food search with debounce
 class FoodSearchNotifier extends StateNotifier<AsyncValue<List<FoodItem>>> {
   FoodSearchNotifier() : super(const AsyncValue.data([]));
-  
+
   Timer? _debounceTimer;
   List<FoodItem> _allFoods = [];
   bool _isLoaded = false;
@@ -56,15 +57,15 @@ class FoodSearchNotifier extends StateNotifier<AsyncValue<List<FoodItem>>> {
   /// Search with debounce (300ms)
   void search(String query) {
     _debounceTimer?.cancel();
-    
+
     if (query.length < 2) {
       state = const AsyncValue.data([]);
       return;
     }
-    
+
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (!_isLoaded) return;
-      
+
       final results = FoodDatabase.getSuggestions(_allFoods, query, limit: 15);
       state = AsyncValue.data(results);
     });
@@ -90,7 +91,9 @@ class FoodSearchNotifier extends StateNotifier<AsyncValue<List<FoodItem>>> {
 }
 
 /// Provider for food search notifier
-final foodSearchNotifierProvider = StateNotifierProvider<FoodSearchNotifier, AsyncValue<List<FoodItem>>>((ref) {
+final foodSearchNotifierProvider =
+    StateNotifierProvider<FoodSearchNotifier, AsyncValue<List<FoodItem>>>(
+        (ref) {
   final notifier = FoodSearchNotifier();
   notifier.initialize();
   return notifier;

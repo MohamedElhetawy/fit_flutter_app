@@ -11,7 +11,8 @@ import '../data/dashboard_stats_repository.dart';
 
 const _statsCacheKey = 'dashboard_admin_stats_cache';
 
-final dashboardStatsRepositoryProvider = Provider<DashboardStatsRepository>((ref) {
+final dashboardStatsRepositoryProvider =
+    Provider<DashboardStatsRepository>((ref) {
   return DashboardStatsRepository(
     ref.watch(firestoreProvider),
     ref.watch(firebaseAuthProvider),

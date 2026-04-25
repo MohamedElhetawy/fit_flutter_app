@@ -135,7 +135,8 @@ class WorkoutDatabase {
     String muscleAngle,
   ) {
     return exercises
-        .where((e) => e.muscleGroup == muscleGroup && e.muscleAngle == muscleAngle)
+        .where(
+            (e) => e.muscleGroup == muscleGroup && e.muscleAngle == muscleAngle)
         .toList();
   }
 

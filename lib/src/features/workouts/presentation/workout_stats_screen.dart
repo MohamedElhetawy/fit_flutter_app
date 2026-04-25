@@ -67,7 +67,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
               delegate: SliverChildListDelegate([
                 // 🏆 Main Stats Cards
                 _buildMainStatsGrid(session),
-                
+
                 const SizedBox(height: spaceLg),
 
                 // 🧠 K-NN Smart Insights
@@ -212,7 +212,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
 
   Widget _buildKNNInsights(WorkoutSession session, WidgetRef ref) {
     final percentileAsync = ref.watch(volumePercentileProvider);
-    
+
     return FitXCard(
       accentGlow: true,
       child: Column(
@@ -233,7 +233,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: spaceMd),
-          
+
           // Volume Comparison with REAL percentile
           if (session.totalVolume > 0)
             percentileAsync.when(
@@ -250,7 +250,8 @@ class WorkoutStatsScreen extends ConsumerWidget {
               error: (_, __) => _buildInsightRow(
                 icon: Icons.bar_chart,
                 title: 'حجم التمرين',
-                subtitle: 'أنت في أعلى ${_calculateVolumePercentile(session)}% من المستخدمين المشابهين',
+                subtitle:
+                    'أنت في أعلى ${_calculateVolumePercentile(session)}% من المستخدمين المشابهين',
                 color: successColor,
               ),
             ),
@@ -271,7 +272,8 @@ class WorkoutStatsScreen extends ConsumerWidget {
           _buildInsightRow(
             icon: Icons.trending_up,
             title: 'التقدم',
-            subtitle: 'أفضل 1RM: ${session.bestOneRepMax.toStringAsFixed(1)} كجم',
+            subtitle:
+                'أفضل 1RM: ${session.bestOneRepMax.toStringAsFixed(1)} كجم',
             color: Colors.blue,
           ),
         ],
@@ -381,7 +383,7 @@ class WorkoutStatsScreen extends ConsumerWidget {
 
   Widget _buildExercisesBreakdown(WorkoutSession session) {
     final exercises = session.setsByExercise;
-    
+
     if (exercises.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -406,7 +408,8 @@ class WorkoutStatsScreen extends ConsumerWidget {
               name: sets.first.exerciseName,
               sets: sets.length,
               volume: volume,
-              avgWeight: sets.fold(0.0, (sum, s) => sum + s.weight) / sets.length,
+              avgWeight:
+                  sets.fold(0.0, (sum, s) => sum + s.weight) / sets.length,
             );
           }),
         ],
@@ -516,7 +519,8 @@ class WorkoutStatsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, WidgetRef ref, WorkoutSession session) {
+  Widget _buildBottomBar(
+      BuildContext context, WidgetRef ref, WorkoutSession session) {
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(

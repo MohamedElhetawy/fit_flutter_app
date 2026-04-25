@@ -48,7 +48,9 @@ class TaskRepository {
   Future<void> startTask(String userId, String taskId) async {
     final task = await getTask(userId, taskId);
     if (task == null) throw TaskException('Task not found');
-    if (!task.canStart) throw TaskException('Cannot start task from ${task.status.name}');
+    if (!task.canStart) {
+      throw TaskException('Cannot start task from ${task.status.name}');
+    }
 
     await _userTasks(userId).doc(taskId).update({
       'status': 'inProgress',
@@ -60,7 +62,9 @@ class TaskRepository {
   Future<void> completeTask(String userId, String taskId) async {
     final task = await getTask(userId, taskId);
     if (task == null) throw TaskException('Task not found');
-    if (!task.canComplete) throw TaskException('Cannot complete task from ${task.status.name}');
+    if (!task.canComplete) {
+      throw TaskException('Cannot complete task from ${task.status.name}');
+    }
 
     await _userTasks(userId).doc(taskId).update({
       'status': 'completed',
@@ -69,10 +73,13 @@ class TaskRepository {
   }
 
   /// Cancel a task (pending/inProgress -> cancelled)
-  Future<void> cancelTask(String userId, String taskId, {String? reason}) async {
+  Future<void> cancelTask(String userId, String taskId,
+      {String? reason}) async {
     final task = await getTask(userId, taskId);
     if (task == null) throw TaskException('Task not found');
-    if (!task.canCancel) throw TaskException('Cannot cancel task from ${task.status.name}');
+    if (!task.canCancel) {
+      throw TaskException('Cannot cancel task from ${task.status.name}');
+    }
 
     await _userTasks(userId).doc(taskId).update({
       'status': 'cancelled',

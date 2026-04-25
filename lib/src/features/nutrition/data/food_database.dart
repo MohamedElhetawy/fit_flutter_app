@@ -62,22 +62,23 @@ class FoodDatabase {
   static Future<List<FoodItem>> loadFoods() async {
     if (_cachedItems != null) return _cachedItems!;
 
-    final jsonString = await rootBundle.loadString('assets/data/food_database.json');
+    final jsonString =
+        await rootBundle.loadString('assets/data/food_database.json');
     final List<dynamic> jsonList = json.decode(jsonString);
-    
+
     _cachedItems = jsonList
         .map((json) => FoodItem.fromJson(json as Map<String, dynamic>))
         .toList();
-    
+
     return _cachedItems!;
   }
 
   /// Search foods by query (matches from first 2+ characters)
   static List<FoodItem> search(List<FoodItem> foods, String query) {
     if (query.length < 2) return [];
-    
+
     final lowerQuery = query.toLowerCase().trim();
-    
+
     return foods.where((food) {
       final searchText = food.searchableText;
       // Match if query appears anywhere in name
@@ -86,7 +87,8 @@ class FoodDatabase {
   }
 
   /// Get quick suggestions (first 10 items matching first 2 letters)
-  static List<FoodItem> getSuggestions(List<FoodItem> foods, String query, {int limit = 10}) {
+  static List<FoodItem> getSuggestions(List<FoodItem> foods, String query,
+      {int limit = 10}) {
     final results = search(foods, query);
     return results.take(limit).toList();
   }

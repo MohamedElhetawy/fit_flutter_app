@@ -37,10 +37,12 @@ class DriveBackupService {
       spaces: 'appDataFolder',
       q: "name = '$name' and trashed = false",
     );
-    final existing = files.files?.isNotEmpty == true ? files.files!.first : null;
+    final existing =
+        files.files?.isNotEmpty == true ? files.files!.first : null;
 
     final data = utf8.encode(jsonEncode(payload));
-    final media = drive.Media(Stream.value(Uint8List.fromList(data)), data.length);
+    final media =
+        drive.Media(Stream.value(Uint8List.fromList(data)), data.length);
 
     if (existing?.id != null) {
       await api.files.update(

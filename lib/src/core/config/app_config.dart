@@ -24,7 +24,8 @@ class AppConfig {
   factory AppConfig.fromMap(Map<String, dynamic>? map) {
     if (map == null) return const AppConfig.defaults();
     return AppConfig(
-      primaryColorValue: (map['primaryColorValue'] as num?)?.toInt() ?? 0xFF7B61FF,
+      primaryColorValue:
+          (map['primaryColorValue'] as num?)?.toInt() ?? 0xFF7B61FF,
       enableSteps: (map['enableSteps'] as bool?) ?? true,
       enableWorkoutRecommendations:
           (map['enableWorkoutRecommendations'] as bool?) ?? true,

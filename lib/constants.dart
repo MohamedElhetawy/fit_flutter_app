@@ -8,10 +8,10 @@ const plusJakartaFont = 'Plus Jakarta';
 // ══════════════════════════════════════════════════════════════
 //  PRIMARY ACCENT — Olive / Lime-Green (from reference design)
 // ══════════════════════════════════════════════════════════════
-const Color primaryColor = Color(0xFFCDDC39);          // Lime-green
-const Color primaryColorDark = Color(0xFFAFB42B);      // Deeper olive
-const Color primaryColorLight = Color(0xFFE6EE9C);     // Light lime
-const Color primaryColorMuted = Color(0xFF9E9D24);     // Muted olive
+const Color primaryColor = Color(0xFFCDDC39); // Lime-green
+const Color primaryColorDark = Color(0xFFAFB42B); // Deeper olive
+const Color primaryColorLight = Color(0xFFE6EE9C); // Light lime
+const Color primaryColorMuted = Color(0xFF9E9D24); // Muted olive
 
 const MaterialColor primaryMaterialColor =
     MaterialColor(0xFFCDDC39, <int, Color>{
@@ -30,26 +30,26 @@ const MaterialColor primaryMaterialColor =
 // ══════════════════════════════════════════════════════════════
 //  DARK PALETTE — Deep black with subtle warm undertone
 // ══════════════════════════════════════════════════════════════
-const Color bgColor = Color(0xFF0A0A0C);               // True deep BG
-const Color surfaceColor = Color(0xFF141418);           // Card/surface BG
-const Color surfaceColorLight = Color(0xFF1C1C22);      // Elevated surface
-const Color surfaceBorder = Color(0xFF2A2A32);          // Subtle borders
-const Color surfaceHover = Color(0xFF222228);           // Hover states
+const Color bgColor = Color(0xFF0A0A0C); // True deep BG
+const Color surfaceColor = Color(0xFF141418); // Card/surface BG
+const Color surfaceColorLight = Color(0xFF1C1C22); // Elevated surface
+const Color surfaceBorder = Color(0xFF2A2A32); // Subtle borders
+const Color surfaceHover = Color(0xFF222228); // Hover states
 
 // Legacy aliases for compatibility
 const Color blackColor = bgColor;
 const Color blackColor80 = surfaceColor;
 const Color blackColor60 = surfaceBorder;
-const Color blackColor40 = Color(0xFF6E6E80);           // Text secondary
+const Color blackColor40 = Color(0xFF6E6E80); // Text secondary
 const Color blackColor20 = Color(0xFFD0D0D2);
 const Color blackColor10 = Color(0xFFE8E8E9);
 const Color blackColor5 = Color(0xFFF3F3F4);
 
 // ── White palette ────────────────────────────────────────────
 const Color whiteColor = Colors.white;
-const Color textPrimary = Color(0xFFF5F5F7);            // Apple-white
-const Color textSecondary = Color(0xFF6E6E80);           // Muted
-const Color textTertiary = Color(0xFF48485A);            // Disabled
+const Color textPrimary = Color(0xFFF5F5F7); // Apple-white
+const Color textSecondary = Color(0xFF6E6E80); // Muted
+const Color textTertiary = Color(0xFF48485A); // Disabled
 const Color whileColor80 = Color(0xFFCCCCCC);
 const Color whileColor60 = Color(0xFF999999);
 const Color whileColor40 = Color(0xFF666666);
@@ -62,7 +62,7 @@ const Color greyColor = Color(0xFFB8B5C3);
 const Color lightGreyColor = Color(0xFFF8F8F9);
 const Color darkGreyColor = Color(0xFF1C1C25);
 const Color purpleColor = Color(0xFF7B61FF);
-const Color successColor = Color(0xFFCDDC39);            // Matches accent
+const Color successColor = Color(0xFFCDDC39); // Matches accent
 const Color warningColor = Color(0xFFFFBE21);
 const Color errorColor = Color(0xFFEA5B5B);
 
@@ -76,7 +76,7 @@ const double spaceLg = 24.0;
 const double spaceXl = 32.0;
 const double spaceXxl = 48.0;
 
-const double defaultPadding = 20.0;    // Primary screen padding
+const double defaultPadding = 20.0; // Primary screen padding
 const double defaultBorderRadious = 16.0;
 
 // ── Border radius scale ──────────────────────────────────────

@@ -5,7 +5,7 @@ import '../data/exercise.dart';
 import 'user_repository_providers.dart';
 
 /// K-NN Providers using Backend Data (Firebase)
-/// 
+///
 /// These providers replace the mock data providers in knn_providers.dart
 /// and use real-time data from Firestore.
 
@@ -13,11 +13,13 @@ import 'user_repository_providers.dart';
 final knnKValueProvider = StateProvider<int>((ref) => 5);
 
 /// Performance comparison provider - BACKEND VERSION
-final performanceComparisonBackendProvider = Provider.family<AsyncValue<PerformanceComparison?>, (
-  Exercise exercise,
-  double currentWeight,
-  int currentReps,
-)>((ref, params) {
+final performanceComparisonBackendProvider = Provider.family<
+    AsyncValue<PerformanceComparison?>,
+    (
+      Exercise exercise,
+      double currentWeight,
+      int currentReps,
+    )>((ref, params) {
   final currentUserAsync = ref.watch(currentUserBackendProvider);
   final allUsersAsync = ref.watch(allUsersBackendProvider);
   final k = ref.watch(knnKValueProvider);
@@ -27,13 +29,13 @@ final performanceComparisonBackendProvider = Provider.family<AsyncValue<Performa
       if (currentUser == null) {
         return const AsyncValue.data(null);
       }
-      
+
       return allUsersAsync.when(
         data: (allUsers) {
           if (allUsers.length < k) {
             return const AsyncValue.data(null);
           }
-          
+
           final result = KNNService.comparePerformance(
             currentUser,
             allUsers,
@@ -42,7 +44,7 @@ final performanceComparisonBackendProvider = Provider.family<AsyncValue<Performa
             params.$3,
             k: k,
           );
-          
+
           return AsyncValue.data(result);
         },
         loading: () => const AsyncValue.loading(),
@@ -55,11 +57,13 @@ final performanceComparisonBackendProvider = Provider.family<AsyncValue<Performa
 });
 
 /// Weight suggestion provider - BACKEND VERSION
-final weightSuggestionBackendProvider = Provider.family<AsyncValue<WeightSuggestion?>, (
-  Exercise exercise,
-  double currentWeight,
-  int currentReps,
-)>((ref, params) {
+final weightSuggestionBackendProvider = Provider.family<
+    AsyncValue<WeightSuggestion?>,
+    (
+      Exercise exercise,
+      double currentWeight,
+      int currentReps,
+    )>((ref, params) {
   final currentUserAsync = ref.watch(currentUserBackendProvider);
   final allUsersAsync = ref.watch(allUsersBackendProvider);
   final k = ref.watch(knnKValueProvider);
@@ -69,13 +73,13 @@ final weightSuggestionBackendProvider = Provider.family<AsyncValue<WeightSuggest
       if (currentUser == null) {
         return const AsyncValue.data(null);
       }
-      
+
       return allUsersAsync.when(
         data: (allUsers) {
           if (allUsers.length < k) {
             return const AsyncValue.data(null);
           }
-          
+
           final result = KNNService.suggestNextWeight(
             currentUser,
             allUsers,
@@ -84,7 +88,7 @@ final weightSuggestionBackendProvider = Provider.family<AsyncValue<WeightSuggest
             params.$3,
             k: k,
           );
-          
+
           return AsyncValue.data(result);
         },
         loading: () => const AsyncValue.loading(),
@@ -97,7 +101,8 @@ final weightSuggestionBackendProvider = Provider.family<AsyncValue<WeightSuggest
 });
 
 /// Exercise recommendation provider - BACKEND VERSION
-final exerciseRecommendationBackendProvider = FutureProvider.family<KNNRecommendation?, Exercise>(
+final exerciseRecommendationBackendProvider =
+    FutureProvider.family<KNNRecommendation?, Exercise>(
   (ref, exercise) async {
     final currentUser = await ref.watch(currentUserBackendProvider.future);
     final allUsers = await ref.watch(allUsersBackendProvider.future);
@@ -117,7 +122,8 @@ final exerciseRecommendationBackendProvider = FutureProvider.family<KNNRecommend
 );
 
 /// Similar users for current exercise - BACKEND VERSION
-final similarUsersBackendProvider = Provider.family<AsyncValue<List<SimilarUser>?>, Exercise>(
+final similarUsersBackendProvider =
+    Provider.family<AsyncValue<List<SimilarUser>?>, Exercise>(
   (ref, exercise) {
     final currentUserAsync = ref.watch(currentUserBackendProvider);
     final allUsersAsync = ref.watch(allUsersBackendProvider);
@@ -128,7 +134,7 @@ final similarUsersBackendProvider = Provider.family<AsyncValue<List<SimilarUser>
         if (currentUser == null) {
           return const AsyncValue.data(null);
         }
-        
+
         return allUsersAsync.when(
           data: (allUsers) {
             if (allUsers.length < k) {
@@ -142,18 +148,18 @@ final similarUsersBackendProvider = Provider.family<AsyncValue<List<SimilarUser>
             );
 
             final similarUsers = neighbors
-                .where((n) => n.user.getExercisePerformance(exercise.id) != null)
+                .where(
+                    (n) => n.user.getExercisePerformance(exercise.id) != null)
                 .map((n) {
-                  final perf = n.user.getExercisePerformance(exercise.id)!;
-                  return SimilarUser(
-                    userId: n.user.id,
-                    name: n.user.name,
-                    similarityScore: n.similarityScore,
-                    theirWeight: perf.avgWeight,
-                    theirReps: perf.avgReps,
-                  );
-                })
-                .toList();
+              final perf = n.user.getExercisePerformance(exercise.id)!;
+              return SimilarUser(
+                userId: n.user.id,
+                name: n.user.name,
+                similarityScore: n.similarityScore,
+                theirWeight: perf.avgWeight,
+                theirReps: perf.avgReps,
+              );
+            }).toList();
 
             return AsyncValue.data(similarUsers);
           },
@@ -168,16 +174,20 @@ final similarUsersBackendProvider = Provider.family<AsyncValue<List<SimilarUser>
 );
 
 /// K-NN stats provider - BACKEND VERSION
-final knnStatsBackendProvider = Provider<AsyncValue<Map<String, dynamic>>>((ref) {
+final knnStatsBackendProvider =
+    Provider<AsyncValue<Map<String, dynamic>>>((ref) {
   final currentUserAsync = ref.watch(currentUserBackendProvider);
   final allUsersAsync = ref.watch(allUsersBackendProvider);
 
   return allUsersAsync.when(
     data: (allUsers) {
       // Count users by level
-      final beginnerCount = allUsers.where((u) => u.level == FitnessLevel.beginner).length;
-      final intermediateCount = allUsers.where((u) => u.level == FitnessLevel.intermediate).length;
-      final advancedCount = allUsers.where((u) => u.level == FitnessLevel.advanced).length;
+      final beginnerCount =
+          allUsers.where((u) => u.level == FitnessLevel.beginner).length;
+      final intermediateCount =
+          allUsers.where((u) => u.level == FitnessLevel.intermediate).length;
+      final advancedCount =
+          allUsers.where((u) => u.level == FitnessLevel.advanced).length;
 
       // Count by goal
       final goalDistribution = <FitnessGoal, int>{};
@@ -208,7 +218,8 @@ final knnStatsBackendProvider = Provider<AsyncValue<Map<String, dynamic>>>((ref)
 });
 
 /// Helper function to calculate average similarity
-double _calculateAverageSimilarity(UserProfile target, List<UserProfile> allUsers) {
+double _calculateAverageSimilarity(
+    UserProfile target, List<UserProfile> allUsers) {
   if (allUsers.isEmpty) return 0;
 
   final targetFeatures = target.toFeatureVector();
@@ -237,18 +248,23 @@ double _calculateAverageSimilarity(UserProfile target, List<UserProfile> allUser
 
 /// Combined K-NN data provider for UI consumption
 /// Provides all K-NN data in one place for the ExerciseExecutionScreen
-final knnDataForExerciseProvider = Provider.family<AsyncValue<KNNExerciseData>, (
-  Exercise exercise,
-  double? currentWeight,
-  int? currentReps,
-)>((ref, params) {
+final knnDataForExerciseProvider = Provider.family<
+    AsyncValue<KNNExerciseData>,
+    (
+      Exercise exercise,
+      double? currentWeight,
+      int? currentReps,
+    )>((ref, params) {
   final exercise = params.$1;
   final weight = params.$2 ?? 0;
   final reps = params.$3 ?? 0;
 
-  final recommendationAsync = ref.watch(exerciseRecommendationBackendProvider(exercise));
-  final comparisonAsync = ref.watch(performanceComparisonBackendProvider((exercise, weight, reps)));
-  final suggestionAsync = ref.watch(weightSuggestionBackendProvider((exercise, weight, reps)));
+  final recommendationAsync =
+      ref.watch(exerciseRecommendationBackendProvider(exercise));
+  final comparisonAsync =
+      ref.watch(performanceComparisonBackendProvider((exercise, weight, reps)));
+  final suggestionAsync =
+      ref.watch(weightSuggestionBackendProvider((exercise, weight, reps)));
   final similarUsersAsync = ref.watch(similarUsersBackendProvider(exercise));
 
   // Combine all async values
@@ -261,9 +277,7 @@ final knnDataForExerciseProvider = Provider.family<AsyncValue<KNNExerciseData>, 
 
   if (recommendationAsync is AsyncError) {
     return AsyncValue.error(
-      recommendationAsync.error!, 
-      recommendationAsync.stackTrace!
-    );
+        recommendationAsync.error!, recommendationAsync.stackTrace!);
   }
 
   return AsyncValue.data(KNNExerciseData(
@@ -288,9 +302,9 @@ class KNNExerciseData {
     this.similarUsers = const [],
   });
 
-  bool get hasData => 
-      recommendation != null || 
-      comparison != null || 
+  bool get hasData =>
+      recommendation != null ||
+      comparison != null ||
       weightSuggestion != null ||
       similarUsers.isNotEmpty;
 }

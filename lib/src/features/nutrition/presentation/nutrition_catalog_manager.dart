@@ -11,10 +11,12 @@ class NutritionCatalogManager extends ConsumerStatefulWidget {
   const NutritionCatalogManager({super.key});
 
   @override
-  ConsumerState<NutritionCatalogManager> createState() => _NutritionCatalogManagerState();
+  ConsumerState<NutritionCatalogManager> createState() =>
+      _NutritionCatalogManagerState();
 }
 
-class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManager> {
+class _NutritionCatalogManagerState
+    extends ConsumerState<NutritionCatalogManager> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedCategory = 'all';
@@ -77,7 +79,8 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
+                  onChanged: (v) =>
+                      setState(() => _searchQuery = v.toLowerCase()),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -93,7 +96,8 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                         child: ChoiceChip(
                           label: Text(_categoryDisplayName(cat)),
                           selected: isSelected,
-                          onSelected: (_) => setState(() => _selectedCategory = cat),
+                          onSelected: (_) =>
+                              setState(() => _selectedCategory = cat),
                         ),
                       );
                     },
@@ -110,7 +114,9 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                 // Filter by category
                 var filtered = items;
                 if (_selectedCategory != 'all') {
-                  filtered = items.where((i) => i['category'] == _selectedCategory).toList();
+                  filtered = items
+                      .where((i) => i['category'] == _selectedCategory)
+                      .toList();
                 }
 
                 if (filtered.isEmpty) {
@@ -118,13 +124,15 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.restaurant_menu, size: 64, color: Colors.grey[400]),
+                        Icon(Icons.restaurant_menu,
+                            size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
                         Text(
                           'No food items found',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                         ),
                         const SizedBox(height: 8),
                         ElevatedButton.icon(
@@ -138,9 +146,11 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: defaultPadding),
                   itemCount: filtered.length,
-                  itemBuilder: (context, index) => _FoodItemCard(item: filtered[index]),
+                  itemBuilder: (context, index) =>
+                      _FoodItemCard(item: filtered[index]),
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -177,7 +187,7 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
     final fatCtrl = TextEditingController(text: '0');
     final servingCtrl = TextEditingController(text: '100');
     final servingUnitCtrl = TextEditingController(text: 'g');
-    
+
     String category = 'proteins';
     bool isEgyptian = false;
 
@@ -211,7 +221,8 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                       labelText: 'Food Name *',
                       hintText: 'e.g., Koshari, Grilled Chicken',
                     ),
-                    validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                    validator: (v) =>
+                        v?.trim().isEmpty == true ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
 
@@ -219,10 +230,12 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                   DropdownButtonFormField<String>(
                     value: category,
                     decoration: const InputDecoration(labelText: 'Category *'),
-                    items: categories.map((c) => DropdownMenuItem(
-                      value: c,
-                      child: Text(_categoryDisplayName(c)),
-                    )).toList(),
+                    items: categories
+                        .map((c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(_categoryDisplayName(c)),
+                            ))
+                        .toList(),
                     onChanged: (v) => setDialogState(() {
                       category = v!;
                       isEgyptian = category == 'egyptian_traditional';
@@ -233,7 +246,8 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                   // Egyptian flag toggle
                   SwitchListTile(
                     title: const Text('Egyptian Traditional Food'),
-                    subtitle: const Text('Mark if this is authentic Egyptian cuisine'),
+                    subtitle: const Text(
+                        'Mark if this is authentic Egyptian cuisine'),
                     value: isEgyptian,
                     onChanged: (v) => setDialogState(() => isEgyptian = v),
                   ),
@@ -250,7 +264,8 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
                             suffixText: 'kcal',
                           ),
                           keyboardType: TextInputType.number,
-                          validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                          validator: (v) =>
+                              v?.trim().isEmpty == true ? 'Required' : null,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -357,9 +372,10 @@ class _NutritionCatalogManagerState extends ConsumerState<NutritionCatalogManage
 }
 
 /// Provider for catalog search
-final _catalogSearchProvider = StreamProvider.family<List<Map<String, dynamic>>, String>((ref, query) {
+final _catalogSearchProvider =
+    StreamProvider.family<List<Map<String, dynamic>>, String>((ref, query) {
   final firestore = ref.watch(firestoreProvider);
-  
+
   if (query.isEmpty) {
     return firestore
         .collection('nutrition_catalog')
@@ -368,7 +384,7 @@ final _catalogSearchProvider = StreamProvider.family<List<Map<String, dynamic>>,
         .snapshots()
         .map((s) => s.docs.map((d) => {'id': d.id, ...d.data()}).toList());
   }
-  
+
   return firestore
       .collection('nutrition_catalog')
       .where('searchableName', isGreaterThanOrEqualTo: query)
@@ -438,7 +454,8 @@ class _FoodItemCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('$calories kcal per ${item['servingSize'] ?? 100}${item['servingUnit'] ?? 'g'}'),
+            Text(
+                '$calories kcal per ${item['servingSize'] ?? 100}${item['servingUnit'] ?? 'g'}'),
             const SizedBox(height: 4),
             Row(
               children: [

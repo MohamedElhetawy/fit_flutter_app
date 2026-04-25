@@ -3,22 +3,30 @@ import '../../../core/auth/auth_controller.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/sync/sync_engine.dart';
 import '../data/unified_steps_service.dart';
+import '../data/home_providers.dart';
 
 /// Unified Steps Service Provider
 final unifiedStepsServiceProvider = Provider<UnifiedStepsService>((ref) {
   final service = UnifiedStepsService();
-  
+
   // Initialize when auth state is available
   ref.listen(authStateProvider, (previous, next) {
     final user = next.value;
     if (user != null) {
-      service.initialize(
-        userId: user.uid,
-        firestore: ref.read(firestoreProvider),
-        syncEngine: ref.read(syncEngineProvider),
-      );
+      // Resolve async dependencies (dashboard data source + sync engine)
+      ref
+          .read(dashboardLocalDataSourceProvider.future)
+          .then((dataSource) async {
+        final engine = await ref.read(syncEngineAsyncProvider.future);
+        await service.initialize(
+          userId: user.uid,
+          firestore: ref.read(firestoreProvider),
+          syncEngine: engine,
+          localDataSource: dataSource,
+        );
+      });
     }
-  });  
+  });
   ref.onDispose(() => service.dispose());
   return service;
 });
@@ -44,7 +52,7 @@ final todayStepsDetailedProvider = FutureProvider<StepsInfo>((ref) async {
   final service = ref.watch(unifiedStepsServiceProvider);
   final steps = service.currentSteps;
   final history = await service.getTodayHistory();
-  
+
   return StepsInfo(
     totalSteps: steps,
     source: _determinePrimarySource(history),
@@ -69,15 +77,16 @@ class StepsInfo {
 
 String _determinePrimarySource(List<StepsData> history) {
   if (history.isEmpty) return 'none';
-  
+
   // Count steps by source
   final sources = <StepSource, int>{};
   for (final entry in history) {
     sources[entry.source] = (sources[entry.source] ?? 0) + entry.steps;
   }
-  
+
   // Return the source with most steps (using display name)
-  final topSource = sources.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+  final topSource =
+      sources.entries.reduce((a, b) => a.value > b.value ? a : b).key;
   return topSource.displayNameAr;
 }
 
@@ -118,7 +127,8 @@ class UnifiedStepsNotifier extends StateNotifier<AsyncValue<void>> {
   }
 }
 
-final unifiedStepsOperationsProvider = StateNotifierProvider<UnifiedStepsNotifier, AsyncValue<void>>((ref) {
+final unifiedStepsOperationsProvider =
+    StateNotifierProvider<UnifiedStepsNotifier, AsyncValue<void>>((ref) {
   final service = ref.watch(unifiedStepsServiceProvider);
   return UnifiedStepsNotifier(service);
 });

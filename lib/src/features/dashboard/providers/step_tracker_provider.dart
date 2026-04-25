@@ -41,7 +41,7 @@ class StepTrackerNotifier extends Notifier<int> {
       state += 1;
       _totalSteps += 1;
       _cooldown = 8;
-      
+
       // Sync to Firestore every 10 steps
       if (_totalSteps % 10 == 0) {
         _syncStepsToFirestore(10);
@@ -52,8 +52,9 @@ class StepTrackerNotifier extends Notifier<int> {
   void _syncStepsToFirestore(int steps) async {
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
-    
-    await ref.read(dailyStatsRepositoryProvider).addSteps(user.uid, steps);
+
+    final repo = await ref.read(dailyStatsRepositoryProvider.future);
+    await repo.addSteps(user.uid, steps);
   }
 
   void reset() {

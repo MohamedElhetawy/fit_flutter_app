@@ -31,9 +31,8 @@ class ProgressPhoto {
         (e) => e.name == map['type'],
         orElse: () => PhotoType.front,
       ),
-      syncedAt: map['syncedAt'] != null 
-          ? DateTime.parse(map['syncedAt']) 
-          : null,
+      syncedAt:
+          map['syncedAt'] != null ? DateTime.parse(map['syncedAt']) : null,
     );
   }
 
@@ -50,7 +49,7 @@ class ProgressPhoto {
   }
 
   String toJson() => json.encode(toMap());
-  factory ProgressPhoto.fromJson(String source) => 
+  factory ProgressPhoto.fromJson(String source) =>
       ProgressPhoto.fromMap(json.decode(source));
 
   ProgressPhoto copyWith({

@@ -157,17 +157,20 @@ class LoggedSetsNotifier extends StateNotifier<LoggedSetsState> {
 }
 
 /// Provider for rest timer
-final restTimerProvider = StateNotifierProvider<RestTimerNotifier, RestTimerState>((ref) {
+final restTimerProvider =
+    StateNotifierProvider<RestTimerNotifier, RestTimerState>((ref) {
   return RestTimerNotifier();
 });
 
 /// Provider for logged sets
-final loggedSetsProvider = StateNotifierProvider<LoggedSetsNotifier, LoggedSetsState>((ref) {
+final loggedSetsProvider =
+    StateNotifierProvider<LoggedSetsNotifier, LoggedSetsState>((ref) {
   return LoggedSetsNotifier();
 });
 
 /// Provider for current exercise session (combines sets + timer)
-final exerciseSessionProvider = Provider<({LoggedSetsState sets, RestTimerState timer})>((ref) {
+final exerciseSessionProvider =
+    Provider<({LoggedSetsState sets, RestTimerState timer})>((ref) {
   final sets = ref.watch(loggedSetsProvider);
   final timer = ref.watch(restTimerProvider);
   return (sets: sets, timer: timer);

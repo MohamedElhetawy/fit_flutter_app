@@ -10,7 +10,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
@@ -177,7 +178,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                           end: Offset.zero,
                         ).animate(CurvedAnimation(
                           parent: _animController,
-                          curve: const Interval(0.1, 0.5, curve: Curves.easeOutCubic),
+                          curve: const Interval(0.1, 0.5,
+                              curve: Curves.easeOutCubic),
                         )),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +262,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                                   foregroundColor: Colors.white,
                                   minimumSize: const Size(double.infinity, 52),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(radiusMd),
+                                    borderRadius:
+                                        BorderRadius.circular(radiusMd),
                                   ),
                                 ),
                                 child: const Text(
@@ -280,7 +283,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                       FadeTransition(
                         opacity: CurvedAnimation(
                           parent: _animController,
-                        curve: const Interval(0.2, 0.6),
+                          curve: const Interval(0.2, 0.6),
                         ),
                         child: AppTheme.buildGlassmorphicContainer(
                           backgroundColor: surfaceColor,
@@ -297,7 +300,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                                     padding: const EdgeInsets.all(spaceSm),
                                     decoration: BoxDecoration(
                                       color: errorColor.withAlpha(26),
-                                      borderRadius: BorderRadius.circular(radiusSm),
+                                      borderRadius:
+                                          BorderRadius.circular(radiusSm),
                                       border: Border.all(
                                         color: errorColor.withAlpha(77),
                                       ),
@@ -332,22 +336,30 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                                   style: const TextStyle(color: textPrimary),
                                   decoration: InputDecoration(
                                     labelText: 'البريد الإلكتروني',
-                                    labelStyle: const TextStyle(color: textSecondary),
+                                    labelStyle:
+                                        const TextStyle(color: textSecondary),
                                     hintText: 'example@email.com',
-                                    hintStyle: const TextStyle(color: textTertiary),
+                                    hintStyle:
+                                        const TextStyle(color: textTertiary),
                                     filled: true,
                                     fillColor: surfaceColorLight,
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(radiusSm),
-                                      borderSide: const BorderSide(color: surfaceBorder),
+                                      borderRadius:
+                                          BorderRadius.circular(radiusSm),
+                                      borderSide: const BorderSide(
+                                          color: surfaceBorder),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(radiusSm),
-                                      borderSide: const BorderSide(color: surfaceBorder),
+                                      borderRadius:
+                                          BorderRadius.circular(radiusSm),
+                                      borderSide: const BorderSide(
+                                          color: surfaceBorder),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(radiusSm),
-                                      borderSide: const BorderSide(color: primaryColor),
+                                      borderRadius:
+                                          BorderRadius.circular(radiusSm),
+                                      borderSide:
+                                          const BorderSide(color: primaryColor),
                                     ),
                                     prefixIcon: const Icon(
                                       Icons.email_outlined,
@@ -358,7 +370,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                                     if (value == null || value.isEmpty) {
                                       return 'يرجى إدخال البريد الإلكتروني';
                                     }
-                                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                        .hasMatch(value)) {
                                       return 'يرجى إدخال بريد إلكتروني صالح';
                                     }
                                     return null;
@@ -377,7 +390,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
                         scale: Tween<double>(begin: 0.8, end: 1).animate(
                           CurvedAnimation(
                             parent: _animController,
-                            curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic),
+                            curve: const Interval(0.4, 0.8,
+                                curve: Curves.easeOutCubic),
                           ),
                         ),
                         child: SizedBox(

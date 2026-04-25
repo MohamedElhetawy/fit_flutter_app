@@ -58,10 +58,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
 
     final messenger = ScaffoldMessenger.of(context);
     await ref.read(authControllerProvider.notifier).signUpWithEmail(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-    
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
     final current = ref.read(authControllerProvider);
     if (current.hasError) {
       messenger.showSnackBar(
@@ -145,7 +145,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                               decoration: BoxDecoration(
                                 color: surfaceColor,
                                 borderRadius: BorderRadius.circular(radiusSm),
-                                border: Border.all(color: surfaceBorder, width: 1),
+                                border:
+                                    Border.all(color: surfaceBorder, width: 1),
                               ),
                               child: const Icon(
                                 Icons.arrow_back_rounded,
@@ -182,7 +183,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                           end: Offset.zero,
                         ).animate(CurvedAnimation(
                           parent: _animController,
-                          curve: const Interval(0.1, 0.5, curve: Curves.easeOutCubic),
+                          curve: const Interval(0.1, 0.5,
+                              curve: Curves.easeOutCubic),
                         )),
                         child: Column(
                           children: [
@@ -198,9 +200,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                             const SizedBox(height: 8),
                             Text(
                               'انضم إلى FitX وابدأ رحلتك اللياقة البدنية',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: textSecondary,
+                                  ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -220,7 +225,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                         scale: Tween<double>(begin: 0.9, end: 1).animate(
                           CurvedAnimation(
                             parent: _animController,
-                            curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
+                            curve: const Interval(0.2, 0.6,
+                                curve: Curves.easeOutCubic),
                           ),
                         ),
                         child: AppTheme.buildGlassmorphicContainer(
@@ -238,7 +244,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                                   label: 'الاسم الكامل',
                                   hint: 'محمد أحمد',
                                   icon: Icons.person_outline,
-                                  validator: (v) => v?.isEmpty ?? true ? 'يرجى إدخال الاسم' : null,
+                                  validator: (v) => v?.isEmpty ?? true
+                                      ? 'يرجى إدخال الاسم'
+                                      : null,
                                 ),
                                 const SizedBox(height: spaceMd),
 
@@ -250,8 +258,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                                   icon: Icons.email_outlined,
                                   keyboardType: TextInputType.emailAddress,
                                   validator: (v) {
-                                    if (v?.isEmpty ?? true) return 'يرجى إدخال البريد الإلكتروني';
-                                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v!)) {
+                                    if (v?.isEmpty ?? true) {
+                                      return 'يرجى إدخال البريد الإلكتروني';
+                                    }
+                                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                        .hasMatch(v!)) {
                                       return 'يرجى إدخال بريد صالح';
                                     }
                                     return null;
@@ -268,14 +279,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                                   obscureText: _obscurePassword,
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                       color: textSecondary,
                                     ),
-                                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                    onPressed: () => setState(() =>
+                                        _obscurePassword = !_obscurePassword),
                                   ),
                                   validator: (v) {
-                                    if (v?.isEmpty ?? true) return 'يرجى إدخال كلمة المرور';
-                                    if (v!.length < 6) return 'يجب أن تكون 6 أحرف على الأقل';
+                                    if (v?.isEmpty ?? true) {
+                                      return 'يرجى إدخال كلمة المرور';
+                                    }
+                                    if (v!.length < 6) {
+                                      return 'يجب أن تكون 6 أحرف على الأقل';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -290,10 +308,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                                   obscureText: _obscureConfirmPassword,
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                      _obscureConfirmPassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                       color: textSecondary,
                                     ),
-                                    onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                                    onPressed: () => setState(() =>
+                                        _obscureConfirmPassword =
+                                            !_obscureConfirmPassword),
                                   ),
                                   validator: (v) {
                                     if (v != _passwordController.text) {
@@ -321,7 +343,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                         children: [
                           Checkbox(
                             value: _agreedToTerms,
-                            onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
+                            onChanged: (v) =>
+                                setState(() => _agreedToTerms = v ?? false),
                             activeColor: primaryColor,
                             checkColor: const Color(0xFF1A1A00),
                             side: const BorderSide(color: surfaceBorder),
@@ -330,7 +353,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                             child: Text.rich(
                               TextSpan(
                                 text: 'أوافق على ',
-                                style: const TextStyle(color: textSecondary, fontSize: 13),
+                                style: const TextStyle(
+                                    color: textSecondary, fontSize: 13),
                                 children: [
                                   TextSpan(
                                     text: 'شروط الخدمة',
@@ -339,7 +363,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                                       fontWeight: FontWeight.w600,
                                     ),
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () => _showComingSoonDialog('الشروط والأحكام'),
+                                      ..onTap = () => _showComingSoonDialog(
+                                          'الشروط والأحكام'),
                                   ),
                                   const TextSpan(
                                     text: ' و ',
@@ -352,7 +377,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                                       fontWeight: FontWeight.w600,
                                     ),
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () => _showComingSoonDialog('سياسة الخصوصية'),
+                                      ..onTap = () => _showComingSoonDialog(
+                                          'سياسة الخصوصية'),
                                   ),
                                 ],
                               ),
@@ -369,7 +395,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                       scale: Tween<double>(begin: 0.8, end: 1).animate(
                         CurvedAnimation(
                           parent: _animController,
-                          curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
+                          curve: const Interval(0.5, 0.9,
+                              curve: Curves.easeOutCubic),
                         ),
                       ),
                       child: SizedBox(
@@ -424,10 +451,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                               children: [
                                 Expanded(child: Divider(color: surfaceBorder)),
                                 Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: spaceSm),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: spaceSm),
                                   child: Text(
                                     'أو',
-                                    style: TextStyle(color: textTertiary, fontSize: 13),
+                                    style: TextStyle(
+                                        color: textTertiary, fontSize: 13),
                                   ),
                                 ),
                                 Expanded(child: Divider(color: surfaceBorder)),
@@ -440,14 +469,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                               onPressed: auth.isLoading
                                   ? null
                                   : () async {
-                                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                                      final scaffoldMessenger =
+                                          ScaffoldMessenger.of(context);
                                       final router = GoRouter.of(context);
-                                      await ref.read(authControllerProvider.notifier).signInWithGoogleMobile();
+                                      await ref
+                                          .read(authControllerProvider.notifier)
+                                          .signInWithGoogleMobile();
                                       if (!mounted) return;
-                                      final current = ref.read(authControllerProvider);
+                                      final current =
+                                          ref.read(authControllerProvider);
                                       if (current.hasError) {
                                         scaffoldMessenger.showSnackBar(
-                                          SnackBar(content: Text(current.error.toString())),
+                                          SnackBar(
+                                              content: Text(
+                                                  current.error.toString())),
                                         );
                                       } else {
                                         router.go('/dashboard');
@@ -459,7 +494,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
                               icon: '🍎',
                               label: 'التسجيل بـ Apple',
                               badge: 'قريباً',
-                              onPressed: () => _showComingSoonDialog('Apple Sign-In'),
+                              onPressed: () =>
+                                  _showComingSoonDialog('Apple Sign-In'),
                             ),
                           ],
                         ),
@@ -545,7 +581,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen>
         ),
         prefixIcon: Icon(icon, color: textSecondary),
         suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceMd),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceMd),
       ),
       validator: validator,
     );

@@ -106,7 +106,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         end: Offset.zero,
                       ).animate(CurvedAnimation(
                         parent: _animController,
-                        curve: const Interval(0, 0.4, curve: Curves.easeOutCubic),
+                        curve:
+                            const Interval(0, 0.4, curve: Curves.easeOutCubic),
                       )),
                       child: Column(
                         children: [
@@ -118,10 +119,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           const SizedBox(height: 8),
                           Text(
                             'Unleash Your Potential with Nerva X',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -138,7 +142,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       end: Offset.zero,
                     ).animate(CurvedAnimation(
                       parent: _animController,
-                      curve: const Interval(0.1, 0.5, curve: Curves.easeOutCubic),
+                      curve:
+                          const Interval(0.1, 0.5, curve: Curves.easeOutCubic),
                     )),
                     child: Column(
                       children: [
@@ -168,7 +173,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       scale: Tween<double>(begin: 0.8, end: 1).animate(
                         CurvedAnimation(
                           parent: _animController,
-                          curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
+                          curve: const Interval(0.2, 0.6,
+                              curve: Curves.easeOutCubic),
                         ),
                       ),
                       child: AppTheme.buildGlassmorphicContainer(
@@ -193,9 +199,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       onPressed: () => context.go('/forgot-password'),
                       child: Text(
                         'Forgot password?',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: primaryColor,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: primaryColor,
+                                ),
                       ),
                     ),
                   ),
@@ -207,7 +214,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     scale: Tween<double>(begin: 0.8, end: 1).animate(
                       CurvedAnimation(
                         parent: _animController,
-                        curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic),
+                        curve: const Interval(0.4, 0.8,
+                            curve: Curves.easeOutCubic),
                       ),
                     ),
                     child: SizedBox(
@@ -217,41 +225,47 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         onPressed: auth.isLoading
                             ? null
                             : () async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          if (_formKey.currentState!.validate()) {
-                            await ref.read(authControllerProvider.notifier).signInWithEmail(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text.trim(),
-                            );
-                            final current = ref.read(authControllerProvider);
-                            if (current.hasError) {
-                              messenger.showSnackBar(
-                                SnackBar(content: Text(current.error.toString())),
-                              );
-                            } else {
-                              if (!context.mounted) return;
-                              context.go('/dashboard');
-                            }
-                          }
-                        },
+                                final messenger = ScaffoldMessenger.of(context);
+                                if (_formKey.currentState!.validate()) {
+                                  await ref
+                                      .read(authControllerProvider.notifier)
+                                      .signInWithEmail(
+                                        email: _emailController.text.trim(),
+                                        password:
+                                            _passwordController.text.trim(),
+                                      );
+                                  final current =
+                                      ref.read(authControllerProvider);
+                                  if (current.hasError) {
+                                    messenger.showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text(current.error.toString())),
+                                    );
+                                  } else {
+                                    if (!context.mounted) return;
+                                    context.go('/dashboard');
+                                  }
+                                }
+                              },
                         child: auth.isLoading
                             ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFF1A1A00),
-                            ),
-                          ),
-                        )
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF1A1A00),
+                                  ),
+                                ),
+                              )
                             : const Text(
-                          'Continue',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                                'Continue',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -268,7 +282,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: spaceSm),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: spaceSm),
                         child: Text(
                           'or',
                           style: Theme.of(context).textTheme.labelSmall,
@@ -290,7 +305,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     scale: Tween<double>(begin: 0.8, end: 1).animate(
                       CurvedAnimation(
                         parent: _animController,
-                        curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
+                        curve: const Interval(0.5, 0.9,
+                            curve: Curves.easeOutCubic),
                       ),
                     ),
                     child: Column(
@@ -305,23 +321,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           onPressed: auth.isLoading
                               ? null
                               : () async {
-                            final messenger = ScaffoldMessenger.of(context);
-                            final router = GoRouter.of(context);
-                            await ref
-                                .read(authControllerProvider.notifier)
-                                .signInWithGoogle();
-                            if (!mounted) return;
-                            final current = ref.read(authControllerProvider);
-                            if (current.hasError) {
-                              messenger.showSnackBar(
-                                SnackBar(
-                                  content: Text(current.error.toString()),
-                                ),
-                              );
-                            } else {
-                              router.go('/dashboard');
-                            }
-                          },
+                                  final messenger =
+                                      ScaffoldMessenger.of(context);
+                                  final router = GoRouter.of(context);
+                                  await ref
+                                      .read(authControllerProvider.notifier)
+                                      .signInWithGoogle();
+                                  if (!mounted) return;
+                                  final current =
+                                      ref.read(authControllerProvider);
+                                  if (current.hasError) {
+                                    messenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text(current.error.toString()),
+                                      ),
+                                    );
+                                  } else {
+                                    router.go('/dashboard');
+                                  }
+                                },
                         ),
                         if (!kIsWeb &&
                             (defaultTargetPlatform == TargetPlatform.android ||
@@ -356,7 +374,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       onPressed: () => context.pop(),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: primaryColor,
-                                        foregroundColor: const Color(0xFF1A1A00),
+                                        foregroundColor:
+                                            const Color(0xFF1A1A00),
                                       ),
                                       child: const Text('حسناً'),
                                     ),
@@ -388,10 +407,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           onTap: () => context.go('/signup'),
                           child: Text(
                             'Sign up',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: primaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ),
                       ],

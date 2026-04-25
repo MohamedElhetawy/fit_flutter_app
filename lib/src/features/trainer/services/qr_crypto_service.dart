@@ -58,7 +58,10 @@ class QrCryptoService {
       final nonce = payload['n']?.toString();
       final signature = payload['sig']?.toString();
 
-      if (trainerId == null || timestamp == null || nonce == null || signature == null) {
+      if (trainerId == null ||
+          timestamp == null ||
+          nonce == null ||
+          signature == null) {
         return false;
       }
 
@@ -78,7 +81,7 @@ class QrCryptoService {
   bool isExpired(Map<String, dynamic> payload) {
     final expiry = payload['exp'] as int?;
     if (expiry == null) return true;
-    
+
     final now = DateTime.now().millisecondsSinceEpoch;
     return now > expiry;
   }
@@ -97,7 +100,8 @@ class QrCryptoService {
   }
 
   String _generateNonce() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random.secure();
     return List.generate(16, (_) => chars[random.nextInt(chars.length)]).join();
   }

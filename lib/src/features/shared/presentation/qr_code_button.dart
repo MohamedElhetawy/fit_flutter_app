@@ -66,7 +66,8 @@ class _QrCodeModal extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return StreamBuilder(
-      stream: ref.read(firestoreProvider)
+      stream: ref
+          .read(firestoreProvider)
           .collection('users')
           .doc(userId)
           .snapshots(),
@@ -74,7 +75,8 @@ class _QrCodeModal extends ConsumerWidget {
         if (!snapshot.hasData) {
           return const SizedBox(
             height: 400,
-            child: Center(child: CircularProgressIndicator(color: primaryColor)),
+            child:
+                Center(child: CircularProgressIndicator(color: primaryColor)),
           );
         }
 
@@ -114,7 +116,8 @@ class _QrCodeModal extends ConsumerWidget {
                         color: primaryColor.withAlpha(26),
                         borderRadius: BorderRadius.circular(radiusMd),
                       ),
-                      child: const Icon(Icons.qr_code, color: primaryColor, size: 28),
+                      child: const Icon(Icons.qr_code,
+                          color: primaryColor, size: 28),
                     ),
                     const SizedBox(width: spaceMd),
                     Expanded(
@@ -176,7 +179,8 @@ class _QrCodeModal extends ConsumerWidget {
 
                 // Code Display
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: spaceLg, vertical: spaceMd),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: spaceLg, vertical: spaceMd),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF6B8E23), Color(0xFF8FBC8F)],

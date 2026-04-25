@@ -32,19 +32,22 @@ final muscleGroupsProvider = FutureProvider<List<String>>((ref) async {
 });
 
 /// Provider for muscle groups with images and metadata
-final muscleGroupsWithImagesProvider = FutureProvider<List<MuscleGroup>>((ref) async {
+final muscleGroupsWithImagesProvider =
+    FutureProvider<List<MuscleGroup>>((ref) async {
   final exercises = await ref.watch(allExercisesProvider.future);
   return MuscleGroup.getDefaultGroups(exercises);
 });
 
 /// Provider for muscle angles of a specific group
-final muscleAnglesForGroupProvider = FutureProvider.family<List<MuscleAngle>, String>((ref, muscleGroup) async {
+final muscleAnglesForGroupProvider =
+    FutureProvider.family<List<MuscleAngle>, String>((ref, muscleGroup) async {
   final exercises = await ref.watch(allExercisesProvider.future);
   return MuscleAngle.getAnglesForGroup(exercises, muscleGroup);
 });
 
 /// Provider for exercises by muscle group and angle
-final exercisesByGroupAndAngleProvider = FutureProvider.family<List<Exercise>, ({String muscleGroup, String muscleAngle})>((ref, params) async {
+final exercisesByGroupAndAngleProvider = FutureProvider.family<List<Exercise>,
+    ({String muscleGroup, String muscleAngle})>((ref, params) async {
   final exercises = await ref.watch(allExercisesProvider.future);
   return WorkoutDatabase.getExercisesByGroupAndAngle(
     exercises,

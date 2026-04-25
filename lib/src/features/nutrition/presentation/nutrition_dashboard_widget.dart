@@ -54,7 +54,8 @@ class NutritionDashboardWidget extends ConsumerWidget {
                         LineChartBarData(
                           spots: [
                             for (int i = 0; i < points.length; i++)
-                              FlSpot(i.toDouble(), points[i].calories.toDouble()),
+                              FlSpot(
+                                  i.toDouble(), points[i].calories.toDouble()),
                           ],
                           isCurved: true,
                           barWidth: 3,

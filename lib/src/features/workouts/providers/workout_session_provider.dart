@@ -33,16 +33,16 @@ class WorkoutSet {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'exerciseId': exerciseId,
-    'exerciseName': exerciseName,
-    'weight': weight,
-    'reps': reps,
-    'setNumber': setNumber,
-    'timestamp': timestamp.toIso8601String(),
-    'volume': volume,
-    'oneRepMax': oneRepMax,
-  };
+        'id': id,
+        'exerciseId': exerciseId,
+        'exerciseName': exerciseName,
+        'weight': weight,
+        'reps': reps,
+        'setNumber': setNumber,
+        'timestamp': timestamp.toIso8601String(),
+        'volume': volume,
+        'oneRepMax': oneRepMax,
+      };
 }
 
 /// Workout session state
@@ -85,14 +85,14 @@ class WorkoutSession {
   int get totalSets => sets.length;
   int get totalExercises => sets.map((s) => s.exerciseId).toSet().length;
   double get totalVolume => sets.fold(0, (total, s) => total + s.volume);
-  Duration? get duration => endTime != null 
-      ? endTime!.difference(startTime) 
+  Duration? get duration => endTime != null
+      ? endTime!.difference(startTime)
       : DateTime.now().difference(startTime);
-  double get averageWeight => sets.isEmpty 
-      ? 0 
+  double get averageWeight => sets.isEmpty
+      ? 0
       : sets.fold(0.0, (total, s) => total + s.weight) / sets.length;
-  double get bestOneRepMax => sets.isEmpty 
-      ? 0 
+  double get bestOneRepMax => sets.isEmpty
+      ? 0
       : sets.map((s) => s.oneRepMax).reduce((a, b) => a > b ? a : b);
 
   // Group sets by exercise
@@ -105,15 +105,15 @@ class WorkoutSession {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'startTime': startTime.toIso8601String(),
-    'endTime': endTime?.toIso8601String(),
-    'sets': sets.map((s) => s.toJson()).toList(),
-    'muscleGroup': muscleGroup,
-    'totalSets': totalSets,
-    'totalVolume': totalVolume,
-    'duration': duration?.inMinutes,
-  };
+        'id': id,
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime?.toIso8601String(),
+        'sets': sets.map((s) => s.toJson()).toList(),
+        'muscleGroup': muscleGroup,
+        'totalSets': totalSets,
+        'totalVolume': totalVolume,
+        'duration': duration?.inMinutes,
+      };
 }
 
 /// Workout Session Notifier
@@ -138,9 +138,8 @@ class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
   }) {
     if (state == null) return;
 
-    final setsForExercise = state!.sets
-        .where((s) => s.exerciseId == exerciseId)
-        .length;
+    final setsForExercise =
+        state!.sets.where((s) => s.exerciseId == exerciseId).length;
 
     final newSet = WorkoutSet(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -195,7 +194,7 @@ class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
         .doc(user.uid)
         .collection('activities')
         .doc(session.id);
-    
+
     batch.set(activityRef, {
       'name': '${session.muscleGroup ?? 'General'} Workout',
       'durationMinutes': session.duration?.inMinutes ?? 0,
@@ -211,12 +210,16 @@ class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
         .collection('daily_stats')
         .doc(startOfDay.millisecondsSinceEpoch.toString());
 
-    // Note: We use a batch here, but for increments we need to be careful. 
+    // Note: We use a batch here, but for increments we need to be careful.
     // In a real app, fieldValue.increment is better.
-    batch.set(statsDoc, {
-      'caloriesBurned': FieldValue.increment((session.duration?.inMinutes ?? 0) * 8), // Rough estimate
-      'lastUpdated': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    batch.set(
+        statsDoc,
+        {
+          'caloriesBurned': FieldValue.increment(
+              (session.duration?.inMinutes ?? 0) * 8), // Rough estimate
+          'lastUpdated': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true));
 
     await batch.commit();
   }
@@ -227,14 +230,15 @@ class WorkoutSessionNotifier extends StateNotifier<WorkoutSession?> {
 }
 
 /// Providers
-final workoutSessionProvider = StateNotifierProvider<WorkoutSessionNotifier, WorkoutSession?>((ref) {
+final workoutSessionProvider =
+    StateNotifierProvider<WorkoutSessionNotifier, WorkoutSession?>((ref) {
   return WorkoutSessionNotifier(ref);
 });
 
 /// Current workout stats (computed)
 final currentWorkoutStatsProvider = Provider<Map<String, dynamic>>((ref) {
   final session = ref.watch(workoutSessionProvider);
-  
+
   if (session == null) {
     return {
       'isActive': false,

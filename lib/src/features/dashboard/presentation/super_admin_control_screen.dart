@@ -10,7 +10,8 @@ class SuperAdminControlScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(appConfigProvider).value ?? const AppConfig.defaults();
+    final config =
+        ref.watch(appConfigProvider).value ?? const AppConfig.defaults();
     final saving = ref.watch(appConfigControllerProvider).isLoading;
 
     return DefaultTabController(
@@ -104,7 +105,9 @@ class SuperAdminControlScreen extends ConsumerWidget {
                     max: 1.35,
                     value: config.typographyScale,
                     onChanged: (v) {
-                      ref.read(appConfigControllerProvider.notifier).updateConfig(
+                      ref
+                          .read(appConfigControllerProvider.notifier)
+                          .updateConfig(
                             AppConfig(
                               primaryColorValue: config.primaryColorValue,
                               enableSteps: config.enableSteps,
@@ -126,7 +129,9 @@ class SuperAdminControlScreen extends ConsumerWidget {
                     max: 28,
                     value: config.cardRadius,
                     onChanged: (v) {
-                      ref.read(appConfigControllerProvider.notifier).updateConfig(
+                      ref
+                          .read(appConfigControllerProvider.notifier)
+                          .updateConfig(
                             AppConfig(
                               primaryColorValue: config.primaryColorValue,
                               enableSteps: config.enableSteps,
@@ -167,7 +172,8 @@ class _ColorButton extends StatelessWidget {
               AppConfig(
                 primaryColorValue: colorValue,
                 enableSteps: config.enableSteps,
-                enableWorkoutRecommendations: config.enableWorkoutRecommendations,
+                enableWorkoutRecommendations:
+                    config.enableWorkoutRecommendations,
                 typographyScale: config.typographyScale,
                 spacingScale: config.spacingScale,
                 cardRadius: config.cardRadius,

@@ -82,7 +82,8 @@ class VisualProgressScreen extends ConsumerWidget {
                   ),
                 ),
                 error: (err, _) => SliverToBoxAdapter(
-                  child: Text('Error: $err', style: const TextStyle(color: errorColor)),
+                  child: Text('Error: $err',
+                      style: const TextStyle(color: errorColor)),
                 ),
               ),
             ),
@@ -122,7 +123,8 @@ class VisualProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildComparisonCard(BuildContext context, List<ProgressPhoto> photos) {
+  Widget _buildComparisonCard(
+      BuildContext context, List<ProgressPhoto> photos) {
     if (photos.length < 2) {
       return const FitXCard(
         padding: EdgeInsets.all(spaceLg),
@@ -177,7 +179,8 @@ class VisualProgressScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: spaceSm),
-              const Icon(Icons.arrow_forward_rounded, color: primaryColor, size: 24),
+              const Icon(Icons.arrow_forward_rounded,
+                  color: primaryColor, size: 24),
               const SizedBox(width: spaceSm),
               Expanded(
                 child: _buildPhotoComparison(
@@ -242,7 +245,7 @@ class VisualProgressScreen extends ConsumerWidget {
 
   Widget _buildProgressIndicator(DateTime before, DateTime after) {
     final daysDiff = after.difference(before).inDays;
-    
+
     return Container(
       padding: const EdgeInsets.all(spaceMd),
       decoration: BoxDecoration(
@@ -251,7 +254,8 @@ class VisualProgressScreen extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.calendar_today_rounded, color: primaryColor, size: 20),
+          const Icon(Icons.calendar_today_rounded,
+              color: primaryColor, size: 20),
           const SizedBox(width: spaceSm),
           Expanded(
             child: Text(
@@ -291,14 +295,15 @@ class VisualProgressScreen extends ConsumerWidget {
           child: Text('All Types'),
         ),
         ...PhotoType.values.map((type) => PopupMenuItem(
-          value: type,
-          child: Text(_getPhotoTypeName(type)),
-        )),
+              value: type,
+              child: Text(_getPhotoTypeName(type)),
+            )),
       ],
     );
   }
 
-  Widget _buildPhotoGrid(BuildContext context, WidgetRef ref, List<ProgressPhoto> photos) {
+  Widget _buildPhotoGrid(
+      BuildContext context, WidgetRef ref, List<ProgressPhoto> photos) {
     if (photos.isEmpty) {
       return const SliverToBoxAdapter(
         child: Center(
@@ -333,7 +338,8 @@ class VisualProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPhotoCard(BuildContext context, WidgetRef ref, ProgressPhoto photo) {
+  Widget _buildPhotoCard(
+      BuildContext context, WidgetRef ref, ProgressPhoto photo) {
     return GestureDetector(
       onTap: () => _showPhotoDetail(context, ref, photo),
       child: FitXCard(
@@ -353,7 +359,8 @@ class VisualProgressScreen extends ConsumerWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
                     color: surfaceColorLight,
-                    child: const Icon(Icons.image_not_supported, color: textTertiary),
+                    child: const Icon(Icons.image_not_supported,
+                        color: textTertiary),
                   ),
                 ),
               ),
@@ -363,7 +370,8 @@ class VisualProgressScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: primaryColor.withAlpha(51),
                       borderRadius: BorderRadius.circular(4),
@@ -379,9 +387,11 @@ class VisualProgressScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   if (photo.driveFileId != null)
-                    const Icon(Icons.cloud_done_rounded, color: successColor, size: 16)
+                    const Icon(Icons.cloud_done_rounded,
+                        color: successColor, size: 16)
                   else
-                    const Icon(Icons.cloud_off_rounded, color: textTertiary, size: 16),
+                    const Icon(Icons.cloud_off_rounded,
+                        color: textTertiary, size: 16),
                 ],
               ),
             ),
@@ -498,16 +508,17 @@ class VisualProgressScreen extends ConsumerWidget {
         image: image,
         onSave: (type, notes) {
           ref.read(photosNotifierProvider.notifier).addPhoto(
-            imageFile: image,
-            type: type,
-            notes: notes?.isEmpty ?? true ? null : notes,
-          );
+                imageFile: image,
+                type: type,
+                notes: notes?.isEmpty ?? true ? null : notes,
+              );
         },
       ),
     );
   }
 
-  void _showPhotoDetail(BuildContext context, WidgetRef ref, ProgressPhoto photo) {
+  void _showPhotoDetail(
+      BuildContext context, WidgetRef ref, ProgressPhoto photo) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -543,7 +554,8 @@ class VisualProgressScreen extends ConsumerWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: primaryColor.withAlpha(51),
                           borderRadius: BorderRadius.circular(4),
@@ -579,8 +591,10 @@ class VisualProgressScreen extends ConsumerWidget {
                             Navigator.pop(context);
                             _confirmDelete(context, ref, photo);
                           },
-                          icon: const Icon(Icons.delete_outline, color: errorColor),
-                          label: const Text('Delete', style: TextStyle(color: errorColor)),
+                          icon: const Icon(Icons.delete_outline,
+                              color: errorColor),
+                          label: const Text('Delete',
+                              style: TextStyle(color: errorColor)),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: errorColor),
                           ),
@@ -597,12 +611,14 @@ class VisualProgressScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, WidgetRef ref, ProgressPhoto photo) {
+  void _confirmDelete(
+      BuildContext context, WidgetRef ref, ProgressPhoto photo) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: surfaceColor,
-        title: const Text('Delete Photo?', style: TextStyle(color: textPrimary)),
+        title:
+            const Text('Delete Photo?', style: TextStyle(color: textPrimary)),
         content: const Text(
           'This action cannot be undone.',
           style: TextStyle(color: textSecondary),
@@ -760,10 +776,12 @@ class _PhotoTypeDialogState extends State<_PhotoTypeDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SegmentedButton<PhotoType>(
-            segments: PhotoType.values.map((type) => ButtonSegment(
-              value: type,
-              label: Text(_getPhotoTypeName(type)),
-            )).toList(),
+            segments: PhotoType.values
+                .map((type) => ButtonSegment(
+                      value: type,
+                      label: Text(_getPhotoTypeName(type)),
+                    ))
+                .toList(),
             selected: {selectedType},
             onSelectionChanged: (selection) {
               setState(() => selectedType = selection.first);

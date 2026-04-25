@@ -29,7 +29,8 @@ class StatisticsScreen extends ConsumerWidget {
                 delegate: SliverChildListDelegate([
                   _HealthScoreCard(),
                   const SizedBox(height: spaceLg),
-                  const SectionHeader(title: 'تفصيل العناصر الغذائية', actionText: 'السجل'),
+                  const SectionHeader(
+                      title: 'تفصيل العناصر الغذائية', actionText: 'السجل'),
                   const SizedBox(height: spaceSm),
                   _NutrientsGrid(healthAsync),
                   const SizedBox(height: spaceLg),
@@ -56,7 +57,13 @@ class _StatsAppBar extends StatelessWidget {
         child: Row(
           children: [
             _CircleActionBtn(icon: Icons.calendar_month_rounded, filled: true),
-            Expanded(child: Text('الأداء', textAlign: TextAlign.center, style: TextStyle(color: textPrimary, fontSize: 18, fontWeight: FontWeight.bold))),
+            Expanded(
+                child: Text('الأداء',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold))),
             SizedBox(width: 44), // Balance the row
           ],
         ),
@@ -107,13 +114,23 @@ class _HealthScoreCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('النتيجة الإجمالية', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const Text('النتيجة الإجمالية',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 const SizedBox(height: 4),
-                Text(health != null && health.steps > 5000 ? 'نشيط وصحي! 🔥' : 'وقت الحركة!', style: const TextStyle(color: textSecondary, fontSize: 13)),
+                Text(
+                    health != null && health.steps > 5000
+                        ? 'نشيط وصحي! 🔥'
+                        : 'وقت الحركة!',
+                    style: const TextStyle(color: textSecondary, fontSize: 13)),
               ],
             ),
           ),
-          const CircularProgressIndicator(value: 0.75, strokeWidth: 5, backgroundColor: surfaceBorder, valueColor: AlwaysStoppedAnimation(primaryColor)),
+          const CircularProgressIndicator(
+              value: 0.75,
+              strokeWidth: 5,
+              backgroundColor: surfaceBorder,
+              valueColor: AlwaysStoppedAnimation(primaryColor)),
         ],
       ),
     );
@@ -135,10 +152,26 @@ class _NutrientsGrid extends StatelessWidget {
         crossAxisSpacing: spaceSm,
         childAspectRatio: 1.3,
         children: [
-          _StatTile(label: 'بروتين', value: '${health.protein}g', icon: Icons.egg, color: Colors.blue),
-          _StatTile(label: 'كارب', value: '${health.carbs}g', icon: Icons.bakery_dining, color: Colors.orange),
-          _StatTile(label: 'دهون', value: '${health.fat}g', icon: Icons.opacity, color: Colors.red),
-          _StatTile(label: 'الهدف', value: '${health.caloriesConsumed}', icon: Icons.flag, color: primaryColor),
+          _StatTile(
+              label: 'بروتين',
+              value: '${health.protein}g',
+              icon: Icons.egg,
+              color: Colors.blue),
+          _StatTile(
+              label: 'كارب',
+              value: '${health.carbs}g',
+              icon: Icons.bakery_dining,
+              color: Colors.orange),
+          _StatTile(
+              label: 'دهون',
+              value: '${health.fat}g',
+              icon: Icons.opacity,
+              color: Colors.red),
+          _StatTile(
+              label: 'الهدف',
+              value: '${health.caloriesConsumed}',
+              icon: Icons.flag,
+              color: primaryColor),
         ],
       ),
       loading: () => const FitXShimmerCard(height: 200),
@@ -159,8 +192,11 @@ class _ActivityAnalysisCard extends StatelessWidget {
           Container(
             height: 140,
             width: double.infinity,
-            decoration: BoxDecoration(color: surfaceColorLight.withAlpha(77), borderRadius: BorderRadius.circular(radiusMd)),
-            child: const Center(child: Icon(Icons.show_chart, color: primaryColor, size: 40)),
+            decoration: BoxDecoration(
+                color: surfaceColorLight.withAlpha(77),
+                borderRadius: BorderRadius.circular(radiusMd)),
+            child: const Center(
+                child: Icon(Icons.show_chart, color: primaryColor, size: 40)),
           ),
         ],
       ),
@@ -179,9 +215,14 @@ class _CircleActionBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = Container(
-      width: 44, height: 44,
-      decoration: BoxDecoration(color: filled ? primaryColor : surfaceColor, borderRadius: BorderRadius.circular(radiusSm), border: filled ? null : Border.all(color: surfaceBorder)),
-      child: Icon(icon, color: filled ? const Color(0xFF1A1A00) : textSecondary, size: 20),
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+          color: filled ? primaryColor : surfaceColor,
+          borderRadius: BorderRadius.circular(radiusSm),
+          border: filled ? null : Border.all(color: surfaceBorder)),
+      child: Icon(icon,
+          color: filled ? const Color(0xFF1A1A00) : textSecondary, size: 20),
     );
     return onTap != null ? GestureDetector(onTap: onTap, child: child) : child;
   }
@@ -191,10 +232,19 @@ class _DateChip extends StatelessWidget {
   final int index;
   final bool isSelected;
   final VoidCallback onTap;
-  const _DateChip({required this.index, required this.isSelected, required this.onTap});
+  const _DateChip(
+      {required this.index, required this.isSelected, required this.onTap});
 
   String _formatDate(DateTime date) {
-    final days = ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+    final days = [
+      'الاثنين',
+      'الثلاثاء',
+      'الأربعاء',
+      'الخميس',
+      'الجمعة',
+      'السبت',
+      'الأحد'
+    ];
     return days[date.weekday - 1];
   }
 
@@ -205,8 +255,21 @@ class _DateChip extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(color: isSelected ? primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(radiusFull), border: isSelected ? null : Border.all(color: surfaceBorder)),
-        child: Center(child: Text(index == 3 ? 'اليوم' : _formatDate(DateTime.now().subtract(Duration(days: 3 - index))), style: TextStyle(color: isSelected ? Colors.black : textSecondary, fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal))),
+        decoration: BoxDecoration(
+            color: isSelected ? primaryColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(radiusFull),
+            border: isSelected ? null : Border.all(color: surfaceBorder)),
+        child: Center(
+            child: Text(
+                index == 3
+                    ? 'اليوم'
+                    : _formatDate(
+                        DateTime.now().subtract(Duration(days: 3 - index))),
+                style: TextStyle(
+                    color: isSelected ? Colors.black : textSecondary,
+                    fontSize: 12,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal))),
       ),
     );
   }
@@ -216,7 +279,11 @@ class _StatTile extends StatelessWidget {
   final String label, value;
   final IconData icon;
   final Color color;
-  const _StatTile({required this.label, required this.value, required this.icon, required this.color});
+  const _StatTile(
+      {required this.label,
+      required this.value,
+      required this.icon,
+      required this.color});
   @override
   Widget build(BuildContext context) {
     return FitXCard(
@@ -225,8 +292,13 @@ class _StatTile extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: grandisExtendedFont)),
-          Text(label, style: const TextStyle(color: textSecondary, fontSize: 11)),
+          Text(value,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontFamily: grandisExtendedFont)),
+          Text(label,
+              style: const TextStyle(color: textSecondary, fontSize: 11)),
         ],
       ),
     );

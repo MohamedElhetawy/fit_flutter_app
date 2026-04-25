@@ -22,7 +22,7 @@ class CodeDisplayScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateProvider).value;
-    
+
     if (user == null) {
       return const Scaffold(
         backgroundColor: bgColor,
@@ -41,7 +41,8 @@ class CodeDisplayScreen extends ConsumerWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(color: textPrimary, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: textPrimary, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -51,7 +52,8 @@ class CodeDisplayScreen extends ConsumerWidget {
         ],
       ),
       body: StreamBuilder(
-        stream: ref.read(firestoreProvider)
+        stream: ref
+            .read(firestoreProvider)
             .collection('users')
             .doc(user.uid)
             .snapshots(),
@@ -215,7 +217,8 @@ class CodeDisplayScreen extends ConsumerWidget {
                       icon: const Icon(Icons.qr_code_scanner),
                       label: const Text(
                         'مسح QR Code',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: surfaceColorLight,
@@ -227,7 +230,7 @@ class CodeDisplayScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: spaceSm),
 
                   // زر نسخ الكود
@@ -238,7 +241,8 @@ class CodeDisplayScreen extends ConsumerWidget {
                       icon: const Icon(Icons.copy),
                       label: const Text(
                         'نسخ الكود',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
@@ -263,16 +267,17 @@ class CodeDisplayScreen extends ConsumerWidget {
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
 
-    final doc = await ref.read(firestoreProvider)
+    final doc = await ref
+        .read(firestoreProvider)
         .collection('users')
         .doc(user.uid)
         .get();
-    
+
     final data = doc.data() ?? {};
     final code = data['accessCode'] ?? '';
 
     await Clipboard.setData(ClipboardData(text: code));
-    
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -296,7 +301,8 @@ class CodeDisplayScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _processScannedCode(BuildContext context, WidgetRef ref, String code) async {
+  Future<void> _processScannedCode(
+      BuildContext context, WidgetRef ref, String code) async {
     try {
       // Parse QR data format: fitx:userId:accessCode
       if (!code.startsWith('fitx:')) {
@@ -312,10 +318,11 @@ class CodeDisplayScreen extends ConsumerWidget {
       final scannedCode = parts[2];
 
       final firestore = ref.read(firestoreProvider);
-      
+
       // Find user by ID and code
-      final userDoc = await firestore.collection('users').doc(scannedUserId).get();
-      
+      final userDoc =
+          await firestore.collection('users').doc(scannedUserId).get();
+
       if (!userDoc.exists) {
         throw Exception('المستخدم غير موجود');
       }
@@ -331,12 +338,14 @@ class CodeDisplayScreen extends ConsumerWidget {
       // Navigate to appropriate linking screen based on role
       if (context.mounted) {
         Navigator.pop(context); // Close scanner
-        
+
         if (userRole == 'trainer') {
           // Navigate to trainer code entry with pre-filled code
-          _showLinkingDialog(context, ref, 'مدرب', scannedUserId, userData['name'] ?? '');
+          _showLinkingDialog(
+              context, ref, 'مدرب', scannedUserId, userData['name'] ?? '');
         } else if (userRole == 'gym') {
-          _showLinkingDialog(context, ref, 'جيم', scannedUserId, userData['name'] ?? '');
+          _showLinkingDialog(
+              context, ref, 'جيم', scannedUserId, userData['name'] ?? '');
         } else {
           throw Exception('لا يمكن الربط بهذا المستخدم');
         }
@@ -353,12 +362,14 @@ class CodeDisplayScreen extends ConsumerWidget {
     }
   }
 
-  void _showLinkingDialog(BuildContext context, WidgetRef ref, String type, String userId, String name) {
+  void _showLinkingDialog(BuildContext context, WidgetRef ref, String type,
+      String userId, String name) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: bgColor,
-        title: Text('الربط بـ $type', style: const TextStyle(color: textPrimary)),
+        title:
+            Text('الربط بـ $type', style: const TextStyle(color: textPrimary)),
         content: Text(
           'هل تريد الانضمام إلى $name؟',
           style: const TextStyle(color: textSecondary),
@@ -380,7 +391,8 @@ class CodeDisplayScreen extends ConsumerWidget {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-            child: const Text('تأكيد', style: TextStyle(color: Color(0xFF1A1A00))),
+            child:
+                const Text('تأكيد', style: TextStyle(color: Color(0xFF1A1A00))),
           ),
         ],
       ),
@@ -420,7 +432,7 @@ class _QrScannerScreenState extends State<_QrScannerScreen> {
       body: MobileScanner(
         onDetect: (capture) {
           if (_hasScanned) return;
-          
+
           final barcodes = capture.barcodes;
           for (final barcode in barcodes) {
             final rawValue = barcode.rawValue;

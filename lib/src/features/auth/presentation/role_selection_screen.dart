@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:fitx/constants.dart';
 import 'package:fitx/src/core/auth/app_role.dart';
 import 'package:fitx/src/core/auth/auth_controller.dart';
+import 'package:fitx/src/features/auth/data/role_setup_providers.dart';
 import 'package:fitx/src/core/providers/firebase_providers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'linking_screen.dart';
 
 /// Modern Role Selection Screen with secure gym code verification
@@ -14,7 +14,8 @@ class RoleSelectionScreen extends ConsumerStatefulWidget {
   const RoleSelectionScreen({super.key});
 
   @override
-  ConsumerState<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
+  ConsumerState<RoleSelectionScreen> createState() =>
+      _RoleSelectionScreenState();
 }
 
 class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
@@ -42,7 +43,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   Widget build(BuildContext context) {
     final loading = ref.watch(authControllerProvider).isLoading;
     final user = ref.watch(authStateProvider).value;
-    
+
     // Auto-detect super admin
     if (_isSuperAdmin(user?.email)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,7 +62,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
           slivers: [
             // Header
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(defaultPadding, spaceLg, defaultPadding, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  defaultPadding, spaceLg, defaultPadding, 0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +107,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
                       icon: Icons.fitness_center,
                       gradient: const [Color(0xFF6B8E23), Color(0xFF8FBC8F)],
                       isSelected: _selectedRole == AppRole.trainee,
-                      onTap: () => setState(() => _selectedRole = AppRole.trainee),
+                      onTap: () =>
+                          setState(() => _selectedRole = AppRole.trainee),
                     ),
                     const SizedBox(height: spaceMd),
                     _RoleCard(
@@ -114,7 +117,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
                       icon: Icons.school,
                       gradient: const [Color(0xFF4A5568), Color(0xFF718096)],
                       isSelected: _selectedRole == AppRole.trainer,
-                      onTap: () => setState(() => _selectedRole = AppRole.trainer),
+                      onTap: () =>
+                          setState(() => _selectedRole = AppRole.trainer),
                     ),
                   ],
                 ),
@@ -124,7 +128,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
             // Gym Selection (if role selected)
             if (_selectedRole != null) ...[
               const SliverPadding(
-                padding: EdgeInsets.fromLTRB(defaultPadding, 0, defaultPadding, spaceSm),
+                padding: EdgeInsets.fromLTRB(
+                    defaultPadding, 0, defaultPadding, spaceSm),
                 sliver: SliverToBoxAdapter(
                   child: Text(
                     'اختر الجيم',
@@ -259,7 +264,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     if (_selectedRole == null) return;
 
     // For Trainee/Trainer with gym selected: Verify code and save with gym
-    if ((_selectedRole == AppRole.trainee || _selectedRole == AppRole.trainer) &&
+    if ((_selectedRole == AppRole.trainee ||
+            _selectedRole == AppRole.trainer) &&
         _selectedGymId != null) {
       final code = _codeController.text.trim();
       if (code.length < 4) {
@@ -273,7 +279,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         return;
       }
 
-      await _saveRoleWithGym(_selectedRole!, _selectedGymId!, _selectedGymName!);
+      await _saveRoleWithGym(
+          _selectedRole!, _selectedGymId!, _selectedGymName!);
       return;
     }
 
@@ -300,40 +307,17 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   }
 
   Future<bool> _verifyGymCode(String gymId, String code) async {
-    final firestore = ref.read(firestoreProvider);
-    final doc = await firestore.collection('gyms').doc(gymId).get();
-    
-    if (!doc.exists) return false;
-    
-    final data = doc.data();
-    final validCode = data?['accessCode'] as String?;
-    
-    return validCode != null && validCode.toUpperCase() == code.toUpperCase();
+    return await ref
+        .read(roleSetupRepositoryProvider)
+        .verifyGymCode(gymId, code);
   }
 
   Future<void> _saveRole(AppRole role) async {
-    await ref.read(authControllerProvider.notifier).saveRole(role);
-    
-    // Generate access code for ALL users (trainee, trainer, gym)
-    await _generateAccessCode();
-    
+    await ref.read(roleSetupRepositoryProvider).saveRole(role);
+
     if (mounted) {
       _navigateToDashboard(role);
     }
-  }
-
-  Future<void> _generateAccessCode() async {
-    final user = ref.read(authStateProvider).value;
-    if (user == null) return;
-    
-    final firestore = ref.read(firestoreProvider);
-    final code = (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
-    
-    await firestore.collection('users').doc(user.uid).update({
-      'accessCode': code,
-      'qrData': 'fitx:${user.uid}:$code',
-      'codeGeneratedAt': FieldValue.serverTimestamp(),
-    });
   }
 
   void _navigateToDashboard(AppRole role) {
@@ -350,19 +334,12 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     }
   }
 
-  Future<void> _saveRoleWithGym(AppRole role, String gymId, String gymName) async {
-    await ref.read(authControllerProvider.notifier).saveRole(role);
-    
-    // Save gym association
-    final user = ref.read(authRepositoryProvider).currentUser;
-    if (user != null) {
-      await ref.read(firestoreProvider).collection('users').doc(user.uid).update({
-        'gymId': gymId,
-        'gymName': gymName,
-        'joinedAt': FieldValue.serverTimestamp(),
-      });
-    }
-    
+  Future<void> _saveRoleWithGym(
+      AppRole role, String gymId, String gymName) async {
+    await ref
+        .read(roleSetupRepositoryProvider)
+        .saveRoleWithGym(role, gymId, gymName);
+
     if (mounted) {
       context.go('/dashboard');
     }
@@ -396,7 +373,8 @@ class _RoleCard extends StatelessWidget {
         padding: const EdgeInsets.all(spaceMd),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: isSelected ? gradient : [surfaceColorLight, surfaceColorLight],
+            colors:
+                isSelected ? gradient : [surfaceColorLight, surfaceColorLight],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -420,7 +398,9 @@ class _RoleCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withOpacity(0.2) : primaryColor.withOpacity(0.1),
+                color: isSelected
+                    ? Colors.white.withOpacity(0.2)
+                    : primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(radiusMd),
               ),
               child: Icon(
@@ -446,7 +426,9 @@ class _RoleCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: isSelected ? Colors.white.withOpacity(0.9) : textSecondary,
+                      color: isSelected
+                          ? Colors.white.withOpacity(0.9)
+                          : textSecondary,
                       fontSize: 14,
                     ),
                   ),
@@ -561,7 +543,8 @@ class _GymTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isSelected ? primaryColor.withOpacity(0.2) : surfaceColor,
+                color:
+                    isSelected ? primaryColor.withOpacity(0.2) : surfaceColor,
                 borderRadius: BorderRadius.circular(radiusSm),
               ),
               child: Icon(
@@ -580,7 +563,8 @@ class _GymTile extends StatelessWidget {
                     style: TextStyle(
                       color: textPrimary,
                       fontSize: 16,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -595,7 +579,9 @@ class _GymTile extends StatelessWidget {
               ),
             ),
             Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
               color: isSelected ? primaryColor : textTertiary,
             ),
           ],
@@ -640,9 +626,12 @@ final _gymsProvider = StreamProvider<List<Map<String, String>>>((ref) {
       .collection('gyms')
       .where('isActive', isEqualTo: true)
       .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => {
-            'id': doc.id,
-            'name': doc.data()['name']?.toString() ?? 'بدون اسم',
-            'location': doc.data()['location']?.toString() ?? 'موقع غير محدد',
-          }).toList());
+      .map((snapshot) => snapshot.docs
+          .map((doc) => {
+                'id': doc.id,
+                'name': doc.data()['name']?.toString() ?? 'بدون اسم',
+                'location':
+                    doc.data()['location']?.toString() ?? 'موقع غير محدد',
+              })
+          .toList());
 });

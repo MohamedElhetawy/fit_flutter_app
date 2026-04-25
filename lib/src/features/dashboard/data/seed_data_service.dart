@@ -26,7 +26,9 @@ class SeedDataNotifier extends AsyncNotifier<String?> {
       final batch = firestore.batch();
 
       // 1. Unified Daily Stats (The brain of the dashboard)
-      final statsDoc = userDoc.collection('daily_stats').doc(today.millisecondsSinceEpoch.toString());
+      final statsDoc = userDoc
+          .collection('daily_stats')
+          .doc(today.millisecondsSinceEpoch.toString());
       batch.set(statsDoc, {
         'steps': 6420,
         'caloriesBurned': 320,
@@ -69,18 +71,21 @@ class SeedDataNotifier extends AsyncNotifier<String?> {
           'name': 'Upper Body Workout',
           'durationMinutes': 45,
           'type': 'workout',
-          'timestamp': Timestamp.fromDate(now.subtract(const Duration(hours: 2))),
+          'timestamp':
+              Timestamp.fromDate(now.subtract(const Duration(hours: 2))),
         },
         {
           'name': 'Morning Walk',
           'durationMinutes': 20,
           'type': 'running',
-          'timestamp': Timestamp.fromDate(now.subtract(const Duration(hours: 8))),
+          'timestamp':
+              Timestamp.fromDate(now.subtract(const Duration(hours: 8))),
         },
       ];
 
       for (final activity in activities) {
-        final docId = 'activity_${DateTime.now().millisecondsSinceEpoch}_${activity['name'].hashCode}';
+        final docId =
+            'activity_${DateTime.now().millisecondsSinceEpoch}_${activity['name'].hashCode}';
         batch.set(userDoc.collection('activities').doc(docId), activity);
       }
 

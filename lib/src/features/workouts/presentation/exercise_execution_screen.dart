@@ -36,8 +36,8 @@ class _ExerciseExecutionScreenState
       final session = ref.read(workoutSessionProvider);
       if (session == null || !session.isActive) {
         ref.read(workoutSessionProvider.notifier).startWorkout(
-          muscleGroup: widget.exercise.muscleGroup,
-        );
+              muscleGroup: widget.exercise.muscleGroup,
+            );
       }
     });
   }
@@ -63,11 +63,11 @@ class _ExerciseExecutionScreenState
 
     // Add to workout session
     ref.read(workoutSessionProvider.notifier).addSet(
-      exerciseId: widget.exercise.id,
-      exerciseName: widget.exercise.nameAr,
-      weight: weight,
-      reps: reps,
-    );
+          exerciseId: widget.exercise.id,
+          exerciseName: widget.exercise.nameAr,
+          weight: weight,
+          reps: reps,
+        );
 
     // Clear inputs
     _weightController.clear();
@@ -122,7 +122,8 @@ class _ExerciseExecutionScreenState
             borderRadius: BorderRadius.circular(radiusMd),
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: textPrimary, size: 20),
+            icon:
+                const Icon(Icons.arrow_back_ios, color: textPrimary, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -370,7 +371,8 @@ class _ExerciseExecutionScreenState
                                       value: timerState.progress,
                                       strokeWidth: 8,
                                       backgroundColor: Colors.transparent,
-                                      valueColor: const AlwaysStoppedAnimation<Color>(
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
                                         primaryColor,
                                       ),
                                       strokeCap: StrokeCap.round,
@@ -378,7 +380,8 @@ class _ExerciseExecutionScreenState
                                     // Timer Text
                                     Center(
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             timerState.formattedTime,
@@ -392,7 +395,8 @@ class _ExerciseExecutionScreenState
                                           Text(
                                             'ثانية',
                                             style: TextStyle(
-                                              color: textSecondary.withAlpha(179),
+                                              color:
+                                                  textSecondary.withAlpha(179),
                                               fontSize: 12,
                                             ),
                                           ),
@@ -428,7 +432,8 @@ class _ExerciseExecutionScreenState
                                     timerNotifier.pause();
                                   }
                                 },
-                                label: timerState.isPaused ? 'استئناف' : 'إيقاف',
+                                label:
+                                    timerState.isPaused ? 'استئناف' : 'إيقاف',
                                 isPrimary: true,
                               ),
                               const SizedBox(width: spaceLg),
@@ -611,9 +616,7 @@ class _ExerciseExecutionScreenState
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: isPrimary
-                  ? primaryColor.withAlpha(51)
-                  : surfaceColorLight,
+              color: isPrimary ? primaryColor.withAlpha(51) : surfaceColorLight,
               borderRadius: BorderRadius.circular(radiusMd),
               border: Border.all(
                 color: isPrimary ? primaryColor : surfaceBorder,
@@ -643,7 +646,8 @@ class _ExerciseExecutionScreenState
     return GestureDetector(
       onTap: () => notifier.start(seconds: seconds),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceSm),
+        padding:
+            const EdgeInsets.symmetric(horizontal: spaceMd, vertical: spaceSm),
         decoration: BoxDecoration(
           color: surfaceColorLight,
           borderRadius: BorderRadius.circular(radiusSm),
@@ -885,7 +889,9 @@ class _ExerciseExecutionScreenState
               Row(
                 children: [
                   Icon(
-                    comparison.isBetter ? Icons.trending_up : Icons.info_outline,
+                    comparison.isBetter
+                        ? Icons.trending_up
+                        : Icons.info_outline,
                     color: comparison.isBetter ? successColor : primaryColor,
                     size: 20,
                   ),
@@ -895,54 +901,54 @@ class _ExerciseExecutionScreenState
                       comparison.message,
                       style: TextStyle(
                         color: comparison.isBetter ? successColor : textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
+                ],
+              ),
+              // Suggestion from similar users
+              suggestionAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+                data: (suggestion) {
+                  if (suggestion == null || suggestion.confidence <= 0.5) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Column(
+                    children: [
+                      const SizedBox(height: spaceMd),
+                      const Divider(color: surfaceBorder),
+                      const SizedBox(height: spaceSm),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.lightbulb_outline,
+                            color: primaryColor,
+                            size: 16,
+                          ),
+                          const SizedBox(width: spaceSm),
+                          Expanded(
+                            child: Text(
+                              '💡 المجموعة الجاية: جرب ${suggestion.suggestedWeight.toStringAsFixed(1)} كجم',
+                              style: const TextStyle(
+                                color: primaryColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
-          // Suggestion from similar users
-          suggestionAsync.when(
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-            data: (suggestion) {
-              if (suggestion == null || suggestion.confidence <= 0.5) {
-                return const SizedBox.shrink();
-              }
-              
-              return Column(
-                children: [
-                  const SizedBox(height: spaceMd),
-                  const Divider(color: surfaceBorder),
-                  const SizedBox(height: spaceSm),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.lightbulb_outline,
-                        color: primaryColor,
-                        size: 16,
-                      ),
-                      const SizedBox(width: spaceSm),
-                      Expanded(
-                        child: Text(
-                          '💡 المجموعة الجاية: جرب ${suggestion.suggestedWeight.toStringAsFixed(1)} كجم',
-                          style: const TextStyle(
-                            color: primaryColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
+        );
       },
     );
   }

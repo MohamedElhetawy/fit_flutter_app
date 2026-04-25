@@ -12,7 +12,7 @@ import 'dart:math';
 /// بيسأل: هل انت تابع لـ؟ (جيم / مدرب / بنفسك)
 class LinkingScreen extends ConsumerStatefulWidget {
   final AppRole selectedRole;
-  
+
   const LinkingScreen({super.key, required this.selectedRole});
 
   @override
@@ -70,7 +70,8 @@ class _LinkingScreenState extends ConsumerState<LinkingScreen> {
                     subtitle: 'ادخل كود الجيم للانضمام',
                     icon: Icons.business,
                     gradient: const [Color(0xFF4A5568), Color(0xFF718096)],
-                    onTap: _isLoading ? () {} : () => _navigateToGymCode(context),
+                    onTap:
+                        _isLoading ? () {} : () => _navigateToGymCode(context),
                   ),
                   const SizedBox(height: spaceMd),
 
@@ -79,7 +80,9 @@ class _LinkingScreenState extends ConsumerState<LinkingScreen> {
                     subtitle: 'ادخل كود المدرب مباشرة',
                     icon: Icons.school,
                     gradient: const [Color(0xFF6B8E23), Color(0xFF8FBC8F)],
-                    onTap: _isLoading ? () {} : () => _navigateToTrainerCode(context, null),
+                    onTap: _isLoading
+                        ? () {}
+                        : () => _navigateToTrainerCode(context, null),
                   ),
                   const SizedBox(height: spaceMd),
 
@@ -88,7 +91,9 @@ class _LinkingScreenState extends ConsumerState<LinkingScreen> {
                     subtitle: 'استخدم التطبيق بشكل مستقل',
                     icon: Icons.person_outline,
                     gradient: const [Color(0xFF805AD5), Color(0xFFB794F6)],
-                    onTap: _isLoading ? () {} : () => _completeAsIndependent(context),
+                    onTap: _isLoading
+                        ? () {}
+                        : () => _completeAsIndependent(context),
                   ),
                 ],
               ),
@@ -141,16 +146,20 @@ class _LinkingScreenState extends ConsumerState<LinkingScreen> {
 
   Future<void> _completeAsIndependent(BuildContext context) async {
     setState(() => _isLoading = true);
-    
+
     try {
-      await ref.read(authControllerProvider.notifier).saveRole(widget.selectedRole);
-      
+      await ref
+          .read(authControllerProvider.notifier)
+          .saveRole(widget.selectedRole);
+
       // Generate code for this user (independent trainers/gyms get codes too)
       final user = ref.read(authStateProvider).value;
-      if (user != null && (widget.selectedRole == AppRole.trainer || widget.selectedRole == AppRole.gym)) {
+      if (user != null &&
+          (widget.selectedRole == AppRole.trainer ||
+              widget.selectedRole == AppRole.gym)) {
         await _generateUserCode(user.uid, widget.selectedRole);
       }
-      
+
       if (context.mounted) {
         _navigateToDashboard(context);
       }
@@ -168,7 +177,7 @@ class _LinkingScreenState extends ConsumerState<LinkingScreen> {
   Future<void> _generateUserCode(String uid, AppRole role) async {
     final firestore = ref.read(firestoreProvider);
     final code = _generate6DigitCode();
-    
+
     await firestore.collection('users').doc(uid).update({
       'accessCode': code,
       'qrData': 'fitx:${role.name}:$code',
@@ -429,7 +438,7 @@ class _GymCodeScreenState extends ConsumerState<GymCodeScreen> {
 
     try {
       final firestore = ref.read(firestoreProvider);
-      
+
       // البحث عن الجيم بالكود
       final query = await firestore
           .collection('gyms')
@@ -532,7 +541,6 @@ class TrainerQuestionScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: spaceLg),
-              
               _OptionCard(
                 title: 'نعم، معايا كود مدرب',
                 icon: Icons.check_circle,
@@ -549,7 +557,6 @@ class TrainerQuestionScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: spaceMd),
-              
               _OptionCard(
                 title: 'لا، بدون مدرب',
                 icon: Icons.cancel,
@@ -566,7 +573,8 @@ class TrainerQuestionScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _completeWithoutTrainer(BuildContext context, AppRole role) async {
+  Future<void> _completeWithoutTrainer(
+      BuildContext context, AppRole role) async {
     // Navigate to dashboard directly
     if (context.mounted) {
       context.go('/dashboard');
@@ -730,7 +738,7 @@ class _TrainerCodeScreenState extends ConsumerState<TrainerCodeScreen> {
 
     try {
       final firestore = ref.read(firestoreProvider);
-      
+
       // البحث عن المدرب بالكود
       final query = await firestore
           .collection('users')
@@ -750,7 +758,9 @@ class _TrainerCodeScreenState extends ConsumerState<TrainerCodeScreen> {
       final trainerGymId = trainerDoc.data()['gymId'];
 
       // لو المدرب في جيم مختلف، نحذر المستخدم
-      if (widget.gymId != null && trainerGymId != null && trainerGymId != widget.gymId) {
+      if (widget.gymId != null &&
+          trainerGymId != null &&
+          trainerGymId != widget.gymId) {
         setState(() => _errorMessage = 'المدرب ده مش في نفس الجيم');
         return;
       }

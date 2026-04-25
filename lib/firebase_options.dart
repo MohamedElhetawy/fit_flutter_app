@@ -70,8 +70,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1085838788540',
     projectId: 'fit-x-cd2c8',
     storageBucket: 'fit-x-cd2c8.firebasestorage.app',
-    iosClientId: '1085838788540-m2e17kebq907jmlj9tv63eof07gtsk7t.apps.googleusercontent.com',
+    iosClientId:
+        '1085838788540-m2e17kebq907jmlj9tv63eof07gtsk7t.apps.googleusercontent.com',
     iosBundleId: 'com.fitx.app',
   );
-
 }

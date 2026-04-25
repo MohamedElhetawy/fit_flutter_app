@@ -7,11 +7,14 @@ final dashboardRepositoryProvider = Provider<DashboardRepository>((ref) {
   return DashboardRepository(ref.watch(firestoreProvider));
 });
 
-final usersCollectionProvider = StreamProvider<List<Map<String, dynamic>>>((ref) {
+final usersCollectionProvider =
+    StreamProvider<List<Map<String, dynamic>>>((ref) {
   return ref.watch(dashboardRepositoryProvider).watchCollection('users');
 });
 
 final subscriptionsCollectionProvider =
     StreamProvider<List<Map<String, dynamic>>>((ref) {
-  return ref.watch(dashboardRepositoryProvider).watchCollection('subscriptions');
+  return ref
+      .watch(dashboardRepositoryProvider)
+      .watchCollection('subscriptions');
 });

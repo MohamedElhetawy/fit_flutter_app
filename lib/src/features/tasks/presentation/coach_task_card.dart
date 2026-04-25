@@ -20,9 +20,11 @@ class CoachTaskCard extends ConsumerWidget {
       error: (_, __) => const SizedBox.shrink(),
       data: (tasks) {
         // Find the most relevant active task
-        final activeTasks = tasks.where((t) =>
-          t.status == TaskStatus.pending || t.status == TaskStatus.inProgress
-        ).toList();
+        final activeTasks = tasks
+            .where((t) =>
+                t.status == TaskStatus.pending ||
+                t.status == TaskStatus.inProgress)
+            .toList();
 
         if (activeTasks.isEmpty) {
           return _buildEmptyState();
@@ -297,7 +299,9 @@ class CoachTaskCard extends ConsumerWidget {
   void _navigateToDetail(BuildContext context, WidgetRef ref, Task task) async {
     // Mark as read when navigating
     if (!task.isRead) {
-      await ref.read(coachTaskControllerProvider(task.id).notifier).markAsRead();
+      await ref
+          .read(coachTaskControllerProvider(task.id).notifier)
+          .markAsRead();
     }
 
     if (context.mounted) {

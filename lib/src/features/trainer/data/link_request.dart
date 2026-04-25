@@ -35,7 +35,8 @@ class LinkRequest {
       trainerId: map['trainerId']?.toString() ?? '',
       trainerName: map['trainerName']?.toString() ?? '',
       status: _parseStatus(map['status']?.toString()),
-      createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
+          DateTime.now(),
       respondedAt: DateTime.tryParse(map['respondedAt']?.toString() ?? ''),
       qrNonce: map['qrNonce']?.toString(),
       responseMessage: map['responseMessage']?.toString(),
@@ -43,17 +44,17 @@ class LinkRequest {
   }
 
   Map<String, dynamic> toMap() => {
-    'traineeId': traineeId,
-    'traineeName': traineeName,
-    'traineeEmail': traineeEmail,
-    'trainerId': trainerId,
-    'trainerName': trainerName,
-    'status': status.name,
-    'createdAt': createdAt.toIso8601String(),
-    'respondedAt': respondedAt?.toIso8601String(),
-    'qrNonce': qrNonce,
-    'responseMessage': responseMessage,
-  };
+        'traineeId': traineeId,
+        'traineeName': traineeName,
+        'traineeEmail': traineeEmail,
+        'trainerId': trainerId,
+        'trainerName': trainerName,
+        'status': status.name,
+        'createdAt': createdAt.toIso8601String(),
+        'respondedAt': respondedAt?.toIso8601String(),
+        'qrNonce': qrNonce,
+        'responseMessage': responseMessage,
+      };
 
   LinkRequest copyWith({
     LinkRequestStatus? status,

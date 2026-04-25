@@ -165,7 +165,8 @@ class ProfileScreenFitX extends ConsumerWidget {
                 _SettingsItem(
                   icon: Icons.person_outline_rounded,
                   title: 'Edit Profile',
-                  onTap: () => _showEditProfileDialog(context, ref, displayName),
+                  onTap: () =>
+                      _showEditProfileDialog(context, ref, displayName),
                 ),
                 _SettingsItem(
                   icon: Icons.notifications_outlined,
@@ -254,8 +255,7 @@ class ProfileScreenFitX extends ConsumerWidget {
                           color: surfaceColorLight,
                           borderRadius: BorderRadius.circular(radiusXs),
                         ),
-                        child: Icon(item.icon,
-                            color: textSecondary, size: 20),
+                        child: Icon(item.icon, color: textSecondary, size: 20),
                       ),
                       const SizedBox(width: spaceSm + spaceXs),
                       Expanded(
@@ -292,7 +292,8 @@ class ProfileScreenFitX extends ConsumerWidget {
     );
   }
 
-  void _showEditProfileDialog(BuildContext context, WidgetRef ref, String currentName) {
+  void _showEditProfileDialog(
+      BuildContext context, WidgetRef ref, String currentName) {
     final nameController = TextEditingController(text: currentName);
     showDialog(
       context: context,
@@ -434,13 +435,15 @@ class ProfileScreenFitX extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: surfaceColor,
-        title: const Text('Help & Support', style: TextStyle(color: textPrimary)),
+        title:
+            const Text('Help & Support', style: TextStyle(color: textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildHelpOption(context, 'FAQ', Icons.help_outline_rounded),
             _buildHelpOption(context, 'Contact Support', Icons.email_outlined),
-            _buildHelpOption(context, 'Report a Bug', Icons.bug_report_outlined),
+            _buildHelpOption(
+                context, 'Report a Bug', Icons.bug_report_outlined),
           ],
         ),
         actions: [

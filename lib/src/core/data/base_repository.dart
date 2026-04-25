@@ -4,9 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// Provides common error handling and Firestore utilities
 abstract class BaseRepository {
   final FirebaseFirestore firestore;
-  
+
   const BaseRepository({required this.firestore});
-  
+
   /// Generic error handler for Firestore operations
   Future<T> handleFirestoreOperation<T>(
     Future<T> operation, {
@@ -23,7 +23,7 @@ abstract class BaseRepository {
       throw RepositoryException(errorMessage ?? 'Unknown error: $e');
     }
   }
-  
+
   /// Generic stream handler with error catching
   Stream<T> handleFirestoreStream<T>(
     Stream<T> stream, {
@@ -45,9 +45,9 @@ abstract class BaseRepository {
 class RepositoryException implements Exception {
   final String message;
   final String? code;
-  
+
   const RepositoryException(this.message, {this.code});
-  
+
   @override
   String toString() => message;
 }

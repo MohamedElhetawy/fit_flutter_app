@@ -36,9 +36,7 @@ class FitXCircleBtn extends StatelessWidget {
         size: 20,
       ),
     );
-    return onTap != null
-        ? GestureDetector(onTap: onTap, child: child)
-        : child;
+    return onTap != null ? GestureDetector(onTap: onTap, child: child) : child;
   }
 }
 

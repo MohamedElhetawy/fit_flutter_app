@@ -27,12 +27,14 @@ class AuthRepository {
     required String email,
     required String password,
   }) {
-    return _auth.createUserWithEmailAndPassword(email: email, password: password);
+    return _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
   }
 
   Future<UserCredential> signInWithGoogleMobile() async {
     if (kIsWeb) {
-      throw UnsupportedError('Google Sign-In mobile flow is not available on web. Use signInWithGoogleWeb instead.');
+      throw UnsupportedError(
+          'Google Sign-In mobile flow is not available on web. Use signInWithGoogleWeb instead.');
     }
     final GoogleSignInAccount? account = await GoogleSignIn().signIn();
     if (account == null) {
@@ -50,11 +52,11 @@ class AuthRepository {
   Future<UserCredential> signInWithGoogleWeb() async {
     // Create a new provider
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
-    
+
     // Add scopes if needed
     googleProvider.addScope('email');
     googleProvider.addScope('profile');
-    
+
     // Sign in with popup
     return await _auth.signInWithPopup(googleProvider);
   }

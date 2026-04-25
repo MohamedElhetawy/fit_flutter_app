@@ -15,7 +15,8 @@ class WorkoutsLocalDataSource {
   Future<void> seedExercisesIfEmpty() async {
     final count = await _isar.exerciseLocals.count();
     if (count == 0) {
-      final jsonString = await rootBundle.loadString('assets/data/mustles.json');
+      final jsonString =
+          await rootBundle.loadString('assets/data/mustles.json');
       final List<dynamic> jsonList = json.decode(jsonString);
 
       final exercises = jsonList.map((j) {
@@ -36,8 +37,12 @@ class WorkoutsLocalDataSource {
     return _isar.exerciseLocals.where().watch(fireImmediately: true);
   }
 
-  Future<List<ExerciseLocal>> getExercisesByMuscleGroup(String muscleGroup) async {
-    return await _isar.exerciseLocals.filter().muscleGroupEqualTo(muscleGroup).findAll();
+  Future<List<ExerciseLocal>> getExercisesByMuscleGroup(
+      String muscleGroup) async {
+    return await _isar.exerciseLocals
+        .filter()
+        .muscleGroupEqualTo(muscleGroup)
+        .findAll();
   }
 
   // ==== WORKOUTS ====

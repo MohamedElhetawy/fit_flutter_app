@@ -7,7 +7,8 @@ import 'package:fitx/src/core/local_db/local_db_service.dart';
 /// Isar is not supported — consumers must handle that or use platform guards.
 final isarProvider = FutureProvider<Isar>((ref) async {
   if (kIsWeb) {
-    throw UnsupportedError('Isar is not supported on Web. Use an alternative local store.');
+    throw UnsupportedError(
+        'Isar is not supported on Web. Use an alternative local store.');
   }
 
   await LocalDbService().init();

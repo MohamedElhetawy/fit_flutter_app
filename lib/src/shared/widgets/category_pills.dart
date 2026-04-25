@@ -37,21 +37,16 @@ class CategoryPills extends StatelessWidget {
                 color: isSelected ? primaryColor : surfaceColor,
                 borderRadius: BorderRadius.circular(radiusFull),
                 border: Border.all(
-                  color: isSelected
-                      ? primaryColor
-                      : surfaceBorder,
+                  color: isSelected ? primaryColor : surfaceBorder,
                   width: 1,
                 ),
               ),
               child: Text(
                 categories[index],
                 style: TextStyle(
-                  color: isSelected
-                      ? const Color(0xFF1A1A00)
-                      : textSecondary,
+                  color: isSelected ? const Color(0xFF1A1A00) : textSecondary,
                   fontSize: 13,
-                  fontWeight:
-                      isSelected ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
             ),

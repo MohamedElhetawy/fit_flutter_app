@@ -57,7 +57,8 @@ class _HomeAppBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(currentUserProfileProvider).value;
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(defaultPadding, spaceMd, defaultPadding, 0),
+      padding:
+          const EdgeInsets.fromLTRB(defaultPadding, spaceMd, defaultPadding, 0),
       sliver: SliverToBoxAdapter(
         child: Row(
           children: [
@@ -66,8 +67,13 @@ class _HomeAppBar extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('أهلاً بيك 👋', style: TextStyle(color: textSecondary, fontSize: 13)),
-                Text(profile?.name ?? 'Loading...', style: const TextStyle(color: textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text('أهلاً بيك 👋',
+                    style: TextStyle(color: textSecondary, fontSize: 13)),
+                Text(profile?.name ?? 'Loading...',
+                    style: const TextStyle(
+                        color: textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
               ],
             ),
             const Spacer(),
@@ -131,8 +137,10 @@ class _RecentActivityCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activities = ref.watch(recentActivitiesProvider).valueOrNull;
-    if (activities == null || activities.isEmpty) return const SizedBox.shrink();
-    
+    if (activities == null || activities.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final latest = activities.first;
     return FitXCard(
       accentGlow: true,
@@ -144,8 +152,10 @@ class _RecentActivityCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(latest.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text('${latest.durationMinutes} دقيقة نشاط', style: const TextStyle(color: textSecondary, fontSize: 12)),
+                Text(latest.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('${latest.durationMinutes} دقيقة نشاط',
+                    style: const TextStyle(color: textSecondary, fontSize: 12)),
               ],
             ),
           ),
@@ -164,20 +174,33 @@ class _WorkoutFeaturedCard extends ConsumerWidget {
       height: 160,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radiusLg),
-        gradient: const LinearGradient(colors: [surfaceColor, bgColor], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: const LinearGradient(
+            colors: [surfaceColor, bgColor],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight),
         border: Border.all(color: surfaceBorder),
       ),
       child: Stack(
         children: [
-          Positioned(right: -10, bottom: -10, child: Icon(Icons.fitness_center, size: 100, color: primaryColor.withAlpha(13))),
+          Positioned(
+              right: -10,
+              bottom: -10,
+              child: Icon(Icons.fitness_center,
+                  size: 100, color: primaryColor.withAlpha(13))),
           Padding(
             padding: const EdgeInsets.all(spaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('الجلسة اليومية', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12)),
+                const Text('الجلسة اليومية',
+                    style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12)),
                 const SizedBox(height: 4),
-                Text(workout?.title ?? 'Full Body Blast', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(workout?.title ?? 'Full Body Blast',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
                 const Spacer(),
                 ElevatedButton(onPressed: () {}, child: const Text('استمرار')),
               ],
@@ -197,15 +220,26 @@ class _MetricCard extends StatelessWidget {
   final Color color;
   final double progress;
 
-  const _MetricCard({required this.title, required this.value, required this.unit, required this.icon, required this.color, required this.progress});
+  const _MetricCard(
+      {required this.title,
+      required this.value,
+      required this.unit,
+      required this.icon,
+      required this.color,
+      required this.progress});
 
   @override
   Widget build(BuildContext context) {
-    final width = (MediaQuery.of(context).size.width - (defaultPadding * 2 + spaceSm)) / 2;
+    final width =
+        (MediaQuery.of(context).size.width - (defaultPadding * 2 + spaceSm)) /
+            2;
     return Container(
       width: width,
       padding: const EdgeInsets.all(spaceMd),
-      decoration: BoxDecoration(color: surfaceColor, borderRadius: BorderRadius.circular(radiusMd), border: Border.all(color: surfaceBorder)),
+      decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(radiusMd),
+          border: Border.all(color: surfaceBorder)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -213,12 +247,25 @@ class _MetricCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(icon, color: color, size: 18),
-              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(value: progress, strokeWidth: 2.5, backgroundColor: surfaceBorder, valueColor: AlwaysStoppedAnimation(color))),
+              SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      value: progress,
+                      strokeWidth: 2.5,
+                      backgroundColor: surfaceBorder,
+                      valueColor: AlwaysStoppedAnimation(color))),
             ],
           ),
           const SizedBox(height: spaceMd),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: grandisExtendedFont)),
-          Text(unit, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: grandisExtendedFont)),
+          Text(unit,
+              style: TextStyle(
+                  color: color, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -232,7 +279,14 @@ class _CircularAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: primaryColor.withAlpha(77), width: 2), color: surfaceColor), child: const Icon(Icons.person, color: textSecondary, size: 22)),
+      child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: primaryColor.withAlpha(77), width: 2),
+              color: surfaceColor),
+          child: const Icon(Icons.person, color: textSecondary, size: 22)),
     );
   }
 }
@@ -242,7 +296,14 @@ class _IconButton extends StatelessWidget {
   const _IconButton({required this.icon});
   @override
   Widget build(BuildContext context) {
-    return Container(width: 40, height: 40, decoration: BoxDecoration(color: surfaceColor, borderRadius: BorderRadius.circular(radiusSm), border: Border.all(color: surfaceBorder)), child: Icon(icon, color: textSecondary, size: 20));
+    return Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+            color: surfaceColor,
+            borderRadius: BorderRadius.circular(radiusSm),
+            border: Border.all(color: surfaceBorder)),
+        child: Icon(icon, color: textSecondary, size: 20));
   }
 }
 
@@ -252,6 +313,10 @@ class _IconCircle extends StatelessWidget {
   const _IconCircle({required this.icon, required this.color});
   @override
   Widget build(BuildContext context) {
-    return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(shape: BoxShape.circle, color: color.withAlpha(26)), child: Icon(icon, color: color, size: 20));
+    return Container(
+        padding: const EdgeInsets.all(10),
+        decoration:
+            BoxDecoration(shape: BoxShape.circle, color: color.withAlpha(26)),
+        child: Icon(icon, color: color, size: 20));
   }
 }

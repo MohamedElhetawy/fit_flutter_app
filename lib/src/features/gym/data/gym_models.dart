@@ -6,7 +6,11 @@ class GymStats {
   final int subscriptions;
   final int revenue;
 
-  const GymStats({this.trainees = 0, this.trainers = 0, this.subscriptions = 0, this.revenue = 0});
+  const GymStats(
+      {this.trainees = 0,
+      this.trainers = 0,
+      this.subscriptions = 0,
+      this.revenue = 0});
 
   factory GymStats.fromMap(Map<String, dynamic>? map) {
     return GymStats(
@@ -23,13 +27,15 @@ class GymRevenue {
   final int monthly;
   final int activeSubscriptions;
 
-  const GymRevenue({this.total = 0, this.monthly = 0, this.activeSubscriptions = 0});
+  const GymRevenue(
+      {this.total = 0, this.monthly = 0, this.activeSubscriptions = 0});
 
   factory GymRevenue.fromMap(Map<String, dynamic>? map) {
     return GymRevenue(
       total: (map?['totalRevenue'] as num?)?.toInt() ?? 0,
       monthly: (map?['monthlyRevenue'] as num?)?.toInt() ?? 0,
-      activeSubscriptions: (map?['activeSubscriptionCount'] as num?)?.toInt() ?? 0,
+      activeSubscriptions:
+          (map?['activeSubscriptionCount'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -54,7 +60,11 @@ class Trainer {
   final String email;
   final int traineeCount;
 
-  const Trainer({required this.id, required this.name, required this.email, required this.traineeCount});
+  const Trainer(
+      {required this.id,
+      required this.name,
+      required this.email,
+      required this.traineeCount});
 
   factory Trainer.fromMap(Map<String, dynamic> map, String id) {
     return Trainer(
@@ -72,7 +82,11 @@ class Trainee {
   final String email;
   final String trainerName;
 
-  const Trainee({required this.id, required this.name, required this.email, required this.trainerName});
+  const Trainee(
+      {required this.id,
+      required this.name,
+      required this.email,
+      required this.trainerName});
 
   factory Trainee.fromMap(Map<String, dynamic> map, String id) {
     return Trainee(
@@ -90,7 +104,11 @@ class GymActivity {
   final String message;
   final DateTime timestamp;
 
-  const GymActivity({required this.id, required this.type, required this.message, required this.timestamp});
+  const GymActivity(
+      {required this.id,
+      required this.type,
+      required this.message,
+      required this.timestamp});
 
   factory GymActivity.fromMap(Map<String, dynamic> map, String id) {
     final ts = map['timestamp'];

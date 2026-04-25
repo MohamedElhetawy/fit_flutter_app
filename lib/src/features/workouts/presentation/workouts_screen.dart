@@ -84,7 +84,8 @@ class WorkoutsScreen extends ConsumerWidget {
                   }
 
                   return SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.85,
                       crossAxisSpacing: spaceMd,

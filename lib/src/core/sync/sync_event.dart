@@ -26,6 +26,6 @@ class SyncEvent {
 
   /// Whether we could not process this error ultimately and gave up
   bool hasError = false;
-  
+
   String? errorMessage;
 }

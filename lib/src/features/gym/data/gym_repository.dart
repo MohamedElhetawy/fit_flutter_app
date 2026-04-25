@@ -19,7 +19,8 @@ class GymRepository {
         .where('gymId', isEqualTo: gymId)
         .where('role', isEqualTo: 'trainer')
         .snapshots()
-        .map((snap) => snap.docs.map((d) => Trainer.fromMap(d.data(), d.id)).toList());
+        .map((snap) =>
+            snap.docs.map((d) => Trainer.fromMap(d.data(), d.id)).toList());
   }
 
   Stream<List<Trainee>> watchGymTrainees(String gymId) {
@@ -28,7 +29,8 @@ class GymRepository {
         .where('gymId', isEqualTo: gymId)
         .where('role', isEqualTo: 'trainee')
         .snapshots()
-        .map((snap) => snap.docs.map((d) => Trainee.fromMap(d.data(), d.id)).toList());
+        .map((snap) =>
+            snap.docs.map((d) => Trainee.fromMap(d.data(), d.id)).toList());
   }
 
   Stream<List<GymActivity>> watchGymActivities(String gymId) {
@@ -39,6 +41,7 @@ class GymRepository {
         .orderBy('timestamp', descending: true)
         .limit(10)
         .snapshots()
-        .map((snap) => snap.docs.map((d) => GymActivity.fromMap(d.data(), d.id)).toList());
+        .map((snap) =>
+            snap.docs.map((d) => GymActivity.fromMap(d.data(), d.id)).toList());
   }
 }

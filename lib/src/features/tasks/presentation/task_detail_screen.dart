@@ -241,9 +241,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.task.type == TaskType.workout
-                ? 'التمارين'
-                : 'عناصر الوجبة',
+            widget.task.type == TaskType.workout ? 'التمارين' : 'عناصر الوجبة',
             style: const TextStyle(
               color: textPrimary,
               fontSize: 16,
@@ -268,14 +266,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         child: Container(
           padding: const EdgeInsets.all(spaceSm),
           decoration: BoxDecoration(
-            color: item.isChecked
-                ? primaryColor.withAlpha(26)
-                : surfaceColorLight,
+            color:
+                item.isChecked ? primaryColor.withAlpha(26) : surfaceColorLight,
             borderRadius: BorderRadius.circular(radiusMd),
             border: Border.all(
-              color: item.isChecked
-                  ? primaryColor.withAlpha(77)
-                  : surfaceBorder,
+              color:
+                  item.isChecked ? primaryColor.withAlpha(77) : surfaceBorder,
             ),
           ),
           child: Row(
@@ -307,9 +303,8 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   style: TextStyle(
                     color: item.isChecked ? textSecondary : textPrimary,
                     fontSize: 14,
-                    decoration: item.isChecked
-                        ? TextDecoration.lineThrough
-                        : null,
+                    decoration:
+                        item.isChecked ? TextDecoration.lineThrough : null,
                   ),
                 ),
               ),
@@ -326,9 +321,8 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: canComplete && !_isCompleting
-            ? () => _completeTask(task)
-            : null,
+        onPressed:
+            canComplete && !_isCompleting ? () => _completeTask(task) : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: canComplete ? primaryColor : surfaceColorLight,
           foregroundColor: canComplete ? Colors.black : textSecondary,

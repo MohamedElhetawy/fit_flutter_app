@@ -18,7 +18,8 @@ final macroGoalProvider = StreamProvider.family<MacroGoal, String>((ref, uid) {
 });
 
 /// Daily macro goals provider for logging screen
-final dailyMacroGoalsProvider = StreamProvider.family<MacroGoal, String>((ref, uid) {
+final dailyMacroGoalsProvider =
+    StreamProvider.family<MacroGoal, String>((ref, uid) {
   return ref
       .watch(firestoreProvider)
       .collection('users')
@@ -26,16 +27,19 @@ final dailyMacroGoalsProvider = StreamProvider.family<MacroGoal, String>((ref, u
       .collection('nutrition')
       .doc('daily_goals')
       .snapshots()
-      .map((doc) => doc.exists 
-          ? MacroGoal.fromMap(doc.data()) 
+      .map((doc) => doc.exists
+          ? MacroGoal.fromMap(doc.data())
           : const MacroGoal(calories: 2200, protein: 140, carbs: 230, fat: 70));
 });
 
 /// Daily nutrition logs provider (filtered by date)
-final dailyNutritionLogsProvider = StreamProvider.family<List<NutritionLog>, ({String uid, DateTime date})>((ref, params) {
-  final startOfDay = DateTime(params.date.year, params.date.month, params.date.day);
+final dailyNutritionLogsProvider =
+    StreamProvider.family<List<NutritionLog>, ({String uid, DateTime date})>(
+        (ref, params) {
+  final startOfDay =
+      DateTime(params.date.year, params.date.month, params.date.day);
   final endOfDay = startOfDay.add(const Duration(days: 1));
-  
+
   return ref
       .watch(firestoreProvider)
       .collection('users')
@@ -51,10 +55,11 @@ final dailyNutritionLogsProvider = StreamProvider.family<List<NutritionLog>, ({S
 });
 
 /// Weekly nutrition summary provider
-final weeklyNutritionSummaryProvider = StreamProvider.family<Map<String, dynamic>, String>((ref, uid) {
+final weeklyNutritionSummaryProvider =
+    StreamProvider.family<Map<String, dynamic>, String>((ref, uid) {
   final now = DateTime.now();
   final weekAgo = now.subtract(const Duration(days: 7));
-  
+
   return ref
       .watch(firestoreProvider)
       .collection('users')
@@ -63,40 +68,42 @@ final weeklyNutritionSummaryProvider = StreamProvider.family<Map<String, dynamic
       .where('loggedAt', isGreaterThanOrEqualTo: weekAgo.toIso8601String())
       .snapshots()
       .map((snapshot) {
-        final logs = snapshot.docs
-            .map((d) => NutritionLog.fromMap(d.id, d.data()))
-            .toList();
-        
-        // Calculate daily totals
-        final dailyTotals = <String, int>{};
-        for (final log in logs) {
-          final dateKey = '${log.loggedAt.year}-${log.loggedAt.month}-${log.loggedAt.day}';
-          dailyTotals[dateKey] = (dailyTotals[dateKey] ?? 0) + log.calories;
-        }
-        
-        // Calculate streak
-        int streak = 0;
-        final today = DateTime.now();
-        for (int i = 0; i < 365; i++) {
-          final checkDate = today.subtract(Duration(days: i));
-          final dateKey = '${checkDate.year}-${checkDate.month}-${checkDate.day}';
-          if (dailyTotals.containsKey(dateKey) && dailyTotals[dateKey]! > 0) {
-            streak++;
-          } else if (i == 0) {
-            // Today might be incomplete, continue checking
-            continue;
-          } else {
-            break;
-          }
-        }
-        
-        return {
-          'streak': streak,
-          'dailyTotals': dailyTotals,
-          'totalLogs': logs.length,
-          'avgCalories': logs.isEmpty ? 0 : logs.fold<int>(0, (total, l) => total + l.calories) / logs.length,
-        };
-      });
+    final logs =
+        snapshot.docs.map((d) => NutritionLog.fromMap(d.id, d.data())).toList();
+
+    // Calculate daily totals
+    final dailyTotals = <String, int>{};
+    for (final log in logs) {
+      final dateKey =
+          '${log.loggedAt.year}-${log.loggedAt.month}-${log.loggedAt.day}';
+      dailyTotals[dateKey] = (dailyTotals[dateKey] ?? 0) + log.calories;
+    }
+
+    // Calculate streak
+    int streak = 0;
+    final today = DateTime.now();
+    for (int i = 0; i < 365; i++) {
+      final checkDate = today.subtract(Duration(days: i));
+      final dateKey = '${checkDate.year}-${checkDate.month}-${checkDate.day}';
+      if (dailyTotals.containsKey(dateKey) && dailyTotals[dateKey]! > 0) {
+        streak++;
+      } else if (i == 0) {
+        // Today might be incomplete, continue checking
+        continue;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      'streak': streak,
+      'dailyTotals': dailyTotals,
+      'totalLogs': logs.length,
+      'avgCalories': logs.isEmpty
+          ? 0
+          : logs.fold<int>(0, (total, l) => total + l.calories) / logs.length,
+    };
+  });
 });
 
 /// Nutrition streak provider
@@ -184,8 +191,9 @@ class NutritionController extends AsyncNotifier<void> {
 
 class NutritionRepository {
   final FirebaseFirestore _firestore;
-  
-  NutritionRepository({required FirebaseFirestore firestore}) : _firestore = firestore;
+
+  NutritionRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> updateMacroGoals(String uid, MacroGoal goals) async {
     await _firestore
@@ -260,11 +268,11 @@ class NutritionRepository {
         .doc(uid)
         .collection('nutrition_streak')
         .doc('current');
-    
+
     final doc = await streakDoc.get();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     if (!doc.exists) {
       await streakDoc.set({
         'streak': 1,
@@ -273,11 +281,12 @@ class NutritionRepository {
       });
       return;
     }
-    
+
     final data = doc.data()!;
-    final lastLogDate = DateTime.tryParse(data['lastLogDate']?.toString() ?? '');
+    final lastLogDate =
+        DateTime.tryParse(data['lastLogDate']?.toString() ?? '');
     final currentStreak = data['streak'] ?? 0;
-    
+
     if (lastLogDate == null) {
       await streakDoc.update({
         'streak': 1,
@@ -285,10 +294,11 @@ class NutritionRepository {
       });
       return;
     }
-    
-    final lastLogDay = DateTime(lastLogDate.year, lastLogDate.month, lastLogDate.day);
+
+    final lastLogDay =
+        DateTime(lastLogDate.year, lastLogDate.month, lastLogDate.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    
+
     if (lastLogDay.isAtSameMomentAs(yesterday)) {
       // Continued streak
       await streakDoc.update({
